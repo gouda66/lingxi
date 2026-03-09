@@ -1,0 +1,571 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>灵犀外卖管理端</title>
+    <link rel="shortcut icon" href="favicon.ico">
+    <!-- 引入样式 -->
+    <link rel="stylesheet" href="plugins/element-ui/index.css" />
+    <link rel="stylesheet" href="styles/common.css" />
+    <link rel="stylesheet" href="styles/index.css" />
+    <link rel="stylesheet" href="styles/icon/iconfont.css" />
+    <style>
+      .body{
+        min-width: 1366px;
+      }
+      .app-main{
+        height: calc(100% - 64px);
+      }
+      .app-main .divTmp{
+        width: 100%;
+        height: 100%;
+      }
+
+      /* AI 助手样式 */
+      .ai-assistant-btn {
+        position: fixed;
+        right: 30px;
+        bottom: 30px;
+        width: 60px;
+        height: 60px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border-radius: 50%;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        transition: all 0.3s ease;
+        z-index: 9999;
+        animation: pulse 2s infinite;
+      }
+
+      .ai-assistant-btn:hover {
+        transform: scale(1.1);
+        box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+      }
+
+      .ai-assistant-btn .icon-ai {
+        font-size: 30px;
+        filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
+      }
+
+      @keyframes pulse {
+        0%, 100% {
+          box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        }
+        50% {
+          box-shadow: 0 4px 25px rgba(102, 126, 234, 0.6);
+        }
+      }
+
+      .ai-chat-dialog {
+        position: fixed;
+        right: 30px;
+        bottom: 100px;
+        width: 380px;
+        height: 550px;
+        background: #fff;
+        border-radius: 12px;
+        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+        z-index: 9998;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+        animation: slideIn 0.3s ease;
+      }
+
+      @keyframes slideIn {
+        from {
+          opacity: 0;
+          transform: translateY(20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .ai-chat-header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: #fff;
+        padding: 16px 20px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+
+      .ai-chat-header h3 {
+        margin: 0;
+        font-size: 16px;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .ai-chat-header .close-btn {
+        cursor: pointer;
+        font-size: 20px;
+        opacity: 0.8;
+        transition: opacity 0.2s;
+      }
+
+      .ai-chat-header .close-btn:hover {
+        opacity: 1;
+      }
+
+      .ai-chat-messages {
+        flex: 1;
+        padding: 16px;
+        overflow-y: auto;
+        background: #f5f7fa;
+      }
+
+      .ai-message {
+        margin-bottom: 16px;
+        display: flex;
+        flex-direction: column;
+      }
+
+      .ai-message.user {
+        align-items: flex-end;
+      }
+
+      .ai-message.assistant {
+        align-items: flex-start;
+      }
+
+      .message-bubble {
+        max-width: 80%;
+        padding: 12px 16px;
+        border-radius: 12px;
+        font-size: 14px;
+        line-height: 1.5;
+        word-wrap: break-word;
+      }
+
+      .ai-message.user .message-bubble {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: #fff;
+        border-bottom-right-radius: 4px;
+      }
+
+      .ai-message.assistant .message-bubble {
+        background: #fff;
+        color: #333;
+        border-bottom-left-radius: 4px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+      }
+
+      .message-time {
+        font-size: 11px;
+        color: #999;
+        margin-top: 4px;
+        padding: 0 4px;
+      }
+
+      .ai-chat-input {
+        padding: 16px;
+        background: #fff;
+        border-top: 1px solid #e8e8e8;
+        display: flex;
+        gap: 10px;
+      }
+
+      .ai-chat-input input {
+        flex: 1;
+        padding: 10px 14px;
+        border: 1px solid #dcdfe6;
+        border-radius: 20px;
+        outline: none;
+        font-size: 14px;
+        transition: border-color 0.2s;
+      }
+
+      .ai-chat-input input:focus {
+        border-color: #667eea;
+      }
+
+      .ai-chat-input button {
+        width: 40px;
+        height: 40px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        border-radius: 50%;
+        color: #fff;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.2s;
+      }
+
+      .ai-chat-input button:hover {
+        transform: scale(1.05);
+      }
+
+      .ai-chat-input button:active {
+        transform: scale(0.95);
+      }
+
+      .typing-indicator {
+        display: flex;
+        gap: 4px;
+        padding: 12px 16px;
+      }
+
+      .typing-indicator span {
+        width: 8px;
+        height: 8px;
+        background: #999;
+        border-radius: 50%;
+        animation: typing 1.4s infinite;
+      }
+
+      .typing-indicator span:nth-child(2) {
+        animation-delay: 0.2s;
+      }
+
+      .typing-indicator span:nth-child(3) {
+        animation-delay: 0.4s;
+      }
+
+      @keyframes typing {
+        0%, 60%, 100% {
+          transform: translateY(0);
+        }
+        30% {
+          transform: translateY(-8px);
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="app" id="app">
+      <div class="app-wrapper openSidebar clearfix">
+        <!-- sidebar -->
+        <div class="sidebar-container">
+          <div class="logo">
+            <!-- <img src="images/logo.png" width="122.5" alt="" /> -->
+            <img src="images/login/login-logo.png" alt="" style="width: 117px; height: 32px" />
+          </div>
+
+          <el-scrollbar wrap-class="scrollbar-wrapper">
+            <el-menu
+              :default-active="defAct"
+              :unique-opened="false"
+              :collapse-transition="false"
+              background-color="#343744"
+              text-color="#bfcbd9"
+              active-text-color="#f4f4f5"
+            >
+              <div v-for="item in menuList" :key="item.id">
+                <el-submenu :index="item.id" v-if="item.children && item.children.length>0">
+                  <template slot="title">
+                    <i class="iconfont" :class="item.icon"></i>
+                    <span>{{item.name}}</span>
+                  </template>
+                  <el-menu-item
+                    v-for="sub in item.children"
+                    :index="sub.id"
+                    :key="sub.id"
+                    @click="menuHandle(sub,false)"
+                    >
+                    <i :class="iconfont" :class="sub.icon"></i>
+                    <span slot="title">{{sub.name}}</span>
+                    </el-menu-item
+                  >
+                </el-submenu>
+                <el-menu-item v-else :index="item.id" @click="menuHandle(item,false)">
+                  <i class="iconfont" :class="item.icon"></i>
+                  <span slot="title">{{item.name}}</span>
+                </el-menu-item>
+              </div>
+            </el-menu>
+          </el-scrollbar>
+        </div>
+        <div class="main-container">
+          <!-- <navbar /> -->
+          <div class="navbar">
+            <div class="head-lable">
+              <span v-if="goBackFlag" class="goBack" @click="goBack()"
+                ><img src="images/icons/btn_back@2x.png" alt="" /> 返回</span
+              >
+              <span>{{headTitle}}</span>
+            </div>
+            <div class="right-menu">
+              <div class="avatar-wrapper">{{ userInfo.name }}</div>
+              <!-- <div class="logout" @click="logout">退出</div> -->
+              <img src="images/icons/btn_close@2x.png" class="outLogin" alt="退出" @click="logout" />
+            </div>
+          </div>
+          <div class="app-main" v-loading="loading">
+            <div class="divTmp" v-show="loading"></div>
+            <iframe
+              id="cIframe"
+              class="c_iframe"
+              name="cIframe"
+              :src="iframeUrl"
+              width="100%"
+              height="auto"
+              frameborder="0"
+              v-show="!loading"
+            ></iframe>
+          </div>
+        </div>
+
+        <!-- AI 助手按钮 -->
+        <div class="ai-assistant-btn" @click="toggleChat" title="AI 助手">
+          <span class="icon-ai">🤖</span>
+        </div>
+
+        <!-- AI 聊天对话框 -->
+        <div class="ai-chat-dialog" v-if="showChat">
+          <div class="ai-chat-header">
+            <h3>
+              <span>🤖</span>
+              AI 智能助手
+            </h3>
+            <span class="close-btn" @click="toggleChat">×</span>
+          </div>
+
+          <div class="ai-chat-messages" ref="messagesContainer">
+            <div
+              v-for="(msg, index) in messages"
+              :key="index"
+              class="ai-message"
+              :class="msg.role"
+            >
+              <div class="message-bubble">{{ msg.content }}</div>
+              <div class="message-time">{{ msg.time }}</div>
+            </div>
+
+            <div v-if="isTyping" class="ai-message assistant">
+              <div class="typing-indicator">
+                <span></span>
+                <span></span>
+                <span></span>
+              </div>
+            </div>
+          </div>
+
+          <div class="ai-chat-input">
+            <input
+              type="text"
+              v-model="inputMessage"
+              placeholder="输入消息..."
+              @keyup.enter="sendMessage"
+            />
+            <button @click="sendMessage">
+              <span style="font-size: 18px;">➤</span>
+            </button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+    <!-- 开发环境版本，包含了有帮助的命令行警告 -->
+    <script src="plugins/vue/vue.js"></script>
+    <!-- 引入组件库 -->
+    <script src="plugins/element-ui/index.js"></script>
+    <!-- 引入axios -->
+    <script src="plugins/axios/axios.min.js"></script>
+    <script src="js/request.js"></script>
+    <script src="./api/login.js"></script>
+    <script>
+
+      new Vue({
+        el: '#app',
+        data() {
+          return {
+            defAct: '2',
+            menuActived: '2',
+            userInfo: {},
+            menuList: [
+              // {
+              //   id: '1',
+              //   name: '门店管理',
+              //   children: [
+                  {
+                    id: '2',
+                    name: '员工管理',
+                    url: 'page/member/list.html',
+                    icon: 'icon-member'
+                  },
+                  {
+                    id: '3',
+                    name: '分类管理',
+                    url: 'page/category/list.html',
+                    icon: 'icon-category'
+                  },
+                  {
+                    id: '4',
+                    name: '菜品管理',
+                    url: 'page/food/list.html',
+                    icon: 'icon-food'
+                  },
+                  {
+                    id: '5',
+                    name: '套餐管理',
+                    url: 'page/combo/list.html',
+                    icon: 'icon-combo'
+                  },
+                  {
+                    id: '6',
+                    name: '订单明细',
+                    url: 'page/order/list.html',
+                    icon: 'icon-order'
+                  }
+              //   ],
+              // },
+            ],
+            iframeUrl: 'page/member/list.html',
+            headTitle: '员工管理',
+            goBackFlag: false,
+            loading: true,
+            timer: null,
+
+            // AI 助手相关
+            showChat: false,
+            inputMessage: '',
+            isTyping: false,
+            messages: [
+              {
+                role: 'assistant',
+                content: '您好！我是 AI 智能助手，有什么可以帮助您的吗？我可以回答关于系统使用、菜品管理、订单处理等问题。',
+                time: this.getCurrentTime()
+              }
+            ]
+          }
+        },
+        computed: {},
+        created() {
+          const userInfo = window.localStorage.getItem('userInfo')
+          if (userInfo) {
+            this.userInfo = JSON.parse(userInfo)
+          }
+          this.closeLoading()
+        },
+        beforeDestroy() {
+          this.timer = null
+          clearTimeout(this.timer)
+        },
+        mounted() {
+          window.menuHandle = this.menuHandle
+        },
+        methods: {
+          toggleChat() {
+            this.showChat = !this.showChat;
+            if (this.showChat) {
+              this.$nextTick(() => {
+                this.scrollToBottom();
+              });
+            }
+          },
+
+          sendMessage() {
+            const message = this.inputMessage.trim();
+            if (!message) return;
+
+            // 添加用户消息
+            this.messages.push({
+              role: 'user',
+              content: message,
+              time: this.getCurrentTime()
+            });
+
+            this.inputMessage = '';
+            this.isTyping = true;
+            this.scrollToBottom();
+
+            // 模拟 AI 响应（实际项目中应该调用后端 API）
+            setTimeout(() => {
+              this.getAIResponse(message);
+              this.isTyping = false;
+              this.scrollToBottom();
+            }, 1000 + Math.random() * 1000);
+          },
+
+          getAIResponse(userMessage) {
+            // 简单的关键词匹配回复（实际项目应接入 AI API）
+            const responses = {
+              '你好': '您好！很高兴为您服务，请问有什么可以帮助您？',
+              '怎么用': '本系统提供菜品管理、套餐管理、订单管理等功能。您可以通过左侧菜单访问各个模块。如有具体问题，欢迎继续提问！',
+              '菜品': '菜品管理功能包括：新建菜品、修改菜品信息、设置价格、调整售卖状态等。您可以在菜品管理页面进行这些操作。',
+              '订单': '订单明细页面可以查看所有订单的详细信息，包括订单状态、金额、配送信息等。支持按条件筛选和导出功能。',
+              '价格': '价格设置可以在菜品管理或套餐管理中进行。点击编辑按钮，修改价格后保存即可。价格单位为元。',
+              '分类': '分类管理用于管理菜品分类，支持添加、修改、删除分类。合理的分类有助于顾客快速找到想要的菜品。',
+              '员工': '员工管理可以管理系统用户，包括添加员工、修改权限、重置密码等功能。请妥善保管管理员账号。',
+              '帮助': '我可以帮助您解答系统使用问题，包括：菜品管理、套餐管理、订单处理、分类设置、员工管理等。请具体描述您的问题。',
+              '默认': '收到您的问题，我正在思考如何帮助您。目前我还在学习中，建议您查看相关功能模块或联系系统管理员获取更详细的帮助。'
+            };
+
+            let response = responses['默认'];
+            for (const key in responses) {
+              if (key !== '默认' && userMessage.includes(key)) {
+                response = responses[key];
+                break;
+              }
+            }
+
+            this.messages.push({
+              role: 'assistant',
+              content: response,
+              time: this.getCurrentTime()
+            });
+          },
+
+          getCurrentTime() {
+            const now = new Date();
+            const hours = String(now.getHours()).padStart(2, '0');
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+            return `${hours}:${minutes}`;
+          },
+
+          scrollToBottom() {
+            this.$nextTick(() => {
+              const container = this.$refs.messagesContainer;
+              if (container) {
+                container.scrollTop = container.scrollHeight;
+              }
+            });
+          },
+
+          logout() {
+            logoutApi().then((res)=>{
+              if(res.code === 1){
+                localStorage.removeItem('userInfo')
+                window.location.href = '/backend/page/login/login.html'
+              }
+            })
+          },
+          goBack() {
+            // window.location.href = 'javascript:history.go(-1)'
+            const menu = this.menuList.find(item=>item.id===this.menuActived)
+            // this.goBackFlag = false
+            // this.headTitle = menu.name
+            this.menuHandle(menu,false)
+          },
+          menuHandle(item, goBackFlag) {
+            this.loading = true
+            this.menuActived = item.id
+            this.iframeUrl = item.url
+            this.headTitle = item.name
+            this.goBackFlag = goBackFlag
+            this.closeLoading()
+          },
+          closeLoading(){
+            this.timer = null
+            this.timer = setTimeout(()=>{
+              this.loading = false
+            },1000)
+          }
+        }
+      })
+    </script>
+  </body>
+</html>
