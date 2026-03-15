@@ -10,7 +10,7 @@ spring:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://localhost:3306/isi_db?useUnicode=true&characterEncoding=utf-8&serverTimezone=Asia/Shanghai&createDatabaseIfNotExist=true
     username: root
-    password: root
+    password: Zpg1314521@
   
   # JPA 配置
   jpa:
@@ -23,7 +23,7 @@ spring:
         format_sql: true
   
   # 文件上传配置
- servlet:
+  servlet:
     multipart:
       max-file-size: 10MB
       max-request-size: 10MB

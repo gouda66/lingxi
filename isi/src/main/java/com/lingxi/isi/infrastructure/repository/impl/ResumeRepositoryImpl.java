@@ -47,6 +47,11 @@ public class ResumeRepositoryImpl implements ResumeRepository {
         return jpaResumeRepository.findByUserIdAndStatus(userId, status, pageable);
     }
 
+                                                                                                                                                                                                                 @Override
+    public Page<Resume> findAll(Pageable pageable) {
+      return jpaResumeRepository.findAll(pageable);
+    }
+
     @Override
     public void deleteById(Long id) {
         jpaResumeRepository.deleteById(id);

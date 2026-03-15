@@ -4,6 +4,8 @@ import com.lingxi.isi.domain.model.entity.User;
 import com.lingxi.isi.domain.repository.UserRepository;
 import com.lingxi.isi.infrastructure.repository.jpa.JpaUserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -53,6 +55,11 @@ public class UserRepositoryImpl implements UserRepository {
     @Override
     public void deleteById(Long id) {
         jpaRepository.deleteById(id);
+    }
+
+    @Override
+    public Page<User> findAll(Pageable pageable) {
+       return jpaRepository.findAll(pageable);
     }
 
     @Override
