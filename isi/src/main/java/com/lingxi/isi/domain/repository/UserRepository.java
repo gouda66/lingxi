@@ -23,9 +23,14 @@ public interface UserRepository {
 
     Optional<User> findByPhone(String phone);
 
-   void deleteById(Long id);
+    void deleteById(Long id);
 
-   Page<User> findAll(Pageable pageable);
+    Page<User> findAll(Pageable pageable);
 
     List<User> findAll();
+    
+    /**
+     * 根据用户 ID 查询菜单权限标识
+     */
+    List<String> findPermissionsByUserId(Long userId);
 }

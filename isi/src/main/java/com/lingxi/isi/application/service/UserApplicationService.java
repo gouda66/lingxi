@@ -135,6 +135,13 @@ public class UserApplicationService {
                 .map(UserMapper.INSTANCE::toDTO)
                 .orElseThrow(() -> new CustomException("用户不存在"));
     }
+    
+    /**
+     * 获取用户权限列表
+     */
+    public List<String> getUserPermissions(Long userId) {
+        return userRepository.findPermissionsByUserId(userId);
+    }
 
     /**
      * 更新用户信息

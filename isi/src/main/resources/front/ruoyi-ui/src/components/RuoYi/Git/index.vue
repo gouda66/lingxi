@@ -4,18 +4,10 @@
   </div>
 </template>
 
-<script>
-export default {
-  name: 'RuoYiGit',
-  data() {
-    return {
-      url: 'https://gitee.com/y_project/RuoYi-Vue'
-    }
-  },
-  methods: {
-    goto() {
-      window.open(this.url)
-    }
-  }
+<script setup lang="ts">
+const url = ref<string>('https://gitee.com/y_project/RuoYi-Vue')
+
+function goto(): void {
+  window.open(url.value)
 }
 </script>

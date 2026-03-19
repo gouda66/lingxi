@@ -19,4 +19,13 @@ public interface JpaUserRepository extends JpaRepository<User, Long> {
     Optional<User> findByEmail(String email);
 
     Optional<User> findByPhone(String phone);
+    
+    /**
+     * 根据用户 ID 查询菜单权限标识
+     */
+    @org.springframework.data.jpa.repository.Query("SELECT m.perms FROM Menu m WHERE m.id IN " +
+           "(SELECT rm.menuId FROM RoleMenu rm WHERE rm.roleId IN " +
+           "(SELECT ur.roleId FROM UserRole ur WHERE ur.userId = ?1)) " +
+           "AND m.hidden = 0 AND m.perms IS NOT NULL")
+    java.util.List<String> findPermissionsByUserId(Long userId);
 }

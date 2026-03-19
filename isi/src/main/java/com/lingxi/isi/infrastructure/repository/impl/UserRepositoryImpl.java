@@ -66,4 +66,9 @@ public class UserRepositoryImpl implements UserRepository {
     public List<User> findAll() {
         return jpaRepository.findAll();
     }
+    
+    @Override
+    public List<String> findPermissionsByUserId(Long userId) {
+        return jpaRepository.findPermissionsByUserId(userId);
+    }
 }

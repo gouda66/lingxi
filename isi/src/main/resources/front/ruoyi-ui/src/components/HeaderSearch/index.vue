@@ -2,8 +2,8 @@
   <div class="header-search">
     <svg-icon class-name="search-icon" icon-class="search" @click.stop="click" />
     <el-dialog
-      :visible.sync="show"
-      width="600px"
+      v-model="show"
+      width="600"
       @close="close"
       :show-close="false"
       append-to-body
@@ -13,17 +13,18 @@
         ref="headerSearchSelectRef"
         size="large"
         @input="querySearch"
-        prefix-icon="el-icon-search"
+        prefix-icon="Search"
         placeholder="菜单搜索，支持标题、URL模糊查询"
         clearable
-        @keyup.enter.native="selectActiveResult"
-        @keydown.up.native="navigateResult('up')"
-        @keydown.down.native="navigateResult('down')"
+        @keyup.enter="selectActiveResult"
+        @keydown.up.prevent="navigateResult('up')"
+        @keydown.down.prevent="navigateResult('down')"
       >
       </el-input>
-      <el-scrollbar wrap-class="right-scrollbar-wrapper">
-        <div class="result-wrap">
-          <div class="search-item" v-for="(item, index) in options" :key="item.path" :style="activeStyle(index)" @mouseenter="activeIndex = index" @mouseleave="activeIndex = -1">
+
+      <div class="result-wrap">
+        <el-scrollbar>
+          <div class="search-item" tabindex="1" v-for="(item, index) in options" :key="item.path" :style="activeStyle(index)" @mouseenter="activeIndex = index" @mouseleave="activeIndex = -1">
             <div class="left">
               <svg-icon class="menu-icon" :icon-class="item.icon" />
             </div>
@@ -37,175 +38,165 @@
             </div>
             <svg-icon icon-class="enter" v-show="index === activeIndex"/>
           </div>
-       </div>
-      </el-scrollbar>
+        </el-scrollbar>
+      </div>
     </el-dialog>
   </div>
 </template>
 
-<script>
-import Fuse from 'fuse.js/dist/fuse.min.js'
-import path from 'path'
+<script setup lang="ts">
+import Fuse from 'fuse.js'
+import { getNormalPath } from '@/utils/ruoyi'
 import { isHttp } from '@/utils/validate'
+import useSettingsStore from '@/store/modules/settings'
+import usePermissionStore from '@/store/modules/permission'
 
-export default {
-  name: 'HeaderSearch',
-  data() {
-    return {
-      search: '',
-      options: [],
-      searchPool: [],
-      activeIndex: -1,
-      show: false,
-      fuse: undefined
+interface SearchItem {
+  path: string
+  title: string[]
+  icon: string
+  query?: string
+}
+
+const search = ref('')
+const options = ref<SearchItem[]>([])
+const searchPool = ref<SearchItem[]>([])
+const activeIndex = ref(-1)
+const show = ref(false)
+const fuse = ref<Fuse<SearchItem> | undefined>(undefined)
+const headerSearchSelectRef = ref(null)
+const router = useRouter()
+const theme = computed(() => useSettingsStore().theme)
+const routes = computed(() => usePermissionStore().defaultRoutes)
+
+function click(): void {
+  show.value = !show.value
+  if (show.value) {
+    headerSearchSelectRef.value && headerSearchSelectRef.value.focus()
+    options.value = searchPool.value
+  }
+}
+
+function close(): void {
+  headerSearchSelectRef.value && headerSearchSelectRef.value.blur()
+  search.value = ''
+  options.value = []
+  show.value = false
+  activeIndex.value = -1
+}
+
+function change(val: SearchItem): void {
+  const path = val.path
+  const query = val.query
+  if (isHttp(path)) {
+    // http(s):// 路径新窗口打开
+    const pindex = path.indexOf("http")
+    window.open(path.substr(pindex, path.length), "_blank")
+  } else {
+    if (query) {
+      router.push({ path: path, query: JSON.parse(query) })
+    } else {
+      router.push(path)
     }
-  },
-  computed: {
-    theme() {
-      return this.$store.state.settings.theme
-    },
-    routes() {
-      return this.$store.getters.defaultRoutes
+  }
+
+  search.value = ''
+  options.value = []
+  nextTick(() => {
+    show.value = false
+  })
+}
+
+function initFuse(list: SearchItem[]): void {
+  fuse.value = new Fuse(list, {
+    shouldSort: true,
+    threshold: 0.4,
+    minMatchCharLength: 1,
+    keys: ['title', 'path']
+  })
+}
+
+// Filter out the routes that can be displayed in the sidebar
+// And generate the internationalized title
+function generateRoutes(routes :any, basePath = '', prefixTitle: string[] = []): SearchItem[] {
+  let res: SearchItem[] = []
+
+  for (const r of routes) {
+    // skip hidden router
+    if (r.hidden) { continue }
+    const p = r.path.length > 0 && r.path[0] === '/' ? r.path : '/' + r.path
+    const data: SearchItem = {
+      path: !isHttp(r.path) ? getNormalPath(basePath + p) : r.path,
+      title: [...prefixTitle],
+      icon: ''
     }
-  },
-  watch: {
-    routes() {
-      this.searchPool = this.generateRoutes(this.routes)
-    },
-    searchPool(list) {
-      this.initFuse(list)
+
+    if (r.meta && r.meta.title) {
+      data.title = [...data.title, r.meta.title as string]
+      data.icon = (r.meta.icon as string) || ''
+      if (r.redirect !== "noRedirect") {
+        // only push the routes with title
+        // special case: need to exclude parent router without redirect
+        res.push(data)
+      }
     }
-  },
-  mounted() {
-    this.searchPool = this.generateRoutes(this.routes)
-  },
-  methods: {
-    click() {
-      this.show = !this.show
-      if (this.show) {
-        this.$refs.headerSearchSelect && this.$refs.headerSearchSelect.focus()
-        this.options = this.searchPool
-      }
-    },
-    close() {
-      this.$refs.headerSearchSelect && this.$refs.headerSearchSelect.blur()
-      this.search = ''
-      this.options = []
-      this.show = false
-      this.activeIndex = -1
-    },
-    change(val) {
-      const path = val.path
-      const query = val.query
-      if(isHttp(val.path)) {
-        // http(s):// 路径新窗口打开
-        const pindex = path.indexOf("http")
-        window.open(path.substr(pindex, path.length), "_blank")
-      } else {
-        if (query) {
-          this.$router.push({ path: path, query: JSON.parse(query) })
-        } else {
-          this.$router.push(path)
-        }
-      }
-      this.search = ''
-      this.options = []
-      this.$nextTick(() => {
-        this.show = false
-      })
-    },
-    initFuse(list) {
-      this.fuse = new Fuse(list, {
-        shouldSort: true,
-        threshold: 0.4,
-        minMatchCharLength: 1,
-        keys: [{
-          name: 'title',
-          weight: 0.7
-        }, {
-          name: 'path',
-          weight: 0.3
-        }]
-      })
-    },
-    // Filter out the routes that can be displayed in the sidebar
-    // And generate the internationalized title
-    generateRoutes(routes, basePath = '/', prefixTitle = []) {
-      let res = []
+    if (r.query) {
+      data.query = r.query
+    }
 
-      for (const router of routes) {
-        // skip hidden router
-        if (router.hidden) { continue }
-
-        const data = {
-          path: !isHttp(router.path) ? path.resolve(basePath, router.path) : router.path,
-          title: [...prefixTitle],
-          icon: ''
-        }
-
-        if (router.meta && router.meta.title) {
-          data.title = [...data.title, router.meta.title]
-          data.icon = router.meta.icon
-
-          if (router.redirect !== 'noRedirect') {
-            // only push the routes with title
-            // special case: need to exclude parent router without redirect
-            res.push(data)
-          }
-        }
-
-        if (router.query) {
-          data.query = router.query
-        }
-
-        // recursive child routes
-        if (router.children) {
-          const tempRoutes = this.generateRoutes(router.children, data.path, data.title)
-          if (tempRoutes.length >= 1) {
-            res = [...res, ...tempRoutes]
-          }
-        }
-      }
-      return res
-    },
-    querySearch(query) {
-      this.activeIndex = -1
-      if (query !== '') {
-        this.options = this.fuse.search(query).map((item) => item.item) ?? this.searchPool
-      } else {
-        this.options = this.searchPool
-      }
-    },
-    activeStyle(index) {
-      if (index !== this.activeIndex) return {}
-      return {
-        "background-color": this.theme,
-        "color": "#fff"
-      }
-    },
-    navigateResult(direction) {
-      if (direction === "up") {
-        this.activeIndex = this.activeIndex <= 0 ? this.options.length - 1 : this.activeIndex - 1
-      } else if (direction === "down") {
-        this.activeIndex = this.activeIndex >= this.options.length - 1 ? 0 : this.activeIndex + 1
-      }
-    },
-    selectActiveResult() {
-      if (this.options.length > 0 && this.activeIndex >= 0) {
-        this.change(this.options[this.activeIndex])
+    // recursive child routes
+    if (r.children) {
+      const tempRoutes = generateRoutes(r.children, data.path, data.title)
+      if (tempRoutes.length >= 1) {
+        res = [...res, ...tempRoutes]
       }
     }
   }
+  return res
 }
+
+function querySearch(query: string): void {
+  activeIndex.value = -1
+  if (query !== '') {
+    const results = fuse.value.search(query) as any[]
+    options.value = results.map((item: any) => item.item) ?? searchPool.value
+  } else {
+    options.value = searchPool.value
+  }
+}
+
+function activeStyle(index: number): Record<string, string> {
+  if (index !== activeIndex.value) return {}
+  return {
+    "background-color": theme.value,
+    "color": "#fff"
+  }
+}
+
+function navigateResult(direction: 'up' | 'down'): void {
+  if (direction === "up") {
+    activeIndex.value = activeIndex.value <= 0 ? options.value.length - 1 : activeIndex.value - 1
+  } else if (direction === "down") {
+    activeIndex.value = activeIndex.value >= options.value.length - 1 ? 0 : activeIndex.value + 1
+  }
+}
+
+function selectActiveResult(): void {
+  if (options.value.length > 0 && activeIndex.value >= 0) {
+    change(options.value[activeIndex.value])
+  }
+}
+
+onMounted(() => {
+  searchPool.value = generateRoutes(routes.value)
+})
+
+watch(searchPool, (list: SearchItem[]) => {
+  initFuse(list)
+})
 </script>
 
 <style lang='scss' scoped>
-::v-deep {
-  .el-dialog__header {
-    padding: 0 !important;
-  }
-}
-
 .header-search {
   .search-icon {
     cursor: pointer;
@@ -214,7 +205,7 @@ export default {
   }
 }
 
-.result-wrap {
+.result-wrap {	
   height: 280px;
   margin: 6px 0;
 
@@ -259,4 +250,3 @@ export default {
   }
 }
 </style>
-

@@ -118,8 +118,17 @@ public class UserController {
             roles = List.of("common");
         }
         
-        // 设置权限信息（暂时返回空列表）
-        List<String> permissions = List.of();
+        // 从数据库查询权限信息
+        List<String> permissions = userApplicationService.getUserPermissions(userId);
+        
+        // 如果是管理员，添加超级管理员权限标识
+        if ("ADMIN".equals(user.getRole())) {
+            permissions.add("*:*:*");
+        }
+        
+        result.put("user", userInfo);
+        result.put("roles", roles);
+        result.put("permissions", permissions);
 
         boolean isDefaultModifyPwd = false;
         boolean isPasswordExpired = false;

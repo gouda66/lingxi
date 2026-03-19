@@ -33,6 +33,13 @@ public class LoginCheckFilter implements Filter {
             return;
         }
         
+        // 拦截 favicon.ico 请求，直接返回空响应
+        if (uri.contains("/favicon.ico") || uri.contains("/")) {
+            response.setContentType("image/x-icon");
+            ((jakarta.servlet.http.HttpServletResponse) response).setStatus(200);
+            return;
+        }
+        
         // 从 Authorization header 中获取 token (格式：Bearer xxx)
         String authorization = httpRequest.getHeader("Authorization");
         String token = null;

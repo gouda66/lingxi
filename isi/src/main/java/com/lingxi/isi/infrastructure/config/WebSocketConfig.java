@@ -1,35 +1,26 @@
 package com.lingxi.isi.infrastructure.config;
 
+import com.lingxi.isi.infrastructure.messaging.InterviewWebSocketHandler;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.messaging.simp.config.MessageBrokerRegistry;
-import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBroker;
-import org.springframework.web.socket.config.annotation.StompEndpointRegistry;
-import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerConfigurer;
+import org.springframework.web.socket.config.annotation.EnableWebSocket;
+import org.springframework.web.socket.config.annotation.WebSocketConfigurer;
+import org.springframework.web.socket.config.annotation.WebSocketHandlerRegistry;
 
 /**
- * WebSocket 配置 - 用于面试间实时通信
+ * WebSocket 配置类
  */
 @Configuration
-@EnableWebSocketMessageBroker
-public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
+@EnableWebSocket
+@RequiredArgsConstructor
+public class WebSocketConfig implements WebSocketConfigurer {
+
+    private final InterviewWebSocketHandler interviewWebSocketHandler;
 
     @Override
-    public void configureMessageBroker(MessageBrokerRegistry config) {
-        // 启用简单的内存消息代理，将消息广播到订阅的客户端
-        config.enableSimpleBroker("/topic", "/queue");
-        
-        // 设置应用目的地前缀
-        config.setApplicationDestinationPrefixes("/app");
-        
-        // 设置用户相关消息的前缀
-        config.setUserDestinationPrefix("/user");
-    }
-
-    @Override
-    public void registerStompEndpoints(StompEndpointRegistry registry) {
-        // 注册 STOMP 协议的端点，前端通过此端点连接 WebSocket
-        registry.addEndpoint("/ws-interview")
-                .setAllowedOriginPatterns("*")
-                .withSockJS();
+    public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
+        // 注册面试间 WebSocket 处理器
+        registry.addHandler(interviewWebSocketHandler, "/interview/ws/{roomId}")
+                .setAllowedOrigins("*");
     }
 }
