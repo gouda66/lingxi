@@ -34,7 +34,7 @@ public class LoginCheckFilter implements Filter {
         }
         
         // 拦截 favicon.ico 请求，直接返回空响应
-        if (uri.contains("/favicon.ico") || uri.contains("/")) {
+        if (uri.contains("/favicon.ico")) {
             response.setContentType("image/x-icon");
             ((jakarta.servlet.http.HttpServletResponse) response).setStatus(200);
             return;
@@ -54,13 +54,15 @@ public class LoginCheckFilter implements Filter {
         if (token != null) {
             try {
                 JWT jwt = JWTUtil.parseToken(token);
-                // 使用 Hutool JWT 提供的正确方法获取 claim
                 Object userIdObj = jwt.getPayload().getClaim("userId");
-
-                userId = Long.parseLong(userIdObj.toString());
-                log.debug("JWT 解析成功，userId: {}", userId);
-
-                USER_ID_HOLDER.set(userId);
+                
+                if (userIdObj != null) {
+                    userId = Long.parseLong(userIdObj.toString());
+                    log.debug("JWT 解析成功，userId: {}", userId);
+                    USER_ID_HOLDER.set(userId);
+                } else {
+                    log.warn("Token 中未找到 userId 字段");
+                }
             } catch (Exception e) {
                 log.error("Token 解析失败，token: {}, 错误：{}", token, e.getMessage(), e);
             }
