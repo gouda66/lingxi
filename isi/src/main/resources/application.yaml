@@ -27,6 +27,27 @@ spring:
     multipart:
       max-file-size: 10MB
       max-request-size: 10MB
+  data:
+    # Redis 配置
+    redis:
+      host: localhost
+      port: 6379
+      password:
+      database: 0
+      timeout: 10s
+      lettuce:
+        pool:
+          max-active: 8
+          max-wait: -1ms
+          max-idle: 8
+          min-idle: 0
+
+# 验证码配置
+captcha:
+  length: 4
+  expire-seconds: 300
+  enabled: true
+  chars: "23456789ABCDEFGHJKLMNPQRSTUVWXYZ"
 
 # 日志配置
 logging:

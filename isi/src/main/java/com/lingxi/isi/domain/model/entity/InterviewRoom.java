@@ -41,10 +41,6 @@ public class InterviewRoom implements Serializable {
     @Comment("HR 用户 ID（可为空，支持多 HR）")
     private Long hrUserId;
 
-    @Column(name = "company_id", length = 64)
-    @Comment("企业 ID")
-    private String companyId;
-
     @Column(name = "title", nullable = false, length = 128)
     @Comment("面试主题")
     private String title;

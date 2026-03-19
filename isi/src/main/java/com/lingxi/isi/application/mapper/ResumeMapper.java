@@ -1,6 +1,5 @@
 package com.lingxi.isi.application.mapper;
 
-import com.lingxi.isi.application.command.CreateResumeCommand;
 import com.lingxi.isi.application.dto.ResumeDTO;
 import com.lingxi.isi.domain.model.entity.Resume;
 import org.mapstruct.Mapper;
@@ -9,21 +8,12 @@ import org.mapstruct.factory.Mappers;
 
 /**
  * 简历 Mapper
- * 用于 DTO、Entity、Command 之间的转换
+ * 用于 DTO、Entity 之间的转换
  */
 @Mapper
 public interface ResumeMapper {
 
     ResumeMapper INSTANCE = Mappers.getMapper(ResumeMapper.class);
-
-    /**
-     * Command 转 Entity
-     */
-    @Mapping(target = "id", ignore = true)
-    @Mapping(target = "status", constant = "0")
-    @Mapping(target = "createTime", ignore = true)
-    @Mapping(target = "updateTime", ignore = true)
-    Resume toEntity(CreateResumeCommand command);
 
     /**
      * Entity 转 DTO

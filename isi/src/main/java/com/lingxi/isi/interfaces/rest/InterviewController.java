@@ -54,8 +54,7 @@ public class InterviewController {
     @PostMapping("/room/{roomId}/join")
     public R<InterviewRoom> hrJoinRoom(@PathVariable Long roomId) {
         Long hrUserId = LoginCheckFilter.getCurrentUserId();
-        String companyId = LoginCheckFilter.getCurrentUserCompanyId();
-        InterviewRoom room = interviewApplicationService.hrJoinRoom(roomId, hrUserId, companyId);
+        InterviewRoom room = interviewApplicationService.hrJoinRoom(roomId, hrUserId);
         return R.success(room);
     }
 

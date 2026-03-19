@@ -47,11 +47,18 @@ const user = {
       const password = userInfo.password
       const code = userInfo.code
       const uuid = userInfo.uuid
+
       return new Promise((resolve, reject) => {
         login(username, password, code, uuid).then(res => {
-          setToken(res.token)
-          commit('SET_TOKEN', res.token)
-          resolve()
+          const token = res.data.token
+
+          if (token) {
+            setToken(token)
+            commit('SET_TOKEN', token)
+            resolve()
+          } else {
+            reject(new Error('登录失败：未获取到 token'))
+          }
         }).catch(error => {
           reject(error)
         })
@@ -62,7 +69,7 @@ const user = {
     GetInfo({ commit, state }) {
       return new Promise((resolve, reject) => {
         getInfo().then(res => {
-          const user = res.user
+          const user = res.data.user
           let avatar = user.avatar || ""
           if (!isHttp(avatar)) {
             avatar = (isEmpty(avatar)) ? defAva : process.env.VUE_APP_BASE_API + avatar

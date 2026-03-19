@@ -34,9 +34,10 @@ const permission = {
       return new Promise(resolve => {
         // 向后端请求路由数据
         getRouters().then(res => {
+          console.log('返回的数据', res)
           const sdata = JSON.parse(JSON.stringify(res.data))
           const rdata = JSON.parse(JSON.stringify(res.data))
-          const sidebarRoutes = filterAsyncRouter(sdata)
+          const sidebarRoutes = filterAsyncRouter(sdata, false, true)
           const rewriteRoutes = filterAsyncRouter(rdata, false, true)
           const asyncRoutes = filterDynamicRoutes(dynamicRoutes)
           rewriteRoutes.push({ path: '*', redirect: '/404', hidden: true })
@@ -58,6 +59,20 @@ function filterAsyncRouter(asyncRouterMap, lastRouter = false, type = false) {
     if (type && route.children) {
       route.children = filterChildren(route.children)
     }
+    
+    // 构建 meta 对象
+    if (route.menuName) {
+      route.meta = {
+        title: route.menuName,
+        icon: route.icon || '',
+        noCache: route.isCache === 1,
+        link: route.isFrame === 0 ? route.path : null
+      }
+    }
+    
+    // 将 hidden 转换为布尔值
+    route.hidden = route.hidden === 1
+    
     if (route.component) {
       // Layout ParentView 组件特殊处理
       if (route.component === 'Layout') {

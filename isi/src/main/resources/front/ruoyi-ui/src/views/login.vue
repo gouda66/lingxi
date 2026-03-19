@@ -112,12 +112,16 @@ export default {
   },
   methods: {
     getCode() {
-      getCodeImg().then(res => {
-        this.captchaEnabled = res.captchaEnabled === undefined ? true : res.captchaEnabled
+       getCodeImg().then(res => {
+        const data = res.data || res
+        this.captchaEnabled = data.captchaEnabled === undefined ? true : data.captchaEnabled
         if (this.captchaEnabled) {
-          this.codeUrl = "data:image/gif;base64," + res.img
-          this.loginForm.uuid = res.uuid
+          this.codeUrl = "data:image/gif;base64," + data.img
+          this.loginForm.uuid = data.uuid
         }
+      }).catch(error => {
+        console.error('获取验证码失败:', error)
+        console.error('错误详情:', error.response || error.message)
       })
     },
     getCookie() {

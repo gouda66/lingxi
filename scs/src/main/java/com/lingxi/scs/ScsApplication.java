@@ -8,7 +8,7 @@ import org.springframework.context.annotation.EnableAspectJAutoProxy;
 @EnableAspectJAutoProxy(exposeProxy = true)
 public class ScsApplication {
 
-    static void main(String[] args) throws Exception {
+    public static void main(String[] args) throws Exception {
         SpringApplication.run(ScsApplication.class, args);
     }
 

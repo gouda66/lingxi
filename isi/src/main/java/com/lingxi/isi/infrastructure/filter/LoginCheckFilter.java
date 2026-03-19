@@ -1,6 +1,7 @@
 package com.lingxi.isi.infrastructure.filter;
 
-import cn.hutool.core.util.StrUtil;
+import cn.hutool.jwt.JWT;
+import cn.hutool.jwt.JWTUtil;
 import com.lingxi.isi.common.exception.CustomException;
 import jakarta.servlet.*;
 import jakarta.servlet.http.HttpServletRequest;
@@ -9,15 +10,11 @@ import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 
-/**
- * 登录检查过滤器（简化版，实际项目需要实现完整的 JWT 或 Session 验证）
- */
 @Slf4j
 @Component
 public class LoginCheckFilter implements Filter {
 
     private static final ThreadLocal<Long> USER_ID_HOLDER = new ThreadLocal<>();
-    private static final ThreadLocal<String> COMPANY_ID_HOLDER = new ThreadLocal<>();
 
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) 
@@ -26,50 +23,52 @@ public class LoginCheckFilter implements Filter {
         HttpServletRequest httpRequest = (HttpServletRequest) request;
         String uri = httpRequest.getRequestURI();
         
-        // 放行登录、注册等接口
-        if (uri.contains("/login") || uri.contains("/register")) {
+        log.debug("收到请求：{}, Method: {}", uri, httpRequest.getMethod());
+        log.debug("Authorization Header: {}", httpRequest.getHeader("Authorization"));
+        
+        // 放行登录、注册、登出、验证码等接口
+        if (uri.contains("/login") || uri.contains("/register") || 
+            uri.contains("/logout") || uri.contains("/captchaImage")) {
             chain.doFilter(request, response);
             return;
         }
-
-        // TODO: 实际项目中应该验证 Token
-        // 这里简化处理，从请求头获取用户 ID
-        String userIdStr = httpRequest.getHeader("X-User-Id");
-        String companyId = httpRequest.getHeader("X-Company-Id");
         
-        if (StrUtil.isNotBlank(userIdStr)) {
-            try {
-                Long userId = Long.parseLong(userIdStr);
-                USER_ID_HOLDER.set(userId);
-                if (StrUtil.isNotBlank(companyId)) {
-                    COMPANY_ID_HOLDER.set(companyId);
-                }
-            } catch (NumberFormatException e) {
-                throw new CustomException("用户 ID 格式错误");
-            }
+        // 从 Authorization header 中获取 token (格式：Bearer xxx)
+        String authorization = httpRequest.getHeader("Authorization");
+        String token = null;
+        if (authorization != null && authorization.startsWith("Bearer ")) {
+            token = authorization.substring(7);
+            log.debug("从 Authorization 中提取 token: {}", token);
+        } else {
+            log.warn("未找到有效的 Authorization header: {}", authorization);
         }
         
-        // 如果没有用户 ID，但访问的是需要登录的接口，抛出异常
-        if (USER_ID_HOLDER.get() == null && !isPublicUri(uri)) {
-            throw new CustomException("未登录");
+        Long userId = null;
+        if (token != null) {
+            try {
+                JWT jwt = JWTUtil.parseToken(token);
+                // 使用 Hutool JWT 提供的正确方法获取 claim
+                Object userIdObj = jwt.getPayload().getClaim("userId");
+
+                userId = Long.parseLong(userIdObj.toString());
+                log.debug("JWT 解析成功，userId: {}", userId);
+
+                USER_ID_HOLDER.set(userId);
+            } catch (Exception e) {
+                log.error("Token 解析失败，token: {}, 错误：{}", token, e.getMessage(), e);
+            }
+        }
+
+        if (USER_ID_HOLDER.get() == null) {
+            log.error("用户未登录，请求 URI: {}", uri);
+            throw new CustomException("未登录或 Token 无效");
         }
 
         try {
             chain.doFilter(request, response);
         } finally {
-            // 清理 ThreadLocal
             USER_ID_HOLDER.remove();
-            COMPANY_ID_HOLDER.remove();
         }
-    }
-
-    /**
-     * 判断是否是公开接口（不需要登录）
-     */
-    private boolean isPublicUri(String uri) {
-        return uri.contains("/common/") || 
-               uri.contains("/public/") ||
-               uri.contains("/actuator/");
     }
 
     /**
@@ -81,12 +80,5 @@ public class LoginCheckFilter implements Filter {
             throw new CustomException("未登录");
         }
         return userId;
-    }
-
-    /**
-     * 获取当前用户所属企业 ID
-     */
-    public static String getCurrentUserCompanyId() {
-        return COMPANY_ID_HOLDER.get();
     }
 }

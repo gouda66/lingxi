@@ -83,7 +83,7 @@ public class InterviewApplicationService {
      * HR 加入面试间
      */
     @Transactional
-    public InterviewRoom hrJoinRoom(Long roomId, Long hrUserId, String companyId) {
+    public InterviewRoom hrJoinRoom(Long roomId, Long hrUserId) {
         InterviewRoom room = interviewRoomRepository.findById(roomId)
                 .orElseThrow(() -> new CustomException("面试间不存在"));
 
@@ -92,7 +92,6 @@ public class InterviewApplicationService {
         }
 
         room.setHrUserId(hrUserId);
-        room.setCompanyId(companyId);
         
         return interviewRoomRepository.save(room);
     }
