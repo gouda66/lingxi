@@ -1,6 +1,5 @@
 package com.lingxi.isi.common.util;
 
-import com.lingxi.isi.infrastructure.properties.CaptchaProperties;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
