@@ -1,6 +1,6 @@
 package com.lingxi.isi.common.exception;
 
-import com.lingxi.scs.common.result.R;
+import com.lingxi.isi.common.result.R;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ControllerAdvice;

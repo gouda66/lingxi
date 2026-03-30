@@ -21,7 +21,6 @@ import java.time.LocalDateTime;
 public class Employee implements Serializable {
 
     @Serial
-    @Serial
     private static final long serialVersionUID = 1L;
 
     @Id

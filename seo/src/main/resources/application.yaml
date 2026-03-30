@@ -1,0 +1,62 @@
+spring:
+  application:
+    name: seo
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/seo?useUnicode=true&characterEncoding=utf8&useSSL=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true&connectTimeout=5000&socketTimeout=30000&queryTimeout=30000
+    username: root
+    password: 65d762992c5f79eb
+    hikari:
+      connection-timeout: 20000
+      validation-timeout: 3000
+      idle-timeout: 600000
+      max-lifetime: 1800000
+      maximum-pool-size: 10
+      minimum-idle: 2
+      leak-detection-threshold: 30000
+      initialization-fail-timeout: -1
+  data:
+    redis:
+      host: localhost
+      port: 6379
+      password: 123456@
+      database: 0
+      timeout: 5000ms
+      lettuce:
+        pool:
+          max-active: 20
+          max-idle: 5
+          min-idle: 2
+          max-wait: 10000ms
+
+mybatis-plus:
+  configuration:
+    map-underscore-to-camel-case: true
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+    default-statement-timeout: 30
+    default-fetch-size: 100
+    lazy-loading-enabled: false
+    aggressive-lazy-loading: false
+    cache-enabled: false
+  global-config:
+    db-config:
+      id-type: auto
+      logic-delete-field: deleted
+      logic-delete-value: 1
+      logic-not-delete-value: 0
+
+
+server:
+  port: 8082
+
+# Nginx SSH 配置
+nginx:
+  ssh:
+    host: localhost
+    port: 22
+    username: root
+    password: Zpg1314521@
+  config:
+#    path: D:/nginx/conf/rewrite
+    path: /etc/nginx/conf.d/seo-web.conf
+

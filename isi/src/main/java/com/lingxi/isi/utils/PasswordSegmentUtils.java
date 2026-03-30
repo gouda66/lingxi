@@ -1,6 +1,11 @@
 package com.lingxi.isi.utils;
 
+import com.lingxi.isi.mapper.SystemSecretKeyMapper;
+import com.lingxi.isi.models.entity.SystemSecretKey;
+import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import javax.crypto.Cipher;
 import javax.crypto.KeyGenerator;
@@ -8,8 +13,8 @@ import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 import java.nio.charset.StandardCharsets;
 import java.security.SecureRandom;
-import java.util.Arrays;
 import java.util.Base64;
+import java.util.List;
 
 /**
  * <p>
@@ -32,49 +37,121 @@ import java.util.Base64;
  * @since 2026-03-25
  */
 @Slf4j
+@Component
 public class PasswordSegmentUtils {
     
-    /**
-     * 分段数量（可配置）
-     */
     private static final int SEGMENT_COUNT = 4;
-    
-    /**
-     * 加密算法
-     */
     private static final String ALGORITHM = "AES";
-    
-    /**
-     * 转换格式
-     */
     private static final String TRANSFORMATION = "AES/ECB/PKCS5Padding";
-    
-    /**
-     * 密钥长度（位）
-     */
     private static final int KEY_LENGTH = 128;
     
-    /**
-     * 主密钥数组（实际应用中应从配置文件或密钥管理系统获取）
-     */
-    private static final SecretKey[] MASTER_KEYS = generateMasterKeys();
+    private static SecretKey[] MASTER_KEYS = new SecretKey[SEGMENT_COUNT];
+    
+    @Autowired(required = false)
+    private SystemSecretKeyMapper secretKeyMapper;
+    
+    @PostConstruct
+    public void init() {
+        loadOrGenerateMasterKeys();
+    }
     
     /**
-     * 生成主密钥（系统启动时生成一次）
+     * 加载或生成主密钥
      */
-    private static SecretKey[] generateMasterKeys() {
+    private void loadOrGenerateMasterKeys() {
         try {
-            SecretKey[] keys = new SecretKey[SEGMENT_COUNT];
+            // 尝试从数据库加载
+            if (secretKeyMapper != null) {
+                List<SystemSecretKey> keys = secretKeyMapper.selectActiveKeys();
+                
+                // 检查密钥是否完整且有效
+                boolean allKeysValid = keys != null && keys.size() == SEGMENT_COUNT;
+                if (allKeysValid) {
+                    for (SystemSecretKey key : keys) {
+                        if (key.getKeyValue() == null || key.getKeyValue().trim().isEmpty()) {
+                            allKeysValid = false;
+                            break;
+                        }
+                    }
+                }
+                
+                if (allKeysValid) {
+                    // 所有密钥都有效，加载到内存
+                    for (int i = 0; i < SEGMENT_COUNT; i++) {
+                        byte[] keyBytes = Base64.getDecoder().decode(keys.get(i).getKeyValue());
+                        MASTER_KEYS[i] = new SecretKeySpec(keyBytes, ALGORITHM);
+                    }
+                    log.info("从数据库成功加载 {} 个密钥", SEGMENT_COUNT);
+                    return;
+                }
+            }
+            
+            // 密钥不存在或无效，生成新密钥并保存
+            log.warn("数据库中密钥不存在或无效，生成新密钥");
+            generateAndSaveMasterKeys();
+            
+        } catch (Exception e) {
+            log.error("加载密钥失败，使用临时密钥（重启后将失效）", e);
+            generateMasterKeysInMemory();
+        }
+    }
+    
+    /**
+     * 生成密钥并保存到数据库
+     */
+    private void generateAndSaveMasterKeys() {
+        try {
             KeyGenerator keyGen = KeyGenerator.getInstance(ALGORITHM);
             keyGen.init(KEY_LENGTH, new SecureRandom());
             
             for (int i = 0; i < SEGMENT_COUNT; i++) {
-                keys[i] = keyGen.generateKey();
+                SecretKey key = keyGen.generateKey();
+                String keyValue = Base64.getEncoder().encodeToString(key.getEncoded());
+                
+                // 先尝试更新已存在的记录
+                SystemSecretKey existingKey = secretKeyMapper.selectByName("MASTER_KEY_" + i);
+                
+                if (existingKey != null) {
+                    // 更新现有记录
+                    existingKey.setKeyValue(keyValue);
+                    existingKey.setAlgorithm(ALGORITHM);
+                    existingKey.setIsActive(1);
+                    secretKeyMapper.updateById(existingKey);
+                } else {
+                    // 插入新记录
+                    SystemSecretKey newKey = new SystemSecretKey();
+                    newKey.setKeyName("MASTER_KEY_" + i);
+                    newKey.setKeyValue(keyValue);
+                    newKey.setAlgorithm(ALGORITHM);
+                    newKey.setIsActive(1);
+                    secretKeyMapper.insert(newKey);
+                }
+                
+                // 加载到内存
+                MASTER_KEYS[i] = key;
             }
-            return keys;
+            
+            log.info("已生成并保存 {} 个密钥到数据库", SEGMENT_COUNT);
+            
         } catch (Exception e) {
-            log.error("生成主密钥失败", e);
-            throw new RuntimeException("生成主密钥失败", e);
+            log.error("生成密钥失败，使用临时密钥", e);
+            generateMasterKeysInMemory();
+        }
+    }
+    
+    /**
+     * 内存中生成密钥（临时方案）
+     */
+    private void generateMasterKeysInMemory() {
+        try {
+            KeyGenerator keyGen = KeyGenerator.getInstance(ALGORITHM);
+            keyGen.init(KEY_LENGTH, new SecureRandom());
+            
+            for (int i = 0; i < SEGMENT_COUNT; i++) {
+                MASTER_KEYS[i] = keyGen.generateKey();
+            }
+        } catch (Exception e) {
+            log.error("生成临时密钥失败", e);
         }
     }
     
@@ -105,49 +182,6 @@ public class PasswordSegmentUtils {
         } catch (Exception e) {
             log.error("加密密码失败", e);
             throw new RuntimeException("加密密码失败", e);
-        }
-    }
-    
-    /**
-     * 解密密码（分段解密并验证）
-     * 
-     * @param encryptedPassword 加密后的密码
-     * @param inputPassword 输入的明文密码（用于对比）
-     * @return 是否匹配
-     */
-    public static boolean decryptAndVerify(String encryptedPassword, String inputPassword) {
-        if (encryptedPassword == null || encryptedPassword.isEmpty()) {
-            return false;
-        }
-        if (inputPassword == null || inputPassword.isEmpty()) {
-            return false;
-        }
-        
-        try {
-            // 1. 分割加密数据
-            String[] encryptedSegments = encryptedPassword.split("\\|");
-            
-            if (encryptedSegments.length != SEGMENT_COUNT) {
-                log.warn("加密数据段数不匹配：期望{}, 实际{}", SEGMENT_COUNT, encryptedSegments.length);
-                return false;
-            }
-            
-            // 2. 分别解密每一段
-            StringBuilder decryptedPassword = new StringBuilder();
-            for (int i = 0; i < encryptedSegments.length; i++) {
-                String decryptedSegment = decryptSegment(encryptedSegments[i], MASTER_KEYS[i]);
-                decryptedPassword.append(decryptedSegment);
-            }
-            
-            // 3. 对比解密结果和输入密码
-            boolean matches = decryptedPassword.toString().equals(inputPassword);
-            log.debug("密码验证结果：{}", matches ? "成功" : "失败");
-            
-            return matches;
-            
-        } catch (Exception e) {
-            log.error("解密密码失败", e);
-            return false;
         }
     }
     
@@ -194,40 +228,6 @@ public class PasswordSegmentUtils {
     }
     
     /**
-     * 导出主密钥（用于持久化到配置文件）
-     * ⚠️ 仅首次启动时使用，之后应禁用此方法
-     */
-    public static String[] exportMasterKeys() {
-        String[] keyStrings = new String[SEGMENT_COUNT];
-        for (int i = 0; i < SEGMENT_COUNT; i++) {
-            keyStrings[i] = Base64.getEncoder().encodeToString(MASTER_KEYS[i].getEncoded());
-        }
-        return keyStrings;
-    }
-    
-    /**
-     * 从 Base64 字符串导入主密钥
-     * 
-     * @param keyStrings Base64 编码的密钥数组
-     */
-    public static void importMasterKeys(String[] keyStrings) {
-        if (keyStrings == null || keyStrings.length != SEGMENT_COUNT) {
-            throw new IllegalArgumentException("密钥数组无效");
-        }
-        
-        try {
-            for (int i = 0; i < SEGMENT_COUNT; i++) {
-                byte[] keyBytes = Base64.getDecoder().decode(keyStrings[i]);
-                MASTER_KEYS[i] = new SecretKeySpec(keyBytes, ALGORITHM);
-            }
-            log.info("成功导入{}个主密钥", SEGMENT_COUNT);
-        } catch (Exception e) {
-            log.error("导入主密钥失败", e);
-            throw new RuntimeException("导入主密钥失败", e);
-        }
-    }
-    
-    /**
      * 验证密码（推荐用于登录场景）
      * 
      * @param encryptedPassword 数据库中存储的加密密码
@@ -271,6 +271,4 @@ public class PasswordSegmentUtils {
             return false;
         }
     }
-
-
 }

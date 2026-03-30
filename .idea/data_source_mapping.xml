@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="DataSourcePerFileMappings">
+    <file url="file://$PROJECT_DIR$/isi/src/main/resources/db/isi.sql" value="0028dbfb-e962-4e4f-a674-452b159d6853" />
+    <file url="file://$PROJECT_DIR$/seo/src/main/resources/db/seo.sql" value="7a4060c9-568a-4472-b332-9fd7336422f8" />
+  </component>
+</project>

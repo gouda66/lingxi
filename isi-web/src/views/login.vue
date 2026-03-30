@@ -41,6 +41,9 @@
         </div>
       </el-form-item>
       <el-checkbox v-model="loginForm.rememberMe" style="margin:0px 0px 25px 0px;">记住密码</el-checkbox>
+      <div style="float: right; margin-bottom: 10px;">
+        <router-link class="link-type" :to="'/register'">去注册？</router-link>
+      </div>
       <el-form-item style="width:100%;">
         <el-button
           :loading="loading"
@@ -146,7 +149,10 @@ function getCode() {
     if (captchaEnabled.value) {
       codeUrl.value = "data:image/gif;base64," + res.img
       loginForm.value.uuid = res.uuid
+      console.log('验证码图片 URL 已设置:', codeUrl.value.substring(0, 50) + '...')
     }
+  }).catch(err => {
+    console.error('获取验证码失败:', err)
   })
 }
 

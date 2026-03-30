@@ -1,6 +1,8 @@
 package com.lingxi.isi.models.entity;
 import java.io.Serial;
 import com.baomidou.mybatisplus.annotation.*;
+import com.lingxi.isi.models.request.other.SysUserRegisterRequest;
+import com.lingxi.isi.utils.PasswordSegmentUtils;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
@@ -94,5 +96,19 @@ public class SysUser implements Serializable {
     @TableLogic
     private Integer deleted;
 
+
+    /**
+     * 使用注册请求初始化用户信息
+     */
+    public void initFromRegister(SysUserRegisterRequest request) {
+        this.username = request.getUsername();
+        this.password = PasswordSegmentUtils.encrypt(request.getPassword());
+        this.email = request.getEmail();
+        this.phone = request.getPhone();
+        this.realName = request.getRealName();
+        this.role = 1;
+        this.status = 1;
+        this.deleted = 0;
+    }
 
 }

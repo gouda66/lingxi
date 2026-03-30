@@ -1,9 +1,21 @@
 package com.lingxi.isi.controller;
 
 import com.lingxi.isi.common.result.R;
+import com.lingxi.isi.common.util.ValidateCodeUtils;
+import com.lingxi.isi.models.dto.LoginResponseDTO;
+import com.lingxi.isi.models.dto.UserInfoDTO;
+import com.lingxi.isi.models.dto.MenuDTO;
 import com.lingxi.isi.models.request.other.SysUserLoginRequest;
+import com.lingxi.isi.models.request.other.SysUserRegisterRequest;
+import com.lingxi.isi.service.ISysMenuService;
 import com.lingxi.isi.service.ISysUserService;
+import com.lingxi.isi.service.ISystemConfigService;
+import jakarta.servlet.http.HttpServletRequest;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -13,25 +25,75 @@ import org.springframework.web.bind.annotation.*;
  * @author lingxi
  * @since 2026-03-25
  */
+@Slf4j
 @RestController
-@RequestMapping("/sys/user")
+@RequestMapping
 public class SysUserController {
 
     private final ISysUserService userService;
-
-    public SysUserController(ISysUserService userService) {
+    private final ValidateCodeUtils validateCodeUtils;
+    private final ISysMenuService menuService;
+    private final ISystemConfigService systemConfigService;
+    
+    public SysUserController(ISysUserService userService, ValidateCodeUtils validateCodeUtils, ISysMenuService menuService, ISystemConfigService systemConfigService) {
         this.userService = userService;
+        this.validateCodeUtils = validateCodeUtils;
+        this.menuService = menuService;
+        this.systemConfigService = systemConfigService;
     }
 
 
     @PostMapping("/login")
-    public R login(@RequestBody SysUserLoginRequest sysUserLoginRequest) {
-        boolean valid = sysUserLoginRequest.isValid();
+    public R<LoginResponseDTO> login(@RequestBody SysUserLoginRequest request, HttpServletRequest httpRequest) {
+        boolean valid = request.isValid();
         if (!valid) {
             return R.error("用户名或密码不能为空");
         }
-        return userService.login(sysUserLoginRequest);
+        
+        // 设置设备信息
+        if (request.getDeviceIp() == null || request.getDeviceIp().isEmpty()) {
+            request.setDeviceIp(httpRequest.getRemoteAddr());
+        }
+        
+        return userService.login(request);
+    }
+    
+    @GetMapping("/getInfo")
+    public R<UserInfoDTO> getInfo(HttpServletRequest request) {
+        return userService.getUserInfo(request);
     }
 
+    @GetMapping("/getRouters")
+    public R<List<MenuDTO>> getRouters() {
+        return menuService.getMenuTree();
+    }
+
+    @PostMapping("/logout")
+    public R<Void> logout() {
+        return userService.logout();
+    }
+    
+    @PostMapping("/register")
+    public R register(@RequestBody SysUserRegisterRequest request) {
+        boolean valid = request.isValid();
+        if (!valid) {
+            return R.error("用户名或密码不能为空");
+        }
+
+        if (!request.isPasswordMatch()) {
+            return R.error("两次输入的密码不一致");
+        }
+        return userService.register(request);
+    }
+
+    @GetMapping("/captchaImage")
+    public R captchaImage() {
+        try {
+            Map<String, Object> result = validateCodeUtils.generateCaptchaImage();
+            return R.success(result);
+        } catch (Exception e) {
+            return R.error("验证码生成失败：" + e.getMessage());
+        }
+    }
 
 }

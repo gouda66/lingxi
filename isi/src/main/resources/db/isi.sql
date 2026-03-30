@@ -12,7 +12,7 @@
 CREATE TABLE `sys_user` (
                             `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '主键ID',
                             `username` VARCHAR(64) NOT NULL COMMENT '用户名',
-                            `email` VARCHAR(128) NOT NULL COMMENT '邮箱（唯一）',
+                            `email` VARCHAR(128) NULL COMMENT '邮箱（唯一）',
                             `password` VARCHAR(128) NOT NULL COMMENT '加密密码',
                             `phone` VARCHAR(20) DEFAULT NULL COMMENT '手机号',
                             `real_name` VARCHAR(64) DEFAULT NULL COMMENT '真实姓名',
@@ -28,6 +28,88 @@ CREATE TABLE `sys_user` (
                             UNIQUE KEY `uk_username` (`username`),
                             KEY `idx_role_status` (`role`, `status`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='用户表';
+
+-- 在 isi.sql 中添加
+CREATE TABLE `system_secret_key` (
+                                     `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+                                     `key_name` VARCHAR(64) NOT NULL COMMENT '密钥名称',
+                                     `key_value` TEXT NOT NULL COMMENT 'Base64 编码的密钥值',
+                                     `algorithm` VARCHAR(32) DEFAULT 'AES' COMMENT '加密算法',
+                                     `is_active` TINYINT DEFAULT 1 COMMENT '是否激活',
+                                     `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
+                                     `updated_at` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+                                     PRIMARY KEY (`id`),
+                                     UNIQUE KEY `uk_key_name` (`key_name`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='系统密钥配置表';
+
+-- 插入初始密钥（启动时会自动生成并更新）
+INSERT INTO `system_secret_key` (`key_name`, `key_value`, `algorithm`, `is_active`) VALUES
+                                                                                        ('MASTER_KEY_0', '', 'AES', 1);
+-- 菜单权限表
+CREATE TABLE `sys_menu` (
+    `menu_id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+    `menu_name` VARCHAR(64) NOT NULL COMMENT '菜单名称',
+    `parent_id` BIGINT UNSIGNED DEFAULT 0 COMMENT '父菜单 ID',
+    `order_num` INT DEFAULT 0 COMMENT '显示顺序',
+    `path` VARCHAR(200) DEFAULT '' COMMENT '路由地址',
+    `component` VARCHAR(255) DEFAULT NULL COMMENT '组件路径',
+    `query` VARCHAR(255) DEFAULT NULL COMMENT '路由参数',
+    `is_frame` TINYINT DEFAULT 1 COMMENT '是否为外链',
+    `is_cache` TINYINT DEFAULT 0 COMMENT '是否缓存',
+    `menu_type` CHAR(1) DEFAULT '' COMMENT '菜单类型（M 目录 C 菜单 F 按钮）',
+    `visible` TINYINT DEFAULT 1 COMMENT '菜单状态（0 显示 1 隐藏）',
+    `status` CHAR(1) DEFAULT '0' COMMENT '菜单状态（0 正常 1 停用）',
+    `perms` VARCHAR(100) DEFAULT NULL COMMENT '权限标识',
+    `icon` VARCHAR(100) DEFAULT '#' COMMENT '菜单图标',
+    `remark` VARCHAR(500) DEFAULT '' COMMENT '备注',
+    `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
+    `updated_at` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    PRIMARY KEY (`menu_id`),
+    KEY `idx_parent_id` (`parent_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='菜单权限表';
+
+-- 角色菜单关联表
+CREATE TABLE `sys_role_menu` (
+                                 `role_id` BIGINT UNSIGNED NOT NULL COMMENT '角色 ID',
+                                 `menu_id` BIGINT UNSIGNED NOT NULL COMMENT '菜单 ID',
+                                 PRIMARY KEY (`role_id`, `menu_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='角色菜单关联表';
+
+-- 初始化菜单数据
+INSERT INTO `sys_menu` (`menu_id`, `menu_name`, `parent_id`, `order_num`, `path`, `component`, `menu_type`, `visible`, `status`, `perms`, `icon`) VALUES
+                                                                                                                                                      (1, '系统管理', 0, 1, 'system', NULL, 'M', 1, '0', 'system:menu', 'monitor'),
+                                                                                                                                                      (2, '用户管理', 1, 1, 'user', 'system/user/index', 'C', 1, '0', 'system:user:list', 'user'),
+                                                                                                                                                      (3, '角色管理', 1, 2, 'role', 'system/role/index', 'C', 1, '0', 'system:role:list', 'peoples'),
+                                                                                                                                                      (4, '菜单管理', 1, 3, 'menu', 'system/menu/index', 'C', 1, '0', 'system:menu:list', 'tree-table'),
+                                                                                                                                                      (5, '面试管理', 0, 2, 'interview', NULL, 'M', 1, '0', 'interview:menu', 'skill'),
+                                                                                                                                                      (6, '面试会话', 5, 1, 'session', 'interview/session/index', 'C', 1, '0', 'interview:session:list', 'eye-open'),
+                                                                                                                                                      (7, '简历管理', 5, 2, 'resume', 'interview/resume/index', 'C', 1, '0', 'interview:resume:list', 'star');
+
+-- 分配所有菜单给管理员角色（假设管理员角色 ID=1）
+INSERT IGNORE INTO `sys_role_menu` (`role_id`, `menu_id`) VALUES
+                                                       (1, 1), (1, 2), (1, 3), (1, 4), (1, 5), (1, 6), (1, 7);
+
+
+-- 系统通知公告表
+CREATE TABLE `sys_notice` (
+                              `notice_id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+                              `notice_title` VARCHAR(100) NOT NULL COMMENT '公告标题',
+                              `notice_type` CHAR(1) NOT NULL COMMENT '公告类型（1 通知 2 公告）',
+                              `notice_content` TEXT COMMENT '公告内容',
+                              `status` CHAR(1) DEFAULT '0' COMMENT '状态（0 正常 1 停用）',
+                              `creator` VARCHAR(64) DEFAULT '' COMMENT '创建者',
+                              `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
+                              `updated_at` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+                              `remark` VARCHAR(255) DEFAULT '' COMMENT '备注',
+                              PRIMARY KEY (`notice_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='通知公告表';
+
+-- 插入测试数据
+INSERT INTO `sys_notice` (`notice_title`, `notice_type`, `notice_content`, `status`, `creator`) VALUES
+    ('欢迎使用 AI 智能面试系统', '1', '<p>欢迎使用 AI 智能面试系统，祝您使用愉快！</p>', '0', 'admin');
+
+
+
 
 -- HR扩展信息表
 CREATE TABLE `hr_profile` (

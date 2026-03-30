@@ -32,17 +32,18 @@ const usePermissionStore = defineStore(
       setSidebarRouters(routes) {
         this.sidebarRouters = routes
       },
-      generateRoutes(roles) {
+      generateRoutes(roles)  {
         return new Promise(resolve => {
           // 向后端请求路由数据
           getRouters().then(res => {
-            const sdata = JSON.parse(JSON.stringify(res.data))
-            const rdata = JSON.parse(JSON.stringify(res.data))
-            const defaultData = JSON.parse(JSON.stringify(res.data))
+            const sdata = JSON.parse(JSON.stringify(res))
+            const rdata = JSON.parse(JSON.stringify(res))
+            const defaultData = JSON.parse(JSON.stringify(res))
             const sidebarRoutes = filterAsyncRouter(sdata)
             const rewriteRoutes = filterAsyncRouter(rdata, false, true)
             const defaultRoutes = filterAsyncRouter(defaultData)
             const asyncRoutes = filterDynamicRoutes(dynamicRoutes)
+            console.log(sidebarRoutes)
             asyncRoutes.forEach(route => { router.addRoute(route) })
             this.setRoutes(rewriteRoutes)
             this.setSidebarRouters(constantRoutes.concat(sidebarRoutes))
@@ -58,9 +59,39 @@ const usePermissionStore = defineStore(
 // 遍历后台传来的路由字符串，转换为组件对象
 function filterAsyncRouter(asyncRouterMap, lastRouter = false, type = false) {
   return asyncRouterMap.filter(route => {
-    if (type && route.children) {
-      route.children = filterChildren(route.children)
+    // 检查是否可见（后端 visible=1 表示显示，对应前端 hidden=false）
+    if (route.visible !== undefined && route.visible === false) {
+      return false
     }
+    
+    // 设置 hidden 属性（若依框架要求）
+    if (route.hidden === undefined) {
+      route.hidden = !route.visible
+    }
+    
+    // 构建 meta 对象（重要！）
+    if (!route.meta) {
+      route.meta = {}
+    }
+    if (route.title) {
+      route.meta.title = route.title
+    }
+    if (route.icon) {
+      route.meta.icon = route.icon
+    }
+    if (route.permissions && route.permissions.length > 0) {
+      route.meta.permissions = route.permissions
+    }
+    
+    // 确保路由路径以 / 开头（在所有处理之前）
+    if (route.path && !route.path.startsWith('/')) {
+      route.path = '/' + route.path
+    }
+    
+    if (type && route.children) {
+      route.children = filterChildren(route.children, route)
+    }
+    
     if (route.component) {
       // Layout ParentView 组件特殊处理
       if (route.component === 'Layout') {
@@ -72,7 +103,11 @@ function filterAsyncRouter(asyncRouterMap, lastRouter = false, type = false) {
       } else {
         route.component = loadView(route.component)
       }
+    } else if (!route.children || route.children.length === 0) {
+      // 如果没有 component 且没有 children，默认为 Layout
+      route.component = Layout
     }
+    
     if (route.children != null && route.children && route.children.length) {
       route.children = filterAsyncRouter(route.children, route, type)
     } else {

@@ -31,6 +31,12 @@
     </properties>
     <dependencies>
 
+        <!-- Web 容器支持（包含 Servlet API） -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+
         <!-- Jackson 序列化支持 -->
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>

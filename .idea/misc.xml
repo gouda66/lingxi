@@ -11,6 +11,7 @@
       <list>
         <option value="$PROJECT_DIR$/scs/pom.xml" />
         <option value="$PROJECT_DIR$/isi/pom.xml" />
+        <option value="$PROJECT_DIR$/seo/pom.xml" />
       </list>
     </option>
   </component>

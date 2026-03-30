@@ -6,7 +6,6 @@ import com.lingxi.scs.common.exception.CustomException;
 import com.lingxi.scs.domain.model.entity.User;
 import com.lingxi.scs.domain.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
-import org.hibernate.boot.internal.Abstract;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
