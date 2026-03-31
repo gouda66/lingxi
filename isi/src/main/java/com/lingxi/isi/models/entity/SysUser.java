@@ -1,6 +1,7 @@
 package com.lingxi.isi.models.entity;
 import java.io.Serial;
 import com.baomidou.mybatisplus.annotation.*;
+import com.lingxi.isi.models.dto.UserAddRequest;
 import com.lingxi.isi.models.request.other.SysUserRegisterRequest;
 import com.lingxi.isi.utils.PasswordSegmentUtils;
 import lombok.Data;
@@ -96,6 +97,8 @@ public class SysUser implements Serializable {
     @TableLogic
     private Integer deleted;
 
+    private Integer sex;
+
 
     /**
      * 使用注册请求初始化用户信息
@@ -109,6 +112,17 @@ public class SysUser implements Serializable {
         this.role = 1;
         this.status = 1;
         this.deleted = 0;
+    }
+
+    public void initFromAdd(UserAddRequest request, SysUser newUser){
+        newUser.setRealName(request.getUserName());
+        newUser.setUsername(request.getNickName());
+        newUser.setPassword(PasswordSegmentUtils.encrypt(request.getPassword()));
+        newUser.setPhone(request.getPhone());
+        newUser.setEmail(request.getEmail());
+        newUser.setSex(Integer.parseInt(request.getSex()));
+        newUser.setStatus(Integer.parseInt(request.getStatus()));
+        newUser.setRole(Math.toIntExact(request.getRoleIds().getFirst()));
     }
 
 }

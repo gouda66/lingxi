@@ -10,20 +10,7 @@ import java.util.Map;
 public interface ISystemConfigService extends IService<SystemConfig> {
     
     R getConfigKey(String configKey);
+    
+    R listAll();
 
-    R listUser(HttpServletRequest request);
-
-    R getUser(Long userId);
-
-    R addUser(Map<String, Object> data);
-
-    R updateUser(Map<String, Object> data);
-
-    R deleteUser(String userIds);
-
-    R resetUserPwd(Map<String, Object> data);
-
-    R changeUserStatus(Map<String, Object> data);
-
-    R getDeptTree();
 }

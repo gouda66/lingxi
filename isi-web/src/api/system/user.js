@@ -134,3 +134,10 @@ export function deptTreeSelect() {
     method: 'get'
   })
 }
+
+export function getRoleOptions() {
+  return request({
+    url: '/system/user/roleOption',
+    method: 'get'
+  })
+}

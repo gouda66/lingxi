@@ -1,4 +1,4 @@
-package com.lingxi.isi.controller;
+                                                                                         package com.lingxi.isi.controller;
 
 import com.lingxi.isi.common.result.R;
 import com.lingxi.isi.common.util.ValidateCodeUtils;
@@ -28,14 +28,14 @@ import java.util.Map;
 @Slf4j
 @RestController
 @RequestMapping
-public class SysUserController {
+public class LoginController {
 
     private final ISysUserService userService;
     private final ValidateCodeUtils validateCodeUtils;
     private final ISysMenuService menuService;
     private final ISystemConfigService systemConfigService;
     
-    public SysUserController(ISysUserService userService, ValidateCodeUtils validateCodeUtils, ISysMenuService menuService, ISystemConfigService systemConfigService) {
+    public LoginController(ISysUserService userService, ValidateCodeUtils validateCodeUtils, ISysMenuService menuService, ISystemConfigService systemConfigService) {
         this.userService = userService;
         this.validateCodeUtils = validateCodeUtils;
         this.menuService = menuService;

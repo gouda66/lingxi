@@ -2,6 +2,7 @@ package com.lingxi.isi.service.impl;
 
 import cn.hutool.jwt.JWTUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.lingxi.isi.common.context.BaseContext;
 import com.lingxi.isi.common.result.R;
@@ -13,6 +14,7 @@ import com.lingxi.isi.models.convert.UserConvert;
 import com.lingxi.isi.models.dto.*;
 import com.lingxi.isi.models.entity.SysMenu;
 import com.lingxi.isi.models.entity.SysUser;
+import com.lingxi.isi.models.request.UserListRequest;
 import com.lingxi.isi.models.request.other.SysUserLoginRequest;
 import com.lingxi.isi.models.request.other.SysUserRegisterRequest;
 import com.lingxi.isi.service.ISysUserService;
@@ -20,12 +22,14 @@ import com.lingxi.isi.utils.PasswordSegmentUtils;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * <p>
@@ -205,6 +209,74 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
             return R.success(response);
         } else {
             return R.error("注册失败");
+        }
+    }
+
+    @Override
+    public R listUser(UserListRequest request) {
+        // 构建查询条件
+        LambdaQueryWrapper<SysUser> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(SysUser::getDeleted, 0);
+        
+        // 添加查询条件
+        if (StringUtils.hasText(request.getUserName())) {
+            queryWrapper.like(SysUser::getUsername, request.getUserName());
+        }
+        if (StringUtils.hasText(request.getPhonenumber())) {
+            queryWrapper.like(SysUser::getPhone, request.getPhonenumber());
+        }
+        if (StringUtils.hasText(request.getStatus())) {
+            queryWrapper.eq(SysUser::getStatus, request.getStatus());
+        }
+        
+        // 分页查询
+        Page<SysUser> page = new Page<>(request.getPageNum(), request.getPageSize());
+        Page<SysUser> resultPage = this.page(page, queryWrapper);
+        
+        // 转换为 DTO
+        List<UserDetailDTO> userDetailDTOS = resultPage.getRecords().stream()
+                .map(UserConvert.INSTANCE::convertToUserDetailDTO)
+                .toList();
+        
+        return R.success(Map.of(
+                "rows", userDetailDTOS,
+                "total", resultPage.getTotal()
+        ));
+    }
+
+    @Override
+    public R addUser(UserAddRequest request) {
+        // 1. 校验用户名是否已存在
+        LambdaQueryWrapper<SysUser> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(SysUser::getUsername, request.getUserName());
+        queryWrapper.eq(SysUser::getDeleted, 0);
+        SysUser existUser = this.getOne(queryWrapper);
+        if (existUser != null) {
+            return R.error("用户名已存在");
+        }
+
+        // 2. 校验手机号是否已存在
+        if (StringUtils.hasText(request.getPhone())) {
+            queryWrapper = new LambdaQueryWrapper<>();
+            queryWrapper.eq(SysUser::getPhone, request.getPhone());
+            queryWrapper.eq(SysUser::getDeleted, 0);
+            existUser = this.getOne(queryWrapper);
+            if (existUser != null) {
+                return R.error("手机号已被注册");
+            }
+        }
+
+        // 3. 创建新用户
+        SysUser newUser = new SysUser();
+        newUser.initFromAdd(request, newUser);
+
+        // 4. 保存用户
+        boolean saved = this.save(newUser);
+
+        if (saved) {
+            return R.success("新增成功");
+        } else {
+            return R.error("新增失败");
         }
     }
 }
