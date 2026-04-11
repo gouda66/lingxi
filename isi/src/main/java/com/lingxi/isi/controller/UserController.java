@@ -1,16 +1,15 @@
 package com.lingxi.isi.controller;
 
 import com.lingxi.isi.common.result.R;
-import com.lingxi.isi.common.util.ValidateCodeUtils;
-import com.lingxi.isi.models.dto.UserAddRequest;
+import com.lingxi.isi.models.request.AuthRoleRequest;
+import com.lingxi.isi.models.request.ResetPasswordRequest;
 import com.lingxi.isi.models.request.UserListRequest;
-import com.lingxi.isi.service.ISysMenuService;
+import com.lingxi.isi.models.request.UserRequest;
+import com.lingxi.isi.service.ISysRoleService;
 import com.lingxi.isi.service.ISysUserService;
-import com.lingxi.isi.service.ISystemConfigService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -20,9 +19,11 @@ import java.util.Map;
 public class UserController {
 
     private final ISysUserService userService;
+    private final ISysRoleService roleService;
 
-    public UserController(ISysUserService userService, ValidateCodeUtils validateCodeUtils, ISysMenuService menuService, ISystemConfigService systemConfigService) {
+    public UserController(ISysUserService userService, ISysRoleService roleService) {
         this.userService = userService;
+        this.roleService = roleService;
     }
 
     /**
@@ -30,26 +31,7 @@ public class UserController {
      */
     @GetMapping("/roleOption")
     public R<List<Map<String, Object>>> getRoleOptions() {
-        List<Map<String, Object>> roleOptions = Arrays.asList(
-            Map.of(
-                    "roleId", 1,
-                    "roleName", "面试者",
-                    "roleKey", "candidate",
-                    "status", "0"
-            ),
-            Map.of(
-                    "roleId", 2,
-                    "roleName", "HR",
-                    "roleKey", "hr",
-                    "status", "0"
-            ),
-            Map.of(
-                    "roleId", 3,
-                    "roleName", "管理员",
-                    "roleKey", "admin",
-                    "status", "0"
-            )
-        );
+        List<Map<String, Object>> roleOptions = roleService.getRoleOptions();
         return R.success(roleOptions);
     }
 
@@ -65,9 +47,71 @@ public class UserController {
      * 新增用户
      */
     @PostMapping
-    public R add(@RequestBody UserAddRequest request) {
+    public R add(@RequestBody UserRequest request) {
         return userService.addUser(request);
     }
 
+    /**
+     * 修改用户
+     */
+    @PutMapping
+    public R edit(@RequestBody UserRequest request) {
+        return userService.updateUser(request);
+    }
+
+    /**
+     * 根据 ID 获取用户详情
+     */
+    @GetMapping("/{userId}")
+    public R getUserInfo(@PathVariable Long userId) {
+        return userService.getUserById(userId);
+    }
+
+    /**
+     * 删除用户（支持批量）
+     * @param userIds 用户 ID 列表，逗号分隔（如：1,2,3）
+     * @return 操作结果
+     */
+    @DeleteMapping("/{userIds}")
+    public R deleteUser(@PathVariable String userIds) {
+        return userService.deleteUsers(userIds);
+    }
+
+    @PutMapping("/resetPwd")
+    public R resetPwd(@RequestBody ResetPasswordRequest request) {
+        return userService.resetPassword(request);
+    }
+
+    /**
+     * 查询用户的角色列表
+     */
+    @GetMapping("/authRole/{userId}")
+    public R getAuthRole(@PathVariable Long userId) {
+        return userService.getUserRoles(userId);
+    }
+
+    /**
+     * 保存授权角色
+     */
+    @PutMapping("/authRole")
+    public R updateAuthRole(AuthRoleRequest request) {
+        return userService.updateAuthRole(request);
+    }
+
+    @GetMapping("/downloadResume")
+    public R downloadResume(@RequestParam String userId) {
+        return userService.downloadResume(userId);
+    }
+
+    @GetMapping("/downloadInterviewReport")
+    public R downloadInterviewReport(@RequestParam String userId) {
+        return userService.downloadInterviewReport(userId);
+    }
+
+    @PostMapping("/sendEmail")
+    public R sendEmail(@RequestParam String userId) {
+        return userService.sendEmail(userId);
+    }
+
 }
-// ... existing code ...
+

@@ -36,8 +36,10 @@ public class LoginCheckFilter implements Filter {
             "/login",
             "/logout",
             "/register",
-            "/captchaImage"
+            "/captchaImage",
+            "/ws/**"
     );
+
 
     @Override
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain)

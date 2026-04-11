@@ -12,7 +12,21 @@
         <option value="$PROJECT_DIR$/scs/pom.xml" />
         <option value="$PROJECT_DIR$/isi/pom.xml" />
         <option value="$PROJECT_DIR$/seo/pom.xml" />
+        <option value="$PROJECT_DIR$/isi/MailMcpServer/pom.xml" />
+        <option value="$PROJECT_DIR$/isi/MailMcpClient/pom.xml" />
+        <option value="$PROJECT_DIR$/MailMcpServer/pom.xml" />
+        <option value="$PROJECT_DIR$/MailMcpClient/pom.xml" />
+        <option value="$PROJECT_DIR$/mcp-stores/MailMcpClient/pom.xml" />
+        <option value="$PROJECT_DIR$/mcp-stores/MailMcpServer/pom.xml" />
       </list>
+    </option>
+    <option name="ignoredFiles">
+      <set>
+        <option value="$PROJECT_DIR$/MailMcpClient/pom.xml" />
+        <option value="$PROJECT_DIR$/MailMcpServer/pom.xml" />
+        <option value="$PROJECT_DIR$/isi/MailMcpClient/pom.xml" />
+        <option value="$PROJECT_DIR$/isi/MailMcpServer/pom.xml" />
+      </set>
     </option>
   </component>
   <component name="ProjectRootManager" version="2" languageLevel="JDK_21" default="true" project-jdk-name="graalvm-21" project-jdk-type="JavaSDK">

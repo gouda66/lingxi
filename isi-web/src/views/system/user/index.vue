@@ -20,15 +20,14 @@
             <el-button icon="Refresh" @click="resetQuery">重置</el-button>
           </el-form-item>
         </el-form>
-
         <el-row :gutter="10" class="mb8">
-          <el-col :span="1.5">
+          <el-col :span="1.5" v-if="!isOnlyHR">
             <el-button type="primary" plain icon="Plus" @click="handleAdd" v-hasPermi="['system:user:add']">新增</el-button>
           </el-col>
-          <el-col :span="1.5">
+          <el-col :span="1.5" v-if="!isOnlyHR">
             <el-button type="success" plain icon="Edit" :disabled="single" @click="handleUpdate" v-hasPermi="['system:user:edit']">修改</el-button>
           </el-col>
-          <el-col :span="1.5">
+          <el-col :span="1.5" v-if="!isOnlyHR">
             <el-button type="danger" plain icon="Delete" :disabled="multiple" @click="handleDelete" v-hasPermi="['system:user:remove']">删除</el-button>
           </el-col>
           <el-col :span="1.5">
@@ -39,7 +38,6 @@
           </el-col>
           <right-toolbar v-model:showSearch="showSearch" @queryTable="getList" :columns="columns"></right-toolbar>
         </el-row>
-
         <el-table v-loading="loading" :data="userList" @selection-change="handleSelectionChange">
           <el-table-column type="selection" width="50" align="left" />
           <el-table-column label="用户编号" align="left" key="userId" prop="userId" v-if="columns.userId.visible" width="120" />
@@ -80,18 +78,34 @@
 
           <el-table-column label="操作" align="left" width="150" class-name="small-padding fixed-width">
             <template #default="scope">
-              <el-tooltip content="修改" placement="top">
-                <el-button link type="primary" icon="Edit" @click="handleUpdate(scope.row)" v-hasPermi="['system:user:edit']"></el-button>
-              </el-tooltip>
-              <el-tooltip content="删除" placement="top">
-                <el-button link type="primary" icon="Delete" @click="handleDelete(scope.row)" v-hasPermi="['system:user:remove']"></el-button>
-              </el-tooltip>
-              <el-tooltip content="重置密码" placement="top">
-                <el-button link type="primary" icon="Key" @click="handleResetPwd(scope.row)" v-hasPermi="['system:user:resetPwd']"></el-button>
-              </el-tooltip>
-              <el-tooltip content="分配角色" placement="top">
-                <el-button link type="primary" icon="CircleCheck" @click="handleAuthRole(scope.row)" v-hasPermi="['system:user:edit']"></el-button>
-              </el-tooltip>
+              <!-- 管理员或超级管理员的按钮 -->
+              <template v-if="!isOnlyHR">
+                <el-tooltip content="修改" placement="top">
+                  <el-button link type="primary" icon="Edit" @click="handleUpdate(scope.row)" v-hasPermi="['system:user:edit']"></el-button>
+                </el-tooltip>
+                <el-tooltip content="删除" placement="top">
+                  <el-button link type="primary" icon="Delete" @click="handleDelete(scope.row)" v-hasPermi="['system:user:remove']"></el-button>
+                </el-tooltip>
+                <el-tooltip content="重置密码" placement="top">
+                  <el-button link type="primary" icon="Key" @click="handleResetPwd(scope.row)" v-hasPermi="['system:user:resetPwd']"></el-button>
+                </el-tooltip>
+                <el-tooltip content="分配角色" placement="top">
+                  <el-button link type="primary" icon="CircleCheck" @click="handleAuthRole(scope.row)" v-hasPermi="['system:user:edit']"></el-button>
+                </el-tooltip>
+              </template>
+
+              <!-- HR角色的按钮 -->
+              <template v-else>
+                <el-tooltip content="下载简历" placement="top">
+                  <el-button link type="primary" icon="Download" @click="handleDownloadResume(scope.row)"></el-button>
+                </el-tooltip>
+                <el-tooltip content="下载面试报告" placement="top">
+                  <el-button link type="primary" icon="Document" @click="handleDownloadReport(scope.row)"></el-button>
+                </el-tooltip>
+                <el-tooltip content="发送邮件" placement="top">
+                  <el-button link type="primary" icon="Message" @click="handleSendEmail(scope.row)"></el-button>
+                </el-tooltip>
+              </template>
             </template>
           </el-table-column>
         </el-table>
@@ -209,12 +223,20 @@ import {
   getUser,
   updateUser,
   addUser,
-  getRoleOptions
+  getRoleOptions,
+  downloadResume,
+  downloadInterviewReport,
+  sendEmail
 } from "@/api/system/user"
 import { UploadFilled, User } from "@element-plus/icons-vue"
-import {useRouter} from "vue-router";
+import {useRouter} from "vue-router"
+import useUserStore from '@/store/modules/user'
+import {generateReport} from "@/api/interview/session.js";
+import {generateInterviewReport} from "@/api/interview/template.js";
+import {ElMessage} from "element-plus";
 
 const router = useRouter()
+const userStore = useUserStore()
 const { proxy } = getCurrentInstance()
 const { sys_normal_disable, sys_user_sex } = proxy.useDict("sys_normal_disable", "sys_user_sex")
 
@@ -283,6 +305,121 @@ const data = reactive({
 
 const { queryParams, form, rules } = toRefs(data)
 
+// 判断当前用户是否只有HR角色(roleId = 2)
+const isOnlyHR = ref(false)
+
+function checkUserRole() {
+  const userId = userStore.id
+  if (!userId) return
+
+  getUser(userId).then(response => {
+    if (response && response.role) {
+      const roleIds = parseRoleIds(response.role)
+      // 如果只有一个角色且是HR(roleId=2)
+      isOnlyHR.value = roleIds.length === 1 && roleIds.includes(2)
+    }
+  }).catch(error => {
+    console.error('获取用户角色失败:', error)
+  })
+}
+
+
+
+function handleDownloadResume(row) {
+  const userId = row.userId
+  downloadResume(userId).then(response => {
+    if (response.code === 0 && response.data) {
+      // 获取到URL后打开下载
+      const fileUrl = response.data
+      window.open(fileUrl, '_blank')
+      proxy.$modal.msgSuccess('开始下载简历')
+    } else {
+      proxy.$modal.msgError(response.msg || '获取简历地址失败')
+    }
+  }).catch(error => {
+    console.error('下载简历失败:', error)
+    proxy.$modal.msgError('此人没有上传简历')
+  })
+}
+
+/** 下载面试报告 */
+function handleDownloadReport(row) {
+  const userId = row.userId
+  downloadInterviewReport(userId).then(response => {
+    if (response.code === 0 && response.data) {
+      // 获取报告数据
+      const report = response.data
+
+      console.log('开始生成HTML报告...')
+
+      // 计算面试时长（分钟）
+      const duration = calculateDuration(report.startTime, report.endTime)
+
+      // 构建CSV格式数据: id,breadthScore,depthScore,,,duration,,,,,,advantages,disadvantages,,evaluation,,date
+      const csvData = [
+        report.sessionId || userId,  // id
+        report.technicalScore ? Math.round(report.technicalScore) : 70,  // breadthScore (技术广度)
+        report.logicScore ? Math.round(report.logicScore) : 65,  // depthScore (技术深度)
+        '',  // 占位
+        '',  // 占位
+        duration,  // duration (分钟)
+        '',  // 占位
+        '',  // 占位
+        '',  // 占位
+        '',  // 占位
+        report.strengths || '暂无数据',  // advantages
+        report.weaknesses || '暂无数据',  // disadvantages
+        '',  // 占位
+        report.overallEvaluation || '暂无数据',  // evaluation
+        '',  // 占位
+        '',  // 占位
+        report.generatedAt || new Date().toISOString()  // date
+      ].join(',')
+
+      // 调用前端JS方法生成并下载报告
+      const result = generateInterviewReport(csvData)
+      if (result && result.success) {
+        console.log('HTML报告已下载:', result.filename)
+        proxy.$modal.msgSuccess('面试报告已生成并下载')
+      } else {
+        console.warn('HTML报告生成失败，但后端报告已保存')
+        proxy.$modal.msgWarning('报告已保存到系统，下载功能异常')
+      }
+    } else {
+      proxy.$modal.msgError(response.msg || '查询不到此面试者已经面试');
+    }
+  }).catch(error => {
+    console.error('下载面试报告失败:', error)
+    proxy.$modal.msgError('下载面试报告失败')
+  })
+}
+
+/** 计算面试时长（分钟） */
+function calculateDuration(startTime, endTime) {
+  if (!startTime || !endTime) return 30 // 默认30分钟
+
+  try {
+    const start = new Date(startTime)
+    const end = new Date(endTime)
+    const diffMs = end - start
+    return Math.round(diffMs / 60000) // 转换为分钟
+  } catch (e) {
+    return 30 // 默认30分钟
+  }
+}
+
+/** 发送邮件 */
+function handleSendEmail(row) {
+  proxy.$modal.confirm(`确认要给 "${row.realName || row.userName}" 发送邮件吗？`).then(() => {
+    // 将 userId 转换为字符串
+    sendEmail(String(row.userId)).then(() => {
+      proxy.$modal.msgSuccess('邮件发送成功')
+    }).catch(error => {
+      console.error('邮件发送失败:', error)
+      proxy.$modal.msgError('邮件发送失败')
+    })
+  }).catch(() => {})
+}
 
 
 function getAvatarUrl(avatar) {
@@ -513,5 +650,7 @@ onMounted(() => {
   proxy.getConfigKey("sys.user.initPassword").then(response => {
     initPassword.value = response.msg
   })
+  // 在组件挂载时检查角色
+  checkUserRole()
 })
 </script>

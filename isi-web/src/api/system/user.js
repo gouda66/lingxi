@@ -1,6 +1,33 @@
 import request from '@/utils/request'
 import { parseStrEmpty } from "@/utils/ruoyi";
 
+// 下载简历
+export function downloadResume(userId) {
+  return request({
+    url: '/system/user/downloadResume',
+    method: 'get',
+    params: { userId }
+  })
+}
+
+// 下载面试报告
+export function downloadInterviewReport(userId) {
+  return request({
+    url: '/system/user/downloadInterviewReport',
+    method: 'get',
+    params: { userId }
+  })
+}
+
+// 发送邮件
+export function sendEmail(userId) {
+  return request({
+    url: '/system/user/sendEmail',
+    method: 'post',
+    params: { userId }
+  })
+}
+
 // 查询用户列表
 export function listUser(query) {
   return request({

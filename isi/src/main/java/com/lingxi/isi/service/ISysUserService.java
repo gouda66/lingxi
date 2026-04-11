@@ -2,14 +2,9 @@ package com.lingxi.isi.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.lingxi.isi.common.result.R;
-import com.lingxi.isi.models.dto.LoginResponseDTO;
-import com.lingxi.isi.models.dto.UserAddRequest;
-import com.lingxi.isi.models.dto.UserInfoDTO;
-import com.lingxi.isi.models.dto.MenuDTO;
+import com.lingxi.isi.models.dto.*;
+import com.lingxi.isi.models.request.*;
 import com.lingxi.isi.models.entity.SysUser;
-import com.lingxi.isi.models.request.UserListRequest;
-import com.lingxi.isi.models.request.other.SysUserLoginRequest;
-import com.lingxi.isi.models.request.other.SysUserRegisterRequest;
 import jakarta.servlet.http.HttpServletRequest;
 
 import java.util.List;
@@ -28,6 +23,39 @@ public interface ISysUserService extends IService<SysUser> {
 
     R listUser(UserListRequest request);
 
-    R addUser(UserAddRequest request);
+    /**
+     * 新增用户
+     * @param request 用户请求参数
+     * @return 操作结果
+     */
+    R<Void> addUser(UserRequest request);
+
+    /**
+     * 修改用户
+     * @param request 用户请求参数
+     * @return 操作结果
+     */
+    R<Void> updateUser(UserRequest request);
+
+    R<UserDetailDTO> getUserById(Long userId);
+
+    /**
+     * 批量删除用户
+     * @param userIds 用户 ID 列表（逗号分隔）
+     * @return 操作结果
+     */
+    R<Void> deleteUsers(String userIds);
+
+    R resetPassword(ResetPasswordRequest request);
+
+    R<AuthRoleDTO> getUserRoles(Long userId);
+
+    R<Void> updateAuthRole(AuthRoleRequest request);
+
+    R downloadResume(String userId);
+
+    R downloadInterviewReport(String userId);
+
+    R sendEmail(String userId);
 }
 

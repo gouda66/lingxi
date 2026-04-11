@@ -3,17 +3,21 @@ package com.lingxi.isi.controller;
 import com.lingxi.isi.common.result.R;
 import com.lingxi.isi.models.entity.SysNotice;
 import com.lingxi.isi.service.ISysNoticeService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@Slf4j
 @RestController
 @RequestMapping("/system/notice")
 public class SysNoticeController {
     
-    @Autowired
-    private ISysNoticeService noticeService;
+    private final ISysNoticeService noticeService;
+
+    public SysNoticeController(ISysNoticeService noticeService) {
+        this.noticeService = noticeService;
+    }
     
     /**
      * 查询置顶公告

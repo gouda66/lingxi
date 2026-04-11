@@ -1,4 +1,4 @@
-                                                                                         package com.lingxi.isi.controller;
+package com.lingxi.isi.controller;
 
 import com.lingxi.isi.common.result.R;
 import com.lingxi.isi.common.util.ValidateCodeUtils;
@@ -41,7 +41,6 @@ public class LoginController {
         this.menuService = menuService;
         this.systemConfigService = systemConfigService;
     }
-
 
     @PostMapping("/login")
     public R<LoginResponseDTO> login(@RequestBody SysUserLoginRequest request, HttpServletRequest httpRequest) {
@@ -92,6 +91,7 @@ public class LoginController {
             Map<String, Object> result = validateCodeUtils.generateCaptchaImage();
             return R.success(result);
         } catch (Exception e) {
+            log.error("验证码生成失败", e);
             return R.error("验证码生成失败：" + e.getMessage());
         }
     }
