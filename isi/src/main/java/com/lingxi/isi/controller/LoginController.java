@@ -5,9 +5,8 @@ import com.lingxi.isi.common.util.ValidateCodeUtils;
 import com.lingxi.isi.models.dto.LoginResponseDTO;
 import com.lingxi.isi.models.dto.UserInfoDTO;
 import com.lingxi.isi.models.dto.MenuDTO;
-import com.lingxi.isi.models.request.other.SysUserLoginRequest;
-import com.lingxi.isi.models.request.other.SysUserRegisterRequest;
-import com.lingxi.isi.service.ISysMenuService;
+import com.lingxi.isi.models.request.SysUserLoginRequest;
+import com.lingxi.isi.models.request.SysUserRegisterRequest;
 import com.lingxi.isi.service.ISysUserService;
 import com.lingxi.isi.service.ISystemConfigService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -32,13 +31,11 @@ public class LoginController {
 
     private final ISysUserService userService;
     private final ValidateCodeUtils validateCodeUtils;
-    private final ISysMenuService menuService;
     private final ISystemConfigService systemConfigService;
     
-    public LoginController(ISysUserService userService, ValidateCodeUtils validateCodeUtils, ISysMenuService menuService, ISystemConfigService systemConfigService) {
+    public LoginController(ISysUserService userService, ValidateCodeUtils validateCodeUtils, ISystemConfigService systemConfigService) {
         this.userService = userService;
         this.validateCodeUtils = validateCodeUtils;
-        this.menuService = menuService;
         this.systemConfigService = systemConfigService;
     }
 
@@ -64,7 +61,7 @@ public class LoginController {
 
     @GetMapping("/getRouters")
     public R<List<MenuDTO>> getRouters() {
-        return menuService.getMenuTree();
+        return userService.getRouters();
     }
 
     @PostMapping("/logout")

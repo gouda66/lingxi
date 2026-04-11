@@ -4,8 +4,8 @@ spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://localhost:3306/seo?useUnicode=true&characterEncoding=utf8&useSSL=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true&connectTimeout=5000&socketTimeout=30000&queryTimeout=30000
-    username: root
-    password: 65d762992c5f79eb
+    username: ${DB_USERNAME:root}
+    password: ${DB_PASSWORD}
     hikari:
       connection-timeout: 20000
       validation-timeout: 3000
@@ -17,10 +17,10 @@ spring:
       initialization-fail-timeout: -1
   data:
     redis:
-      host: localhost
-      port: 6379
-      password: 123456@
-      database: 0
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
+      password: ${REDIS_PASSWORD}
+      database: ${REDIS_DB:0}
       timeout: 5000ms
       lettuce:
         pool:
@@ -49,14 +49,12 @@ mybatis-plus:
 server:
   port: 8082
 
-# Nginx SSH 配置
 nginx:
   ssh:
-    host: localhost
-    port: 22
-    username: root
-    password: Zpg1314521@
+    host: ${NGINX_SSH_HOST:localhost}
+    port: ${NGINX_SSH_PORT:22}
+    username: ${NGINX_SSH_USERNAME:root}
+    password: ${NGINX_SSH_PASSWORD}
   config:
-#    path: D:/nginx/conf/rewrite
     path: /etc/nginx/conf.d/seo-web.conf
 

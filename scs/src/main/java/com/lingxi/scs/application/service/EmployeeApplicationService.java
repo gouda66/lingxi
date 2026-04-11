@@ -44,7 +44,7 @@ public class EmployeeApplicationService {
 
     @Transactional
     public Employee addEmployee(Employee employee, Long operatorId) {
-        if (employeeRepository.findByUsername(employee.getUsername()).isPresent()) {
+        if (employeeRepository.findByUsername(employee.getUserName()).isPresent()) {
             throw new CustomException("用户名已存在");
         }
         

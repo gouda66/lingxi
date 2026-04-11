@@ -56,8 +56,18 @@ export default defineConfig(({ mode, command }) => {
          '^/v3/api-docs/(.*)': {
           target: baseUrl,
           changeOrigin: true,
+        },
+        // WebSocket 代理
+        '/ws': {
+          target: baseUrl,
+          changeOrigin: true,
+          ws: true
         }
       }
+    },
+    // 解决 stompjs 依赖 global 的问题
+    define: {
+      global: 'globalThis'
     },
     css: {
       postcss: {

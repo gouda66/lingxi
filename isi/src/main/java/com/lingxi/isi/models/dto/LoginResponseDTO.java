@@ -31,7 +31,7 @@ public class LoginResponseDTO {
     /**
      * 真实姓名
      */
-    private String nickName;
+    private String realName;
     
     /**
      * 头像 URL

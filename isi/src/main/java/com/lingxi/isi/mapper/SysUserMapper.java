@@ -3,6 +3,7 @@ package com.lingxi.isi.mapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.lingxi.isi.models.entity.SysUser;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Select;
 
 /**
  * <p>
@@ -14,5 +15,6 @@ import org.apache.ibatis.annotations.Mapper;
  */
 @Mapper
 public interface SysUserMapper extends BaseMapper<SysUser> {
+
 
 }

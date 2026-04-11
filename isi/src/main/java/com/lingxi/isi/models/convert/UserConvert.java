@@ -14,8 +14,8 @@ public interface UserConvert {
      * 将 Entity 转换为 Login DTO
      */
     @Mapping(target = "id", source = "id")
-    @Mapping(target = "username", source = "username")
-    @Mapping(target = "nickname", source = "realName")
+    @Mapping(target = "userName", source = "userName")
+    @Mapping(target = "realName", source = "realName")
     @Mapping(target = "email", source = "email")
     @Mapping(target = "phonenumber", source = "phone")
     @Mapping(target = "sex", ignore = true)
@@ -32,8 +32,8 @@ public interface UserConvert {
      * 将 Entity 转换为登录响应 DTO
      */
     @Mapping(target = "userId", source = "id")
-    @Mapping(target = "userName", source = "username")
-    @Mapping(target = "nickName", expression = "java(user.getRealName() != null ? user.getRealName() : user.getUsername())")
+    @Mapping(target = "userName", source = "userName")
+    @Mapping(target = "realName", expression = "java(user.getRealName() != null ? user.getRealName() : user.getUserName())")
     @Mapping(target = "avatar", source = "avatarUrl")
     @Mapping(target = "token", ignore = true)
     @Mapping(target = "roles", ignore = true)
@@ -46,21 +46,22 @@ public interface UserConvert {
      * 将 Entity 转换为用户详细信息 DTO
      */
     @Mapping(target = "userId", source = "id")
-    @Mapping(target = "userName", source = "username")
-    @Mapping(target = "nickName", expression = "java(user.getRealName() != null ? user.getRealName() : user.getUsername())")
+    @Mapping(target = "userName", source = "userName")
+    @Mapping(target = "realName", expression = "java(user.getRealName() != null ? user.getRealName() : user.getUserName())")
     @Mapping(target = "email", source = "email")
     @Mapping(target = "phone", source = "phone")
-    @Mapping(target = "sex", ignore = true)
+    @Mapping(target = "sex", source = "sex")
     @Mapping(target = "avatar", source = "avatarUrl")
     @Mapping(target = "status", source = "status")
+    @Mapping(target = "role", source = "role")
     UserDetailDTO convertToUserDetailDTO(SysUser user);
 
     /**
      * 将 Entity 转换为注册响应 DTO
      */
     @Mapping(target = "userId", source = "id")
-    @Mapping(target = "userName", source = "username")
-    @Mapping(target = "nickName", expression = "java(user.getRealName() != null ? user.getRealName() : user.getUsername())")
+    @Mapping(target = "userName", source = "userName")
+    @Mapping(target = "realName", expression = "java(user.getRealName() != null ? user.getRealName() : user.getUserName())")
     @Mapping(target = "email", source = "email")
     @Mapping(target = "phone", source = "phone")
     @Mapping(target = "message", constant = "注册成功")

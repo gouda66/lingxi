@@ -9,7 +9,15 @@ public class MenuDTO {
     
     private Long id;
     
+    /**
+     * 菜单名称（前端显示为 label）
+     */
     private String name;
+    
+    /**
+     * 前端显示的标签名称（与 name 相同）
+     */
+    private String label;
     
     private Long parentId;
     

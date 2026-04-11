@@ -30,17 +30,11 @@
           <el-col :span="1.5" v-if="!isOnlyHR">
             <el-button type="danger" plain icon="Delete" :disabled="multiple" @click="handleDelete" v-hasPermi="['system:user:remove']">删除</el-button>
           </el-col>
-          <el-col :span="1.5">
-            <el-button type="info" plain icon="Upload" @click="handleImport" v-hasPermi="['system:user:import']">导入</el-button>
-          </el-col>
-          <el-col :span="1.5">
-            <el-button type="warning" plain icon="Download" @click="handleExport" v-hasPermi="['system:user:export']">导出</el-button>
-          </el-col>
           <right-toolbar v-model:showSearch="showSearch" @queryTable="getList" :columns="columns"></right-toolbar>
         </el-row>
         <el-table v-loading="loading" :data="userList" @selection-change="handleSelectionChange">
-          <el-table-column type="selection" width="50" align="left" />
-          <el-table-column label="用户编号" align="left" key="userId" prop="userId" v-if="columns.userId.visible" width="120" />
+          <el-table-column type="selection" width="50" align="center" />
+          <el-table-column label="用户编号" align="center" key="userId" prop="userId" v-if="columns.userId.visible" width="120" />
           <el-table-column label="用户头像" align="center" key="avatar" v-if="columns.avatar.visible" width="120">
             <template #default="scope">
               <el-image
@@ -57,11 +51,28 @@
               </el-image>
             </template>
           </el-table-column>
-          <el-table-column label="用户名称" align="left" key="userName" prop="userName" v-if="columns.userName.visible" :show-overflow-tooltip="true" width="180" />
-          <el-table-column label="用户昵称" align="left" key="nickName" prop="nickName" v-if="columns.nickName.visible" :show-overflow-tooltip="true" width="180" />
-          <el-table-column label="性别" align="left" key="sex" prop="sex" v-if="columns.sex.visible"  width="100" />
-          <el-table-column label="手机号码" align="left" key="phone" prop="phone" v-if="columns.phone.visible"  width="180" />
-          <el-table-column label="邮箱" align="left" key="email" prop="email" v-if="columns.email.visible"  width="180" />
+          <el-table-column label="用户名称" align="center" key="userName" prop="userName" v-if="columns.userName.visible" :show-overflow-tooltip="true" width="180" />
+          <el-table-column label="角色" align="center" key="roleNames" v-if="columns.roleNames.visible" width="200">
+            <template #default="scope">
+              <el-tag
+                v-for="(roleId, index) in parseRoleIds(scope.row.role)"
+                :key="index"
+                :type="getRoleTagType(roleId)"
+                size="small"
+                style="margin-right: 5px; margin-bottom: 3px;"
+              >
+                {{ getRoleName(roleId) }}
+              </el-tag>
+            </template>
+          </el-table-column>
+          <el-table-column label="用户真实名称" align="center" key="realName" prop="realName" v-if="columns.realName.visible" :show-overflow-tooltip="true" width="180" />
+          <el-table-column label="性别" align="center" key="sex" prop="sex" v-if="columns.sex.visible"  width="100">
+            <template #default="scope">
+              <span>{{ scope.row.sex === 1 ? '男' : scope.row.sex === 2 ? '女' : '未知' }}</span>
+            </template>
+          </el-table-column>
+          <el-table-column label="手机号码" align="center" key="phone" prop="phone" v-if="columns.phone.visible"  width="180" />
+          <el-table-column label="邮箱" align="center" key="email" prop="email" v-if="columns.email.visible"  width="180" />
           <el-table-column label="状态" align="center" key="status" prop="status" v-if="columns.status.visible" width="200">
             <template #default="scope">
               <el-switch
@@ -74,9 +85,8 @@
               />
             </template>
           </el-table-column>
-// ... existing code ...
 
-          <el-table-column label="操作" align="left" width="150" class-name="small-padding fixed-width">
+          <el-table-column label="操作" align="center" width="150" class-name="small-padding fixed-width">
             <template #default="scope">
               <!-- 管理员或超级管理员的按钮 -->
               <template v-if="!isOnlyHR">
@@ -118,12 +128,12 @@
       <el-form :model="form" :rules="rules" ref="userRef" label-width="80px">
         <el-row>
           <el-col :span="12">
-            <el-form-item label="用户昵称" prop="nickName">
-              <el-input v-model="form.nickName" placeholder="请输入用户昵称" maxlength="30" />
+            <el-form-item label="用户真实名称" prop="realName">
+              <el-input v-model="form.realName" placeholder="请输入用户真实名称" maxlength="30" />
             </el-form-item>
           </el-col>
           <el-col :span="12">
-            <el-form-item v-if="form.userId === undefined" label="用户名称" prop="userName">
+            <el-form-item label="用户名称" prop="userName">
               <el-input v-model="form.userName" placeholder="请输入用户名称" maxlength="30" />
             </el-form-item>
           </el-col>
@@ -142,7 +152,7 @@
         </el-row>
         <el-row>
           <el-col :span="12">
-            <el-form-item v-if="form.userId === undefined" label="用户密码" prop="password">
+            <el-form-item v-if="title.value === '修改用户'" label="用户密码" prop="password">
               <el-input v-model="form.password" placeholder="请输入用户密码" type="password" maxlength="20" show-password />
             </el-form-item>
           </el-col>
@@ -151,14 +161,17 @@
           <el-col :span="12">
             <el-form-item label="用户性别">
               <el-select v-model="form.sex" placeholder="请选择">
-                <el-option v-for="dict in sys_user_sex" :key="dict.value" :label="dict.label" :value="dict.value"></el-option>
+                <el-option label="未知" :value="0" />
+                <el-option label="男" :value="1" />
+                <el-option label="女" :value="2" />
               </el-select>
             </el-form-item>
           </el-col>
           <el-col :span="12">
             <el-form-item label="状态">
               <el-radio-group v-model="form.status">
-                <el-radio v-for="dict in sys_normal_disable" :key="dict.value" :value="dict.value">{{ dict.label }}</el-radio>
+                <el-radio :value="0">正常</el-radio>
+                <el-radio :value="1">禁用</el-radio>
               </el-radio-group>
             </el-form-item>
           </el-col>
@@ -166,8 +179,8 @@
         <el-row>
           <el-col :span="12">
             <el-form-item label="角色">
-              <el-select v-model="form.role" multiple placeholder="请选择">
-                <el-option v-for="item in roleOptions" :key="item.roleId" :label="item.roleName" :value="item.roleId" :disabled="item.status == '1'"></el-option>
+              <el-select v-model="form.roleIds" multiple placeholder="请选择">
+                <el-option v-for="item in roleOptions" :key="item.roleId" :label="item.roleName" :value="item.roleId" :disabled="item.status === '1'"></el-option>
               </el-select>
             </el-form-item>
           </el-col>
@@ -251,9 +264,8 @@ const total = ref(0)
 const title = ref("")
 const dateRange = ref([])
 const initPassword = ref(undefined)
-const postOptions = ref([])
 const roleOptions = ref([])
-const enabledDeptOptions = ref([])
+const roleMap = ref({})
 
 // 用户导入参数
 const upload = reactive({
@@ -270,7 +282,8 @@ const columns = ref({
   userId: { label: '用户编号', visible: true },
   avatar: { label: '用户头像', visible: true },
   userName: { label: '用户名称', visible: true },
-  nickName: { label: '用户昵称', visible: true },
+  roleNames: { label: '角色', visible: true },
+  realName: { label: '用户真实名称', visible: true },
   phone: { label: '手机号码', visible: true },
   email: { label: '邮箱地址', visible: true },
   sex: { label: '用户性别', visible: true },
@@ -292,7 +305,7 @@ const data = reactive({
       { required: true, message: "用户名称不能为空", trigger: "blur" },
       { min: 2, max: 20, message: "用户名称长度必须介于 2 和 20 之间", trigger: "blur" }
     ],
-    nickName: [{ required: true, message: "用户昵称不能为空", trigger: "blur" }],
+    realName: [{ required: true, message: "用户真实名称不能为空", trigger: "blur" }],
     password: [
       { required: true, message: "用户密码不能为空", trigger: "blur" },
       { min: 5, max: 20, message: "用户密码长度必须介于 5 和 20 之间", trigger: "blur" },
@@ -433,13 +446,53 @@ function getAvatarUrl(avatar) {
   return import.meta.env.VITE_APP_BASE_API + avatar
 }
 
+/** 解析角色 ID（将数字字符串拆分成数组） */
+function parseRoleIds(role) {
+  if (!role) return []
+  const roleStr = String(role)
+  const result = []
+  for (let i = 0; i < roleStr.length; i++) {
+    const roleId = parseInt(roleStr.charAt(i))
+    if (!isNaN(roleId)) {
+      result.push(roleId)
+    }
+  }
+  return result
+}
+
+/** 根据角色 ID 获取角色名称 */
+function getRoleName(roleId) {
+  return roleMap.value[roleId] || '未知角色'
+}
+
+/** 根据角色 ID 获取标签颜色 */
+function getRoleTagType(roleId) {
+  const types = ['primary', 'success', 'warning', 'danger', 'info']
+  return types[(roleId - 1) % types.length]
+}
+
 /** 查询用户列表 */
 function getList() {
   loading.value = true
-  listUser(proxy.addDateRange(queryParams.value, dateRange.value)).then(res => {
+  // 先获取角色选项
+  getRoleOptions().then(response => {
+    roleOptions.value = response || []
+    // 构建角色映射
+    roleMap.value = {}
+    response.forEach(role => {
+      roleMap.value[role.roleId] = role.roleName
+    })
+    
+    // 再获取用户列表
+    listUser(proxy.addDateRange(queryParams.value, dateRange.value)).then(res => {
+      loading.value = false
+      userList.value = res.rows
+      total.value = res.total
+    })
+  }).catch(error => {
+    console.error('获取角色列表失败:', error)
+    roleOptions.value = []
     loading.value = false
-    userList.value = res.rows
-    total.value = res.total
   })
 }
 
@@ -574,14 +627,13 @@ function reset() {
     userId: undefined,
     deptId: undefined,
     userName: undefined,
-    nickName: undefined,
+    realName: undefined,
     password: undefined,
     phone: undefined,
     email: undefined,
     sex: undefined,
     status: "0",
     remark: undefined,
-    postIds: [],
     roleIds: []
   }
   proxy.resetForm("userRef")
@@ -610,19 +662,50 @@ function handleAdd() {
 
 /** 修改按钮操作 */
 function handleUpdate(row) {
-  reset()
   const userId = row.userId || ids.value
   getUser(userId).then(response => {
-    form.value = response.data
-    postOptions.value = response.posts
-    roleOptions.value = response.roles
-    form.value.postIds = response.postIds
-    form.value.roleIds = response.roleIds
-    open.value = true
-    title.value = "修改用户"
-    form.value.password = ""
+    console.log('用户信息 response:', response)
+    // 先获取角色选项
+    getRoleOptions().then(roleRes => {
+      roleOptions.value = roleRes || []
+      console.log('角色列表:', roleRes)
+      console.log('用户当前角色:', response.role)
+
+      // 确保 roleIds 是数组格式
+      let userRoleIds = []
+      if (response.role) {
+        // 将数字字符串拆分成单个数字，如 "123" -> [1, 2, 3]
+        const roleStr = String(response.role)
+        for (let i = 0; i < roleStr.length; i++) {
+          const roleId = parseInt(roleStr.charAt(i))
+          if (!isNaN(roleId)) {
+            userRoleIds.push(roleId)
+          }
+        }
+      }
+
+      console.log('处理后的角色 IDs:', userRoleIds)
+
+      // 然后设置表单数据
+      form.value = {
+        userId: response.userId,
+        userName: response.userName,
+        realName: response.realName,
+        password: "",
+        phone: response.phone,
+        email: response.email,
+        sex: response.sex,
+        status: response.status,
+        remark: response.remark,
+        roleIds: userRoleIds,
+        deptId: response.deptId
+      }
+      open.value = true
+      title.value = "修改用户"
+    })
   })
 }
+
 
 /** 提交按钮 */
 function submitForm() {

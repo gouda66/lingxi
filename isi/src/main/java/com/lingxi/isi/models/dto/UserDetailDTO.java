@@ -24,7 +24,7 @@ public class UserDetailDTO {
     /**
      * 真实姓名
      */
-    private String nickName;
+    private String realName;
 
     /**
      * 邮箱
@@ -50,4 +50,6 @@ public class UserDetailDTO {
      * 账号状态（0 禁用 1 正常）
      */
     private Integer status;
+
+    private Integer role;
 }

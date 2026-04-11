@@ -17,6 +17,7 @@ public interface MenuConvert {
      */
     @Mapping(target = "id", source = "menuId")
     @Mapping(target = "name", source = "menuName")
+    @Mapping(target = "label", source = "menuName")
     @Mapping(target = "parentId", source = "parentId")
     @Mapping(target = "orderNum", source = "orderNum")
     @Mapping(target = "path", source = "path")

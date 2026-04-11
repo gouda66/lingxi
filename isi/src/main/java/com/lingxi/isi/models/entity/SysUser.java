@@ -1,8 +1,8 @@
 package com.lingxi.isi.models.entity;
 import java.io.Serial;
 import com.baomidou.mybatisplus.annotation.*;
-import com.lingxi.isi.models.dto.UserAddRequest;
-import com.lingxi.isi.models.request.other.SysUserRegisterRequest;
+import com.lingxi.isi.models.request.SysUserRegisterRequest;
+import com.lingxi.isi.models.request.UserRequest;
 import com.lingxi.isi.utils.PasswordSegmentUtils;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -37,7 +37,7 @@ public class SysUser implements Serializable {
     /**
      * 用户名
      */
-    private String username;
+    private String userName;
 
     /**
      * 邮箱（唯一）
@@ -104,25 +104,26 @@ public class SysUser implements Serializable {
      * 使用注册请求初始化用户信息
      */
     public void initFromRegister(SysUserRegisterRequest request) {
-        this.username = request.getUsername();
+        this.userName = request.getUserName();
         this.password = PasswordSegmentUtils.encrypt(request.getPassword());
         this.email = request.getEmail();
         this.phone = request.getPhone();
         this.realName = request.getRealName();
         this.role = 1;
-        this.status = 1;
+        this.status = 0;
         this.deleted = 0;
     }
 
-    public void initFromAdd(UserAddRequest request, SysUser newUser){
-        newUser.setRealName(request.getUserName());
-        newUser.setUsername(request.getNickName());
-        newUser.setPassword(PasswordSegmentUtils.encrypt(request.getPassword()));
-        newUser.setPhone(request.getPhone());
-        newUser.setEmail(request.getEmail());
-        newUser.setSex(Integer.parseInt(request.getSex()));
-        newUser.setStatus(Integer.parseInt(request.getStatus()));
-        newUser.setRole(Math.toIntExact(request.getRoleIds().getFirst()));
+    public void initFromAdd(UserRequest request){
+        this.realName = request.getRealName();
+        this.password = PasswordSegmentUtils.encrypt(request.getPassword());
+        this.email = request.getEmail();
+        this.phone = request.getPhone();
+        this.userName = request.getUserName();
+        this.role = 1;
+        this.status = 1;
+        this.deleted = 0;
+        this.sex = Integer.valueOf(request.getSex());
     }
 
 }

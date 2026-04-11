@@ -185,6 +185,7 @@ public class OssUploadUtils {
         if (accessKeyId == null || accessKeySecret == null) {
             throw new IllegalStateException("请设置环境变量 OSS_ACCESS_KEY_ID 和 OSS_ACCESS_KEY_SECRET");
         }
+
         // 创建凭证提供者
         DefaultCredentialProvider provider = new DefaultCredentialProvider(accessKeyId, accessKeySecret);
 

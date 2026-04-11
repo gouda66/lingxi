@@ -22,8 +22,8 @@ public class EmployeeController {
 
     @PostMapping("/login")
     public R<Employee> login(HttpServletRequest request, @RequestBody Employee employee) {
-        log.info("员工登录：{}", employee.getUsername());
-        Employee emp = employeeService.login(employee.getUsername(), employee.getPassword());
+        log.info("员工登录：{}", employee.getUserName());
+        Employee emp = employeeService.login(employee.getUserName(), employee.getPassword());
         request.getSession().setAttribute("employee", emp.getId());
         return R.success(emp);
     }

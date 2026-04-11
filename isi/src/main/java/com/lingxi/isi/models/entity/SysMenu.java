@@ -1,9 +1,13 @@
 package com.lingxi.isi.models.entity;
 
 import com.baomidou.mybatisplus.annotation.*;
+import com.lingxi.isi.models.dto.MenuDTO;
+import com.lingxi.isi.models.convert.MenuConvert;
 import lombok.Data;
 
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Data
 @TableName("sys_menu")
@@ -45,4 +49,26 @@ public class SysMenu {
     
     @TableField(fill = FieldFill.INSERT_UPDATE)
     private LocalDateTime updatedAt;
+    
+    /**
+     * 转换为 DTO
+     */
+    public MenuDTO toDTO() {
+        return MenuConvert.INSTANCE.convertToDTO(this);
+    }
+    
+    /**
+     * 构建菜单树（静态方法，用于递归构建树形结构）
+     * 
+     * @param menus 所有菜单列表
+     * @param parentId 父级 ID
+     * @return 指定父级下的子菜单树
+     */
+    public static List<MenuDTO> buildMenuTree(List<SysMenu> menus, Long parentId) {
+        return menus.stream()
+            .filter(menu -> menu.getParentId().equals(parentId))
+            .map(SysMenu::toDTO)
+            .peek(dto -> dto.setChildren(buildMenuTree(menus, dto.getId())))
+            .collect(Collectors.toList());
+    }
 }

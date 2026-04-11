@@ -44,6 +44,18 @@ import ImagePreview from "@/components/ImagePreview"
 // 字典标签组件
 import DictTag from '@/components/DictTag'
 
+// 抑制 SockJS unload 事件警告
+if (typeof window !== 'undefined') {
+  const originalAddEventListener = window.addEventListener
+  window.addEventListener = function(type, listener, options) {
+    if (type === 'unload') {
+      // 静默忽略 unload 事件注册
+      return
+    }
+    return originalAddEventListener.call(this, type, listener, options)
+  }
+}
+
 const app = createApp(App)
 
 // 全局方法挂载
