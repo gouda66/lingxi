@@ -1,0 +1,233 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ChangeListManager">
+    <list default="true" id="9a866ca0-5629-4b1f-9091-e9ed330aae34" name="更改" comment="">
+      <change afterPath="$PROJECT_DIR$/../.idea/data_source_mapping.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../.idea/libraries/mail_mcp_client.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.dockerignore" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Dockerfile" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/deploy.bat" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/deploy.sh" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/docker-compose.yml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../isi-web/src/api/interview/template.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../isi-web/src/utils/audioUtils.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../isi/src/main/java/com/lingxi/isi/client/MailClient.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../isi/src/main/java/com/lingxi/isi/mcp/MailMcpService.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../isi/src/main/java/com/lingxi/isi/models/request/EmailRequest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../isi/src/main/java/com/lingxi/isi/service/impl/RealtimeAsrService.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../isi/src/main/java/com/lingxi/isi/utils/RealtimeRecognitionUtils.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../mcp-stores/MailMcpClient/src/main/java/com/lingxi/mailmcpclient/client/MailClient.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../mcp-stores/MailMcpServer/src/main/java/com/lingxi/mailmcpserver/config/McpConfig.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../mcp-stores/MailMcpServer/src/main/java/com/lingxi/mailmcpserver/model/AddContactInput.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../mcp-stores/MailMcpServer/src/main/java/com/lingxi/mailmcpserver/model/AddContactOutput.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../mcp-stores/MailMcpServer/src/main/java/com/lingxi/mailmcpserver/model/DeleteContactInput.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../mcp-stores/MailMcpServer/src/main/java/com/lingxi/mailmcpserver/model/DeleteContactOutput.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../mcp-stores/MailMcpServer/src/main/java/com/lingxi/mailmcpserver/model/FindContactInput.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../mcp-stores/MailMcpServer/src/main/java/com/lingxi/mailmcpserver/model/FindContactOutput.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../mcp-stores/MailMcpServer/src/main/java/com/lingxi/mailmcpserver/model/ListContactsOutput.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../mcp-stores/MailMcpServer/src/main/java/com/lingxi/mailmcpserver/model/SendMailInput.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../mcp-stores/MailMcpServer/src/main/java/com/lingxi/mailmcpserver/model/SendMailOutput.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../mcp-stores/MailMcpServer/src/main/java/com/lingxi/mailmcpserver/service/MailService.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../mcp-stores/MailMcpServer/src/main/java/com/lingxi/mailmcpserver/service/impl/MailServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../.idea/compiler.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../.idea/compiler.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../.idea/dataSources.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../.idea/dataSources.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../.idea/db-forest-config.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../.idea/db-forest-config.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../.idea/encodings.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../.idea/encodings.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../.idea/misc.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pyproject.toml" beforeDir="false" afterPath="$PROJECT_DIR$/pyproject.toml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../isi-web/.env.development" beforeDir="false" afterPath="$PROJECT_DIR$/../isi-web/.env.development" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../isi-web/.env.production" beforeDir="false" afterPath="$PROJECT_DIR$/../isi-web/.env.production" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../isi-web/.env.staging" beforeDir="false" afterPath="$PROJECT_DIR$/../isi-web/.env.staging" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../isi-web/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/../isi-web/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../isi-web/src/api/system/user.js" beforeDir="false" afterPath="$PROJECT_DIR$/../isi-web/src/api/system/user.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../isi-web/src/views/index.vue" beforeDir="false" afterPath="$PROJECT_DIR$/../isi-web/src/views/index.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../isi-web/src/views/interview/session/index.vue" beforeDir="false" afterPath="$PROJECT_DIR$/../isi-web/src/views/interview/session/index.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../isi-web/src/views/system/user/index.vue" beforeDir="false" afterPath="$PROJECT_DIR$/../isi-web/src/views/system/user/index.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../isi/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../isi/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../isi/src/main/java/com/lingxi/isi/IsiApplication.java" beforeDir="false" afterPath="$PROJECT_DIR$/../isi/src/main/java/com/lingxi/isi/IsiApplication.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../isi/src/main/java/com/lingxi/isi/config/WebSocketConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/../isi/src/main/java/com/lingxi/isi/config/WebSocketConfig.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../isi/src/main/java/com/lingxi/isi/controller/AiInvocationLogController.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../isi/src/main/java/com/lingxi/isi/controller/EmailRecordController.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../isi/src/main/java/com/lingxi/isi/controller/EmailTemplateController.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../isi/src/main/java/com/lingxi/isi/controller/HrInterventionController.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../isi/src/main/java/com/lingxi/isi/controller/HrObservationController.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../isi/src/main/java/com/lingxi/isi/controller/HrProfileController.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../isi/src/main/java/com/lingxi/isi/controller/InterviewAnswerController.java" beforeDir="false" afterPath="$PROJECT_DIR$/../isi/src/main/java/com/lingxi/isi/controller/InterviewAnswerController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../isi/src/main/java/com/lingxi/isi/controller/InterviewDecisionController.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../isi/src/main/java/com/lingxi/isi/controller/InterviewQuestionController.java" beforeDir="false" afterPath="$PROJECT_DIR$/../isi/src/main/java/com/lingxi/isi/controller/InterviewQuestionController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../isi/src/main/java/com/lingxi/isi/controller/InterviewReportController.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../isi/src/main/java/com/lingxi/isi/controller/InterviewSessionController.java" beforeDir="false" afterPath="$PROJECT_DIR$/../isi/src/main/java/com/lingxi/isi/controller/InterviewSessionController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../isi/src/main/java/com/lingxi/isi/controller/InterviewWebSocketHandler.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../isi/src/main/java/com/lingxi/isi/controller/LoginController.java" beforeDir="false" afterPath="$PROJECT_DIR$/../isi/src/main/java/com/lingxi/isi/controller/LoginController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../isi/src/main/java/com/lingxi/isi/controller/OperationLogController.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../isi/src/main/java/com/lingxi/isi/controller/ResumeController.java" beforeDir="false" afterPath="$PROJECT_DIR$/../isi/src/main/java/com/lingxi/isi/controller/ResumeController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../isi/src/main/java/com/lingxi/isi/controller/ResumeProjectController.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../isi/src/main/java/com/lingxi/isi/controller/ResumeSkillController.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../isi/src/main/java/com/lingxi/isi/controller/SysDictDataController.java" beforeDir="false" afterPath="$PROJECT_DIR$/../isi/src/main/java/com/lingxi/isi/controller/SysDictDataController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../isi/src/main/java/com/lingxi/isi/controller/SysNoticeController.java" beforeDir="false" afterPath="$PROJECT_DIR$/../isi/src/main/java/com/lingxi/isi/controller/SysNoticeController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../isi/src/main/java/com/lingxi/isi/controller/UserController.java" beforeDir="false" afterPath="$PROJECT_DIR$/../isi/src/main/java/com/lingxi/isi/controller/UserController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../isi/src/main/java/com/lingxi/isi/filter/LoginCheckFilter.java" beforeDir="false" afterPath="$PROJECT_DIR$/../isi/src/main/java/com/lingxi/isi/filter/LoginCheckFilter.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../isi/src/main/java/com/lingxi/isi/mapper/AiInvocationLogMapper.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../isi/src/main/java/com/lingxi/isi/mapper/EmailRecordMapper.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../isi/src/main/java/com/lingxi/isi/mapper/EmailTemplateMapper.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../isi/src/main/java/com/lingxi/isi/mapper/HrInterventionMapper.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../isi/src/main/java/com/lingxi/isi/mapper/HrObservationMapper.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../isi/src/main/java/com/lingxi/isi/mapper/HrProfileMapper.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../isi/src/main/java/com/lingxi/isi/mapper/InterviewDecisionMapper.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../isi/src/main/java/com/lingxi/isi/mapper/InterviewReportMapper.java" beforeDir="false" afterPath="$PROJECT_DIR$/../isi/src/main/java/com/lingxi/isi/mapper/InterviewReportMapper.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../isi/src/main/java/com/lingxi/isi/mapper/OperationLogMapper.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../isi/src/main/java/com/lingxi/isi/models/dto/AiInvocationLogDTO.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../isi/src/main/java/com/lingxi/isi/models/dto/EmailRecordDTO.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../isi/src/main/java/com/lingxi/isi/models/dto/EmailTemplateDTO.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../isi/src/main/java/com/lingxi/isi/models/dto/HrInterventionDTO.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../isi/src/main/java/com/lingxi/isi/models/dto/HrObservationDTO.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../isi/src/main/java/com/lingxi/isi/models/dto/HrProfileDTO.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../isi/src/main/java/com/lingxi/isi/models/dto/InterviewDecisionDTO.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../isi/src/main/java/com/lingxi/isi/models/dto/InterviewReportDTO.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../isi/src/main/java/com/lingxi/isi/models/dto/OperationLogDTO.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../isi/src/main/java/com/lingxi/isi/models/entity/AiInvocationLog.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../isi/src/main/java/com/lingxi/isi/models/entity/EmailRecord.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../isi/src/main/java/com/lingxi/isi/models/entity/EmailTemplate.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../isi/src/main/java/com/lingxi/isi/models/entity/HrIntervention.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../isi/src/main/java/com/lingxi/isi/models/entity/HrObservation.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../isi/src/main/java/com/lingxi/isi/models/entity/HrProfile.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../isi/src/main/java/com/lingxi/isi/models/entity/InterviewDecision.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../isi/src/main/java/com/lingxi/isi/models/entity/InterviewReport.java" beforeDir="false" afterPath="$PROJECT_DIR$/../isi/src/main/java/com/lingxi/isi/models/entity/InterviewReport.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../isi/src/main/java/com/lingxi/isi/models/entity/OperationLog.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../isi/src/main/java/com/lingxi/isi/models/request/ResumeRequest.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../isi/src/main/java/com/lingxi/isi/service/IAiInvocationLogService.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../isi/src/main/java/com/lingxi/isi/service/IEmailRecordService.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../isi/src/main/java/com/lingxi/isi/service/IEmailTemplateService.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../isi/src/main/java/com/lingxi/isi/service/IHrInterventionService.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../isi/src/main/java/com/lingxi/isi/service/IHrObservationService.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../isi/src/main/java/com/lingxi/isi/service/IHrProfileService.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../isi/src/main/java/com/lingxi/isi/service/IInterviewAnswerService.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../isi/src/main/java/com/lingxi/isi/service/IInterviewDecisionService.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../isi/src/main/java/com/lingxi/isi/service/IInterviewQuestionService.java" beforeDir="false" afterPath="$PROJECT_DIR$/../isi/src/main/java/com/lingxi/isi/service/IInterviewQuestionService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../isi/src/main/java/com/lingxi/isi/service/IInterviewReportService.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../isi/src/main/java/com/lingxi/isi/service/IInterviewSessionService.java" beforeDir="false" afterPath="$PROJECT_DIR$/../isi/src/main/java/com/lingxi/isi/service/IInterviewSessionService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../isi/src/main/java/com/lingxi/isi/service/IOperationLogService.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../isi/src/main/java/com/lingxi/isi/service/IResumeProjectService.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../isi/src/main/java/com/lingxi/isi/service/IResumeSkillService.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../isi/src/main/java/com/lingxi/isi/service/ISysUserService.java" beforeDir="false" afterPath="$PROJECT_DIR$/../isi/src/main/java/com/lingxi/isi/service/ISysUserService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../isi/src/main/java/com/lingxi/isi/service/impl/AiInvocationLogServiceImpl.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../isi/src/main/java/com/lingxi/isi/service/impl/EmailRecordServiceImpl.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../isi/src/main/java/com/lingxi/isi/service/impl/EmailTemplateServiceImpl.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../isi/src/main/java/com/lingxi/isi/service/impl/HrInterventionServiceImpl.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../isi/src/main/java/com/lingxi/isi/service/impl/HrObservationServiceImpl.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../isi/src/main/java/com/lingxi/isi/service/impl/HrProfileServiceImpl.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../isi/src/main/java/com/lingxi/isi/service/impl/InterviewAgentServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/../isi/src/main/java/com/lingxi/isi/service/impl/InterviewAgentServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../isi/src/main/java/com/lingxi/isi/service/impl/InterviewAnswerServiceImpl.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../isi/src/main/java/com/lingxi/isi/service/impl/InterviewDecisionServiceImpl.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../isi/src/main/java/com/lingxi/isi/service/impl/InterviewQuestionServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/../isi/src/main/java/com/lingxi/isi/service/impl/InterviewQuestionServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../isi/src/main/java/com/lingxi/isi/service/impl/InterviewReportServiceImpl.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../isi/src/main/java/com/lingxi/isi/service/impl/InterviewSessionServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/../isi/src/main/java/com/lingxi/isi/service/impl/InterviewSessionServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../isi/src/main/java/com/lingxi/isi/service/impl/OperationLogServiceImpl.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../isi/src/main/java/com/lingxi/isi/service/impl/ResumeProjectServiceImpl.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../isi/src/main/java/com/lingxi/isi/service/impl/ResumeSkillServiceImpl.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../isi/src/main/java/com/lingxi/isi/service/impl/SysUserServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/../isi/src/main/java/com/lingxi/isi/service/impl/SysUserServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../isi/src/main/resources/application.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/../isi/src/main/resources/application.yaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../isi/src/main/resources/db/isi.sql" beforeDir="false" afterPath="$PROJECT_DIR$/../isi/src/main/resources/db/isi.sql" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../seo-web/.env.development" beforeDir="false" afterPath="$PROJECT_DIR$/../seo-web/.env.development" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../seo-web/.env.production" beforeDir="false" afterPath="$PROJECT_DIR$/../seo-web/.env.production" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../seo-web/.env.staging" beforeDir="false" afterPath="$PROJECT_DIR$/../seo-web/.env.staging" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../seo-web/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/../seo-web/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../seo-web/src/views/index.vue" beforeDir="false" afterPath="$PROJECT_DIR$/../seo-web/src/views/index.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../seo/src/main/java/com/lingxi/seo/models/entity/SysUser.java" beforeDir="false" afterPath="$PROJECT_DIR$/../seo/src/main/java/com/lingxi/seo/models/entity/SysUser.java" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="FastAPI main" />
+        <option value="FastAPI test_main" />
+      </list>
+    </option>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/.." />
+  </component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 5
+}</component>
+  <component name="ProjectId" id="3BznDfXuQs69JEfLospLolKx8Qg" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;ASKED_SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
+    &quot;FastAPI.isi-agent.executor&quot;: &quot;Debug&quot;,
+    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.typescript.service.memoryLimit.init&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;zpg__init__20260309&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.pluginManager&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  }
+}</component>
+  <component name="RunManager">
+    <configuration name="isi-agent" type="Python.FastAPI">
+      <option name="file" value="$PROJECT_DIR$/main.py" />
+      <module name="isi-agent" />
+      <option name="ENV_FILES" value="" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="" />
+      <option name="IS_MODULE_SDK" value="false" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="RUN_TOOL" value="" />
+      <option name="launchJavascriptDebuger" value="false" />
+      <method v="2" />
+    </configuration>
+  </component>
+  <component name="SharedIndexes">
+    <attachedChunks>
+      <set>
+        <option value="bundled-js-predefined-d6986cc7102b-9b0f141eb926-JavaScript-PY-253.29346.142" />
+        <option value="bundled-python-sdk-f2b7a9f6281b-6e1f45a539f7-com.jetbrains.pycharm.pro.sharedIndexes.bundled-PY-253.29346.142" />
+      </set>
+    </attachedChunks>
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="默认任务">
+      <changelist id="9a866ca0-5629-4b1f-9091-e9ed330aae34" name="更改" comment="" />
+      <created>1775500647423</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1775500647423</updated>
+      <workItem from="1775500648478" duration="293000" />
+      <workItem from="1775500951651" duration="46000" />
+      <workItem from="1775501018503" duration="3421000" />
+      <workItem from="1775528121576" duration="1915000" />
+      <workItem from="1775553358328" duration="1839000" />
+      <workItem from="1775578816361" duration="705000" />
+      <workItem from="1775607153565" duration="10388000" />
+      <workItem from="1775664185264" duration="701000" />
+      <workItem from="1775704841057" duration="595000" />
+      <workItem from="1775720536415" duration="1925000" />
+      <workItem from="1775751281141" duration="1234000" />
+      <workItem from="1775753094425" duration="6423000" />
+      <workItem from="1775782056030" duration="128000" />
+      <workItem from="1775880146358" duration="680000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+  <component name="com.intellij.coverage.CoverageDataManagerImpl">
+    <SUITE FILE_PATH="coverage/isi_agent$isi_agent.coverage" NAME="isi-agent 覆盖结果" MODIFIED="1775721325734" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="" />
+  </component>
+</project>
