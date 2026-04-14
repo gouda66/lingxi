@@ -8,12 +8,17 @@ import com.lingxi.scs.domain.repository.OrderDetailRepository;
 import com.lingxi.scs.domain.repository.OrderRepository;
 import com.lingxi.scs.domain.repository.ShoppingCartRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 /**
@@ -125,4 +130,53 @@ public class OrderApplicationService {
         order.setStatus(status);
         orderRepository.save(order);
     }
+
+
+    /**
+     * 分页查询订单
+     *
+     * @param page 页码（从1开始）
+     * @param pageSize 每页大小
+     * @param number 订单号（可选）
+     * @param beginTime 开始时间（可选）
+     * @param endTime 结束时间（可选）
+     * @return 分页订单数据
+     */
+    public Page<Orders> getOrderPage(int page, int pageSize, String number, 
+                                      LocalDateTime beginTime, LocalDateTime endTime) {
+        Pageable pageable = PageRequest.of(page - 1, pageSize, Sort.by(Sort.Direction.DESC, "orderTime"));
+        return orderRepository.findAllWithFilters(number, beginTime, endTime, pageable);
+    }
+
+    public Map<String, Object> getStatistics() {
+        List<Orders> allOrders = orderRepository.findAll();
+
+        long totalOrders = allOrders.size();
+        BigDecimal totalAmount = allOrders.stream()
+                .map(Orders::getAmount)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+        long pendingOrders = allOrders.stream()
+                .filter(order -> order.getStatus() == 2)
+                .count();
+
+        long completedOrders = allOrders.stream()
+                .filter(order -> order.getStatus() == 5)
+                .count();
+
+        Map<String, Object> statistics = new java.util.HashMap<>();
+        statistics.put("totalOrders", totalOrders);
+        statistics.put("totalAmount", totalAmount);
+        statistics.put("pendingOrders", pendingOrders);
+        statistics.put("completedOrders", completedOrders);
+
+        return statistics;
+    }
+
+    public List<Orders> getRecentOrders(int limit) {
+        Pageable pageable = PageRequest.of(0, limit, Sort.by(Sort.Direction.DESC, "orderTime"));
+        return orderRepository.findAllWithFilters(null, null, null, pageable).getContent();
+    }
+
+
 }

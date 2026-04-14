@@ -54,10 +54,10 @@ public class SetmealController {
      * 删除套餐
      */
     @DeleteMapping
-    public R<String> delete(@RequestParam List<Long> ids) {
+    public R<String> delete(@RequestParam List<String> ids) {
         log.info("删除套餐: {}", ids);
-        for (Long id : ids) {
-            setmealService.deleteSetmeal(id);
+        for (String id : ids) {
+            setmealService.deleteSetmeal(Long.parseLong(id));
         }
         return R.success("套餐数据删除成功");
     }
@@ -66,9 +66,9 @@ public class SetmealController {
      * 根据ID查询套餐（包含分类名和菜品列表）
      */
     @GetMapping("/{id}")
-    public R<SetmealDetailVO> get(@PathVariable Long id) {
+    public R<SetmealDetailVO> get(@PathVariable String id) {
         log.info("查询套餐: {}", id);
-        SetmealDetailVO detail = setmealFacade.getSetmealDetail(id);
+        SetmealDetailVO detail = setmealFacade.getSetmealDetail(Long.parseLong(id));
         return R.success(detail);
     }
 
@@ -98,9 +98,9 @@ public class SetmealController {
      * 查询套餐菜品
      */
     @GetMapping("/{id}/dishes")
-    public R<List<SetmealDish>> getSetmealDishes(@PathVariable Long id) {
+    public R<List<SetmealDish>> getSetmealDishes(@PathVariable String id) {
         log.info("查询套餐菜品: {}", id);
-        List<SetmealDish> dishes = setmealService.getSetmealDishes(id);
+        List<SetmealDish> dishes = setmealService.getSetmealDishes(Long.parseLong(id));
         return R.success(dishes);
     }
 
@@ -108,10 +108,11 @@ public class SetmealController {
      * 启用/禁用套餐
      */
     @PostMapping("/status/{status}")
-    public R<String> updateStatus(@PathVariable Integer status, @RequestParam List<Long> ids) {
+    public R<String> updateStatus(@PathVariable Integer status, @RequestParam List<String> ids) {
         log.info("修改套餐状态: id={}, status={}", ids, status);
         Long operatorId = BaseContext.getCurrentId();
-        setmealService.updateStatus(ids, status, operatorId);
+        List<Long> longIds = ids.stream().map(Long::parseLong).collect(java.util.stream.Collectors.toList());
+        setmealService.updateStatus(longIds, status, operatorId);
         return R.success("套餐状态修改成功");
     }
 }

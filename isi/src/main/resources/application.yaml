@@ -1,0 +1,81 @@
+spring:
+  application:
+    name: isi
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 10MB
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/isi?useUnicode=true&characterEncoding=utf8&useSSL=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true
+    username: root
+    password: 65d762992c5f79eb
+  data:
+    redis:
+      host: localhost
+      port: 6379
+      password: 123456@
+      database: 0
+      timeout: 5000ms
+      lettuce:
+        pool:
+          max-active: 100
+          max-idle: 20
+          min-idle: 5
+          max-wait: 3000ms
+  ai:
+    openai:
+      base-url: https://api.deepseek.com/v1
+      api-key: sk-92a139dbea674ab2a3f1d3025e407787
+      chat:
+        completions-path: /chat/completions
+        options:
+          model: 'deepseek-chat'
+    mcp:
+      client:
+        enabled: true
+        request-timeout: 30s
+        initialized: true
+        sse:
+          connections:
+            mail-mcp-server:
+              url: http://localhost:8088
+  mail:
+    host: smtp.qq.com
+    port: 587
+    username: 3296257965@qq.com
+    password: Zpg1314521@
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+            required: true
+
+server:
+  port: 8081
+
+mybatis-plus:
+  configuration:
+    map-underscore-to-camel-case: true
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+  global-config:
+    db-config:
+      id-type: auto
+      logic-delete-field: deleted
+      logic-delete-value: 1
+      logic-not-delete-value: 0
+
+
+# 阿里云 DashScope 配置
+aliyun:
+  dashscope:
+    api-key: sk-42a2860dab6f4c10b2207b2178f64317
+    websocket-url: wss://dashscope.aliyuncs.com/api-ws/v1/inference
+    model: fun-asr-realtime
+    sample-rate: 16000
+    format: pcm
+
+
+

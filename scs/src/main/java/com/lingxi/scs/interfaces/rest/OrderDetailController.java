@@ -26,9 +26,9 @@ public class OrderDetailController {
      * 根据订单ID查询订单明细
      */
     @GetMapping("/{orderId}")
-    public R<List<OrderDetail>> getByOrderId(@PathVariable Long orderId) {
+    public R<List<OrderDetail>> getByOrderId(@PathVariable String orderId) {
         log.info("查询订单明细: orderId={}", orderId);
-        List<OrderDetail> details = orderService.getOrderDetails(orderId);
+        List<OrderDetail> details = orderService.getOrderDetails(Long.parseLong(orderId));
         return R.success(details);
     }
 }

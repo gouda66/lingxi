@@ -447,8 +447,11 @@
           const userInfo = window.localStorage.getItem('userInfo')
           if (userInfo) {
             this.userInfo = JSON.parse(userInfo)
+            this.closeLoading()
+          } else {
+            // 未登录，直接跳转到登录页
+            window.location.href = '/backend/page/login/login.html'
           }
-          this.closeLoading()
         },
         beforeDestroy() {
           this.timer = null
@@ -482,13 +485,104 @@
             this.isTyping = true;
             this.scrollToBottom();
 
-            // 模拟 AI 响应（实际项目中应该调用后端 API）
-            setTimeout(() => {
-              this.getAIResponse(message);
-              this.isTyping = false;
-              this.scrollToBottom();
-            }, 1000 + Math.random() * 1000);
+            // 创建 AI 回复消息占位
+            const aiMessageIndex = this.messages.length;
+            this.messages.push({
+              role: 'assistant',
+              content: '',
+              time: this.getCurrentTime()
+            });
+
+            // 调用后端 AI 接口（流式响应）
+            this.callAIAPI(message, aiMessageIndex);
           },
+
+          callAIAPI(userMessage, messageIndex) {
+            fetch('http://120.76.242.12:8067/api/scs/chat', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json'
+              },
+              body: JSON.stringify({
+                message: userMessage
+              })
+            })
+            .then(response => {
+              if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+              }
+          
+              const reader = response.body.getReader();
+              const decoder = new TextDecoder('utf-8');
+              let accumulatedText = '';
+              let buffer = ''; // 添加缓冲区处理不完整的数据块
+          
+              const readStream = () => {
+                return reader.read().then(({ done, value }) => {
+                  if (done) {
+                    this.isTyping = false;
+                    this.scrollToBottom();
+                    return;
+                  }
+          
+                  // 解码数据块并添加到缓冲区
+                  buffer += decoder.decode(value, { stream: true });
+          
+                  // 按行分割处理
+                  const lines = buffer.split('\n');
+                            
+                  // 保留最后一个可能不完整的行
+                  buffer = lines.pop() || '';
+          
+                  // 处理每一行
+                  lines.forEach(line => {
+                    const trimmedLine = line.trim();
+                              
+                    // 跳过空行
+                    if (!trimmedLine) return;
+          
+                    // 处理 SSE 格式的数据行 (data:xxx)
+                    if (trimmedLine.startsWith('data:')) {
+                      const data = trimmedLine.substring(5);
+                                
+                      // 只有当 data 不为空时才追加
+                      if (data !== '') {
+                        accumulatedText += data;
+                                  
+                        // 实时更新消息内容
+                        this.$set(this.messages[messageIndex], 'content', accumulatedText);
+                        this.scrollToBottom();
+                      }
+                    }
+                  });
+          
+                  // 继续读取下一块
+                  return readStream();
+                });
+              };
+          
+              return readStream();
+            })
+            .catch(error => {
+              console.error('AI 接口调用失败:', error);
+              this.isTyping = false;
+          
+              // 如果出错,显示错误信息
+              if (this.messages[messageIndex]) {
+                this.$set(this.messages[messageIndex], 'content',
+                  '抱歉,服务暂时不可用,请稍后重试。');
+              } else {
+                this.messages.push({
+                  role: 'assistant',
+                  content: '抱歉,服务暂时不可用,请稍后重试。',
+                  time: this.getCurrentTime()
+                });
+              }
+          
+              this.scrollToBottom();
+            });
+          },
+
 
           getAIResponse(userMessage) {
             // 简单的关键词匹配回复（实际项目应接入 AI API）

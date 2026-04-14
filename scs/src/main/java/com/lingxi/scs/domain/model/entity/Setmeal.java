@@ -1,12 +1,13 @@
 package com.lingxi.scs.domain.model.entity;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import jakarta.persistence.*;
 import lombok.Data;
 import org.hibernate.annotations.Comment;
 
 import java.io.Serial;
 
-import java.io.Serial;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -27,10 +28,12 @@ public class Setmeal implements Serializable {
 
     @Id
     @Comment("主键ID")
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long id;
 
     @Column(name = "category_id", nullable = false)
     @Comment("分类ID")
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long categoryId;
 
     @Column(name = "name", nullable = false, length = 64, unique = true)
@@ -67,10 +70,12 @@ public class Setmeal implements Serializable {
 
     @Column(name = "create_user", nullable = false, updatable = false)
     @Comment("创建人ID")
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long createUser;
 
     @Column(name = "update_user", nullable = false)
     @Comment("修改人ID")
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long updateUser;
     
     /**

@@ -4,8 +4,11 @@ import com.lingxi.scs.domain.model.entity.Orders;
 import com.lingxi.scs.domain.repository.OrderRepository;
 import com.lingxi.scs.infrastructure.repository.jpa.OrderJpaRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -48,6 +51,12 @@ public class OrderRepositoryImpl implements OrderRepository {
     @Override
     public List<Orders> findAll() {
         return jpaRepository.findAll();
+    }
+
+    @Override
+    public Page<Orders> findAllWithFilters(String number, LocalDateTime beginTime,
+                                            LocalDateTime endTime, Pageable pageable) {
+        return jpaRepository.findAllWithFilters(number, beginTime, endTime, pageable);
     }
 
     @Override

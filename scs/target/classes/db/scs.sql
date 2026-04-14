@@ -364,6 +364,22 @@ CREATE TABLE `user` (
                         PRIMARY KEY (`id`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin COMMENT='用户信息';
 
+-- auto-generated definition
+create table t_menu_dish_flavor
+(
+    id         bigint               not null comment '主键ID'
+        primary key,
+    dish_id    bigint               not null comment '菜品ID',
+    name       varchar(32)          not null comment '口味名称',
+    value      varchar(100)         not null comment '口味值',
+    is_deleted tinyint(1) default 0 null comment '是否删除 0未删除 1已删除'
+)
+    comment '菜品口味表';
+
+INSERT INTO scs.t_menu_dish_flavor (id, dish_id, name, value, is_deleted) VALUES (2029208665080336384, 2029208647225184256, '甜味', '["半糖","多糖","全糖"]', 0);
+INSERT INTO scs.t_menu_dish_flavor (id, dish_id, name, value, is_deleted) VALUES (2029208665080336385, 2029208647225184256, '温度', '["去冰","少冰","多冰"]', 0);
+
+
 
 -- 1. address_book -> t_user_address
 ALTER TABLE `address_book` RENAME TO `t_user_address`;

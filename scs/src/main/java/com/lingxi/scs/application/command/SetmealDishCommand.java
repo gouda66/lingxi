@@ -1,5 +1,7 @@
 package com.lingxi.scs.application.command;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import lombok.Data;
 
 import java.math.BigDecimal;
@@ -9,6 +11,7 @@ import java.math.BigDecimal;
  */
 @Data
 public class SetmealDishCommand {
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long dishId;
     private String name;
     private BigDecimal price;

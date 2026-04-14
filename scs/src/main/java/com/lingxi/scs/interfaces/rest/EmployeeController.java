@@ -67,9 +67,9 @@ public class EmployeeController {
     }
 
     @GetMapping("/{id}")
-    public R<Employee> getById(@PathVariable Long id) {
+    public R<Employee> getById(@PathVariable String id) {
         log.info("查询员工：{}", id);
-        Employee employee = employeeService.getEmployeeById(id);
+        Employee employee = employeeService.getEmployeeById(Long.parseLong(id));
         return R.success(employee);
     }
 }

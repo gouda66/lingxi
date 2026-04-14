@@ -1,5 +1,7 @@
 package com.lingxi.scs.application.dto;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import lombok.Data;
 
 import java.math.BigDecimal;
@@ -25,6 +27,7 @@ public class ShoppingCartDTO {
     /**
      * 购物车项ID
      */
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long id;
 
     /**
@@ -35,16 +38,19 @@ public class ShoppingCartDTO {
     /**
      * 用户ID
      */
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long userId;
 
     /**
      * 菜品ID
      */
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long dishId;
 
     /**
      * 套餐ID
      */
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long setmealId;
 
     /**

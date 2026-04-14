@@ -205,9 +205,23 @@ public class DishApplicationService {
         for (Long id : ids) {
             Dish dish = dishRepository.findById(id)
                     .orElseThrow(() -> new CustomException("菜品不存在"));
-            
+
             dishFlavorRepository.deleteByDishId(id);
             dishRepository.deleteById(id);
         }
     }
+
+    public List<Dish> searchByName(String keyword) {
+        return dishRepository.findByNameContaining(keyword, PageRequest.of(0, 100)).getContent();
+    }
+
+    public Dish getById(Long id) {
+        return dishRepository.findById(id)
+                .orElseThrow(() -> new CustomException("菜品不存在"));
+    }
+
+    public List<Dish> getByCategoryId(Long categoryId) {
+        return dishRepository.findByCategoryId(categoryId);
+    }
+
 }

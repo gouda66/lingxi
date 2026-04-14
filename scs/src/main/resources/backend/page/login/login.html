@@ -98,19 +98,33 @@
         async handleLogin() {
           this.$refs.loginForm.validate(async (valid) => {
             if (valid) {
-              this.loading = true
-              let res = await loginApi(this.loginForm)
-              if (String(res.code) === '1') {//1表示登录成功
-                localStorage.setItem('userInfo',JSON.stringify(res.data))
-                window.location.href= '/backend/index.html'
-              } else {
-                this.$message.error(res.msg)
+              try {
+                this.loading = true
+                let res = await loginApi(this.loginForm)
+                console.log('登录结果：', res)
+                if (String(res.code) === '1') {
+                  localStorage.setItem('userInfo', JSON.stringify(res.data))
+                  window.location.href = '/backend/index.html'
+                } else {
+                  ELEMENT.Message({
+                    message: res.msg || '登录失败',
+                    type: 'error'
+                  })
+                  this.loading = false
+                }
+              } catch (error) {
+                console.error('登录错误：', error)
+                ELEMENT.Message({
+                  message: error.message || '登录异常，请稍后重试',
+                  type: 'error'
+                })
                 this.loading = false
               }
             }
           })
         }
       }
+
     })
   </script>
 </body>

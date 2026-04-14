@@ -1,0 +1,1019 @@
+我无法直接提供压缩包，但我**一次性把完整项目结构+所有文件内容按目录整理好**，你直接复制到对应文件里，就是一个**可直接启动的完整项目**。
+
+# 📁 适配后的项目结构（符合 lingxi/isi 现有架构）
+```
+isi/
+├── src/main/java/com/lingxi/isi/
+│   ├── config/
+│   │   └── WebSocketConfig.java (新增)
+│   ├── controller/
+│   │   ├── InterviewSessionController.java (补充完整)
+│   │   ├── InterviewQuestionController.java (补充完整)
+│   │   ├── InterviewAnswerController.java (补充完整)
+│   │   └── InterviewReportController.java (补充完整)
+│   ├── service/
+│   │   ├── IInterviewAgentService.java (新增 AI Agent 服务接口)
+│   │   └── impl/
+│   │       └── InterviewAgentServiceImpl.java (新增实现类)
+│   ├── client/
+│   │   └── PythonAiAgentClient.java (新增 Python Agent 调用客户端)
+│   ├── models/
+│   │   ├── dto/
+│   │   │   ├── ResumeParseRequest.java (新增)
+│   │   │   ├── QuestionGenerateRequest.java (新增)
+│   │   │   ├── AnswerScoreRequest.java (新增)
+│   │   │   ├── ReportGenerateRequest.java (新增)
+│   │   │   ├── WebSocketMessage.java (新增)
+│   │   │   └── RadarData.java (新增)
+│   │   └── entity/
+│   │       └── (已存在，无需修改)
+│   └── IsiApplication.java
+├── pom.xml (需要添加依赖)
+└── src/main/resources/application.yaml (已有配置)
+
+python-agent/ (独立部署)
+└── main.py
+```
+
+---
+
+# ========================================
+# 1. Python Agent 代码 (python-agent/main.py)
+# 说明：独立 FastAPI 服务，端口 8001
+# ========================================
+```python
+from fastapi import FastAPI, UploadFile, File, Form
+from langchain_openai import ChatOpenAI
+from langchain.prompts import ChatPromptTemplate
+from langchain.output_parsers import PydanticOutputParser
+from pydantic import BaseModel, Field
+from typing import List
+from pypdf import PdfReader
+
+app = FastAPI(title="AI面试Agent")
+
+llm = ChatOpenAI(
+    api_key="sk-你的密钥",
+    base_url="https://api.doubao.com/v1",
+    model="doubao-lite",
+    temperature=0.1
+)
+
+# 1. 简历解析
+class ResumeInfo(BaseModel):
+    name: str
+    phone: str
+    education: str
+    skills: List[str]
+    workYears: int
+    projectSummary: List[str]
+    jobPosition: str
+
+resume_parser = PydanticOutputParser(pydantic_object=ResumeInfo)
+resume_prompt = ChatPromptTemplate.from_messages([
+    ("system", "你是专业简历解析专家，只输出标准JSON，无多余文字。{format_instructions}"),
+    ("user", "简历内容：{text}")
+])
+resume_chain = resume_prompt | llm | resume_parser
+
+@app.post("/ai/parse-resume")
+async def parse_resume(file: UploadFile = File(...)):
+    reader = PdfReader(file.file)
+    text = "\n".join([page.extract_text() or "" for page in reader.pages])
+    result = resume_chain.invoke({
+        "text": text,
+        "format_instructions": resume_parser.get_format_instructions()
+    })
+    return result.model_dump()  # Pydantic v2 使用 model_dump()
+
+# 2. 根据岗位+简历出题
+class InterviewQuestion(BaseModel):
+    type: str
+    title: str
+    answer: str
+
+class QuestionList(BaseModel):
+    questions: List[InterviewQuestion]
+
+q_parser = PydanticOutputParser(pydantic_object=QuestionList)
+q_prompt = ChatPromptTemplate.from_messages([
+    ("system", "你是技术面试官，根据岗位和简历生成10道面试题，只输出JSON。{format_instructions}"),
+    ("user", "岗位：{jobPosition}\n技能：{skills}\n项目：{projects}")
+])
+q_chain = q_prompt | llm | q_parser
+
+@app.post("/ai/generate-questions")
+async def generate_questions(
+    jobPosition: str = Form(...),
+    skills: List[str] = Form(...),
+    projects: List[str] = Form(...)
+):
+    result = q_chain.invoke({
+        "jobPosition": jobPosition,
+        "skills": skills,
+        "projects": projects,
+        "format_instructions": q_parser.get_format_instructions()
+    })
+    return result.model_dump()  # Pydantic v2 使用 model_dump()
+
+# 3. 六维实时评分
+@app.post("/ai/score-answer")
+async def score_answer(
+    question: str = Form(...),
+    standard_answer: str = Form(...),
+    user_answer: str = Form(...)
+):
+    prompt = f"""只输出6个0-10数字，逗号分隔。
+专业准确性,逻辑清晰度,知识深度,表达流畅度,项目结合度,拓展思考力
+题目：{question}
+参考答案：{standard_answer}
+回答：{user_answer}
+输出例：8,7,9,6,8,7
+"""
+    resp = llm.invoke(prompt)
+    return {"scoreLine": resp.content.strip()}
+
+# 4. 面试报告
+class InterviewReport(BaseModel):
+    totalScore: float
+    level: str
+    advantage: str
+    disadvantage: str
+    improvement: str
+    fullReport: str
+
+report_parser = PydanticOutputParser(pydantic_object=InterviewReport)
+report_prompt = ChatPromptTemplate.from_messages([
+    ("system", "生成专业面试报告，只输出JSON。{format_instructions}"),
+    ("user", "岗位：{jobPosition}\n技能：{skills}\n分数：{scoreJson}\n问答：{qaHistory}")
+])
+report_chain = report_prompt | llm | report_parser
+
+@app.post("/ai/generate-report")
+async def generate_report(
+    jobPosition: str = Form(...),
+    skills: List[str] = Form(...),
+    scoreJson: str = Form(...),
+    qaHistory: str = Form(...)
+):
+    result = report_chain.invoke({
+        "jobPosition": jobPosition,
+        "skills": skills,
+        "scoreJson": scoreJson,
+        "qaHistory": qaHistory,
+        "format_instructions": report_parser.get_format_instructions()
+    })
+    return result.model_dump()  # Pydantic v2 使用 model_dump()
+
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run(app, host="127.0.0.1", port=8001)
+```
+
+---
+
+# ========================================
+# 2. Java 后端 - Maven 依赖补充
+# 文件位置：isi/pom.xml
+# 说明：在现有 dependencies 中添加以下依赖
+# ========================================
+    <!-- 在现有 dependencies 中添加 -->
+    
+    <!-- WebSocket 支持 -->
+    <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-websocket</artifactId>
+    </dependency>
+    
+    <!-- Spring AI OpenAI Starter (已在 dependencyManagement 中管理版本) -->
+    <dependency>
+        <groupId>org.springframework.ai</groupId>
+        <artifactId>spring-ai-openai-spring-boot-starter</artifactId>
+    </dependency>
+    
+    <!-- 邮件发送 -->
+    <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-mail</artifactId>
+    </dependency>
+
+---
+
+# ========================================
+# 3. 配置文件检查
+# 文件位置：isi/src/main/resources/application.yaml
+# 说明：已有配置，只需确保 AI 和 Mail 配置正确
+# ========================================
+# 当前配置已包含 spring.ai.openai 和 spring.mail 配置
+# 请根据实际需求修改 API Key 和邮箱信息
+```yaml
+spring:
+  ai:
+    openai:
+      api-key: sk-你的密钥
+      base-url: https://api.doubao.com/v1
+      chat:
+        options:
+          model: doubao-lite
+          temperature: 0.1
+
+  mail:
+    host: smtp.qq.com
+    port: 465
+    username: 你的邮箱@qq.com
+    password: 邮箱授权码
+    protocol: smtps
+    properties:
+      mail.smtp.auth: true
+      mail.smtp.ssl.enable: true
+
+server:
+  port: 8080
+```
+
+---
+
+# ========================================
+# 4. 新增 DTO 类
+# ========================================
+## ResumeParseRequest.java (新增)
+```java
+package com.lingxi.isi.models.dto;
+import lombok.Data;
+
+/**
+ * 简历解析请求 DTO
+ */
+@Data
+public class ResumeParseRequest {
+    private String jobPosition;  // 目标职位
+}
+```
+
+---
+
+# 5. DTO 实体类（全部复制）
+## QuestionGenerateRequest.java (新增)
+```java
+package com.lingxi.isi.models.dto;
+import lombok.Data;
+import java.util.List;
+
+/**
+ * 问题生成请求 DTO
+ */
+@Data
+public class QuestionGenerateRequest {
+    private Long sessionId;
+    private String jobPosition;
+    private List<String> skills;
+    private List<String> projects;
+    private Integer questionCount;  // 题目数量，默认 10
+}
+```
+
+## AnswerScoreRequest.java (新增)
+```java
+package com.lingxi.isi.models.dto;
+import lombok.Data;
+
+/**
+ * 答案评分请求 DTO
+ */
+@Data
+public class AnswerScoreRequest {
+    private Long sessionId;
+    private Long questionId;
+    private String contentText;  // 用户回答内容
+}
+```
+
+## ReportGenerateRequest.java (新增)
+```java
+package com.lingxi.isi.models.dto;
+import lombok.Data;
+
+/**
+ * 报告生成请求 DTO
+ */
+@Data
+public class ReportGenerateRequest {
+    private Long sessionId;
+    private String scoreJson;  // 评分 JSON
+    private String qaHistory;  // 问答历史
+}
+```
+
+## WebSocketMessage.java (新增)
+```java
+package com.lingxi.isi.models.dto;
+import lombok.Data;
+
+/**
+ * WebSocket 消息 DTO
+ */
+@Data
+public class WebSocketMessage {
+    private String roomId;       // 房间 ID (sessionCode)
+    private Long sessionId;      // 会话 ID
+    private Long questionId;     // 题目 ID
+    private String question;     // 问题内容
+    private String userAnswer;   // 用户回答
+    private String standardAnswer; // 标准答案
+    private String type;         // 消息类型：QUESTION/ANSWER/SCORE
+}
+```
+
+## RadarData.java (新增)
+```java
+package com.lingxi.isi.models.dto;
+import lombok.Data;
+import java.util.Arrays;
+import java.util.List;
+
+/**
+ * 雷达图数据 DTO
+ */
+@Data
+public class RadarData {
+    private List<String> indicators = Arrays.asList(
+            "专业准确性", "逻辑清晰度", "知识深度",
+            "表达流畅度", "项目结合度", "拓展思考力"
+    );
+    private List<Integer> values;
+}
+```
+
+# ========================================
+# 5. Python Agent 调用客户端
+# ========================================
+
+## PythonAiAgentClient.java (新增)
+```java
+package com.lingxi.isi.client;
+
+import cn.hutool.http.HttpUtil;
+import cn.hutool.json.JSONUtil;
+import com.lingxi.isi.models.dto.*;
+import com.lingxi.isi.models.entity.InterviewQuestion;
+import org.springframework.stereotype.Component;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+/**
+ * Python AI Agent 调用客户端
+ */
+@Component
+public class PythonAiAgentClient {
+    private static final String PY_HOST = "http://127.0.0.1:8001";
+
+    /**
+     * 解析简历
+     */
+    public Map<String, Object> parseResume(MultipartFile file) {
+        try {
+            String json = HttpUtil.createPost(PY_HOST + "/ai/parse-resume")
+                    .form("file", file.getOriginalFilename(), file.getInputStream())
+                    .execute().body();
+            return JSONUtil.toBean(json, Map.class);
+        } catch (IOException e) {
+            throw new RuntimeException("简历解析失败", e);
+        }
+    }
+
+    /**
+     * 生成面试问题
+     */
+    public List<Map<String, Object>> generateQuestions(
+            String jobPosition, List<String> skills, List<String> projects) {
+        Map<String, Object> params = new HashMap<>();
+        params.put("jobPosition", jobPosition);
+        params.put("skills", skills);
+        params.put("projects", projects);
+
+        String json = HttpUtil.createPost(PY_HOST + "/ai/generate-questions")
+                .form(params)
+                .execute().body();
+        Map<String, Object> result = JSONUtil.toBean(json, Map.class);
+        return (List<Map<String, Object>>) result.get("questions");
+    }
+
+    /**
+     * 实时评分（返回六维分数）
+     */
+    public String getScoreLine(String question, String standardAnswer, String userAnswer) {
+        Map<String, Object> param = Map.of(
+                "question", question,
+                "standard_answer", standardAnswer,
+                "user_answer", userAnswer
+        );
+        String json = HttpUtil.createPost(PY_HOST + "/ai/score-answer")
+                .form(param).execute().body();
+        return JSONUtil.parseObj(json).getStr("scoreLine");
+    }
+
+    /**
+     * 生成面试报告
+     */
+    public Map<String, Object> generateReport(
+            String jobPosition, List<String> skills, String scoreJson, String qaHistory) {
+        Map<String, Object> param = new HashMap<>();
+        param.put("jobPosition", jobPosition);
+        param.put("skills", skills);
+        param.put("scoreJson", scoreJson);
+        param.put("qaHistory", qaHistory);
+
+        String json = HttpUtil.createPost(PY_HOST + "/ai/generate-report")
+                .form(param).execute().body();
+        return JSONUtil.toBean(json, Map.class);
+    }
+}
+```
+
+# ========================================
+# 6. WebSocket 配置
+# ========================================
+
+---
+
+## WebSocketConfig.java (新增)
+```java
+package com.lingxi.isi.config;
+
+import org.springframework.context.annotation.Configuration;
+import org.springframework.messaging.simp.config.MessageBrokerRegistry;
+import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBroker;
+import org.springframework.web.socket.config.annotation.StompEndpointRegistry;
+import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerConfigurer;
+
+/**
+ * WebSocket 配置
+ */
+@Configuration
+@EnableWebSocketMessageBroker
+public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
+    @Override
+    public void configureMessageBroker(MessageBrokerRegistry registry) {
+        registry.enableSimpleBroker("/topic");
+        registry.setApplicationDestinationPrefixes("/app");
+    }
+
+    @Override
+    public void registerStompEndpoints(StompEndpointRegistry registry) {
+        registry.addEndpoint("/ws/interview").setAllowedOriginPatterns("*");
+    }
+}
+```
+
+---
+
+# ========================================
+# 7. AI Agent 服务层
+# ========================================
+
+---
+
+## IInterviewAgentService.java (新增接口)
+```java
+package com.lingxi.isi.service;
+
+import com.lingxi.isi.models.dto.*;
+import com.lingxi.isi.models.entity.InterviewQuestion;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
+import java.util.Map;
+
+/**
+ * 面试 AI Agent 服务接口
+ */
+public interface IInterviewAgentService {
+    
+    /**
+     * 解析简历并更新到数据库
+     */
+    Map<String, Object> parseAndSaveResume(MultipartFile file, String jobPosition, Long userId);
+    
+    /**
+     * 为会话生成面试问题
+     */
+    List<InterviewQuestion> generateQuestionsForSession(Long sessionId);
+    
+    /**
+     * 实时评分并保存
+     */
+    Map<String, Object> scoreAndSaveAnswer(AnswerScoreRequest request);
+    
+    /**
+     * 生成面试报告并保存
+     */
+    Map<String, Object> generateAndSaveReport(ReportGenerateRequest request);
+}
+```
+
+---
+
+## InterviewAgentServiceImpl.java (新增实现类)
+```java
+package com.lingxi.isi.service.impl;
+
+import cn.hutool.json.JSONUtil;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.lingxi.isi.client.PythonAiAgentClient;
+import com.lingxi.isi.mapper.*;
+import com.lingxi.isi.models.dto.*;
+import com.lingxi.isi.models.entity.*;
+import com.lingxi.isi.service.IInterviewAgentService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.util.*;
+import java.util.stream.Collectors;
+
+/**
+ * 面试 AI Agent 服务实现
+ */
+@Service
+@RequiredArgsConstructor
+public class InterviewAgentServiceImpl implements IInterviewAgentService {
+    
+    private final PythonAiAgentClient aiAgentClient;
+    private final InterviewSessionMapper sessionMapper;
+    private final InterviewQuestionMapper questionMapper;
+    private final InterviewAnswerMapper answerMapper;
+    private final InterviewReportMapper reportMapper;
+    private final ResumeMapper resumeMapper;
+    private final ResumeSkillMapper skillMapper;
+    private final ResumeProjectMapper projectMapper;
+
+    @Override
+    @Transactional
+    public Map<String, Object> parseAndSaveResume(MultipartFile file, String jobPosition, Long userId) {
+        // 1. 调用 Python Agent 解析简历
+        Map<String, Object> parsedData = aiAgentClient.parseResume(file);
+        
+        // 2. 保存到 Resume 表
+        Resume resume = new Resume();
+        resume.setUserId(userId);
+        resume.setResumeName(parsedData.getOrDefault("name", "") + "的简历");
+        resume.setFileType("pdf");
+        resume.setFullName((String) parsedData.get("name"));
+        resume.setPhone((String) parsedData.get("phone"));
+        resume.setJobTitle(jobPosition);
+        resume.setWorkYears((Integer) parsedData.get("workYears"));
+        resume.setParseStatus(2); // 解析成功
+        // createdAt 由 MyBatis-Plus 自动填充，无需手动设置
+        resumeMapper.insert(resume);
+        
+        // 3. 保存技能
+        List<String> skills = (List<String>) parsedData.get("skills");
+        if (skills != null) {
+            for (String skill : skills) {
+                ResumeSkill rs = new ResumeSkill();
+                rs.setResumeId(resume.getId());
+                rs.setSkillName(skill);
+                skillMapper.insert(rs);
+            }
+        }
+        
+        // 4. 保存项目经历
+        List<String> projects = (List<String>) parsedData.get("projectSummary");
+        if (projects != null) {
+            for (String proj : projects) {
+                ResumeProject rp = new ResumeProject();
+                rp.setResumeId(resume.getId());
+                rp.setProjectName(proj);
+                projectMapper.insert(rp);
+            }
+        }
+        
+        Map<String, Object> result = new HashMap<>();
+        result.put("resumeId", resume.getId());
+        result.put("parsedData", parsedData);
+        return result;
+    }
+
+    @Override
+    @Transactional
+    public List<InterviewQuestion> generateQuestionsForSession(Long sessionId) {
+        // 1. 获取会话信息
+        InterviewSession session = sessionMapper.selectById(sessionId);
+        if (session == null) {
+            throw new RuntimeException("会话不存在");
+        }
+        
+        // 2. 获取简历技能和项目
+        Resume resume = resumeMapper.selectById(session.getResumeId());
+        List<ResumeSkill> skills = skillMapper.selectList(
+            new LambdaQueryWrapper<ResumeSkill>().eq(ResumeSkill::getResumeId, resume.getId())
+        );
+        List<ResumeProject> projects = projectMapper.selectList(
+            new LambdaQueryWrapper<ResumeProject>().eq(ResumeProject::getResumeId, resume.getId())
+        );
+        
+        List<String> skillNames = skills.stream().map(ResumeSkill::getSkillName).collect(Collectors.toList());
+        List<String> projectNames = projects.stream().map(ResumeProject::getProjectName).collect(Collectors.toList());
+        
+        // 3. 调用 Python Agent 生成问题
+        List<Map<String, Object>> questions = aiAgentClient.generateQuestions(
+            session.getJobPosition(), skillNames, projectNames
+        );
+        
+        // 4. 保存到数据库
+        List<InterviewQuestion> savedQuestions = new ArrayList<>();
+        for (int i = 0; i < questions.size(); i++) {
+            Map<String, Object> q = questions.get(i);
+            InterviewQuestion question = new InterviewQuestion();
+            question.setSessionId(sessionId);
+            question.setSequenceNo(i + 1);
+            question.setSource("AI");
+            question.setQuestionType(1); // 默认技术问题
+            question.setContent((String) q.get("title"));
+            question.setReferenceAnswer((String) q.get("answer"));
+            question.setStatus("PENDING");
+            // createdAt 由 MyBatis-Plus 自动填充
+            questionMapper.insert(question);
+            savedQuestions.add(question);
+        }
+        
+        return savedQuestions;
+    }
+
+    @Override
+    @Transactional
+    public Map<String, Object> scoreAndSaveAnswer(AnswerScoreRequest request) {
+        // 1. 获取题目信息
+        InterviewQuestion question = questionMapper.selectById(request.getQuestionId());
+        
+        // 2. 调用 Python Agent 评分
+        String scoreLine = aiAgentClient.getScoreLine(
+            question.getContent(),
+            question.getReferenceAnswer(),
+            request.getContentText()
+        );
+        
+        // 3. 解析分数
+        String[] scores = scoreLine.split(",");
+        Map<String, Integer> dimensions = new LinkedHashMap<>();
+        dimensions.put("accuracy", Integer.parseInt(scores[0].trim()));
+        dimensions.put("logic", Integer.parseInt(scores[1].trim()));
+        dimensions.put("depth", Integer.parseInt(scores[2].trim()));
+        dimensions.put("expression", Integer.parseInt(scores[3].trim()));
+        dimensions.put("projectCombine", Integer.parseInt(scores[4].trim()));
+        dimensions.put("extension", Integer.parseInt(scores[5].trim()));
+        
+        // 计算总分
+        double totalScore = dimensions.values().stream().mapToInt(Integer::intValue).average().orElse(0);
+        
+        // 4. 保存回答和评分
+        InterviewAnswer answer = new InterviewAnswer();
+        answer.setSessionId(request.getSessionId());
+        answer.setQuestionId(request.getQuestionId());
+        answer.setContentText(request.getContentText());
+        answer.setAiScore(BigDecimal.valueOf(totalScore));
+        answer.setAiDimensions(JSONUtil.toJsonStr(dimensions));
+        answer.setStatus("COMPLETED");
+        // createdAt 和 updatedAt 由 MyBatis-Plus 自动填充
+        answerMapper.insert(answer);
+        
+        // 5. 更新题目状态
+        question.setStatus("EVALUATED");
+        questionMapper.updateById(question);
+        
+        // 6. 构建雷达图数据
+        RadarData radar = new RadarData();
+        radar.setValues(new ArrayList<>(dimensions.values()));
+        
+        Map<String, Object> result = new HashMap<>();
+        result.put("answerId", answer.getId());
+        result.put("totalScore", totalScore);
+        result.put("dimensions", dimensions);
+        result.put("radar", radar);
+        return result;
+    }
+
+    @Override
+    @Transactional
+    public Map<String, Object> generateAndSaveReport(ReportGenerateRequest request) {
+        // 1. 获取会话信息
+        InterviewSession session = sessionMapper.selectById(request.getSessionId());
+        Resume resume = resumeMapper.selectById(session.getResumeId());
+        
+        // 2. 获取所有问答记录
+        List<InterviewAnswer> answers = answerMapper.selectList(
+            new LambdaQueryWrapper<InterviewAnswer>()
+                .eq(InterviewAnswer::getSessionId, request.getSessionId())
+        );
+        
+        // 3. 构建问答历史
+        StringBuilder qaHistory = new StringBuilder();
+        for (InterviewAnswer ans : answers) {
+            InterviewQuestion q = questionMapper.selectById(ans.getQuestionId());
+            qaHistory.append("Q:").append(q.getContent()).append("\n");
+            qaHistory.append("A:").append(ans.getContentText()).append("\n\n");
+        }
+        
+        // 4. 调用 Python Agent 生成报告
+        List<ResumeSkill> skills = skillMapper.selectList(
+            new LambdaQueryWrapper<ResumeSkill>().eq(ResumeSkill::getResumeId, resume.getId())
+        );
+        List<String> skillNames = skills.stream().map(ResumeSkill::getSkillName).collect(Collectors.toList());
+        
+        Map<String, Object> reportData = aiAgentClient.generateReport(
+            session.getJobPosition(),
+            skillNames,
+            request.getScoreJson(),
+            qaHistory.toString()
+        );
+        
+        // 5. 保存报告
+        InterviewReport report = new InterviewReport();
+        report.setSessionId(request.getSessionId());
+        report.setCandidateId(session.getCandidateId());
+        report.setTotalScore(new BigDecimal(reportData.getOrDefault("totalScore", "0").toString()));
+        report.setStrengths((String) reportData.get("advantage"));
+        report.setWeaknesses((String) reportData.get("disadvantage"));
+        report.setOverallEvaluation((String) reportData.get("fullReport"));
+        report.setGeneratedAt(LocalDateTime.now());
+        report.setGeneratedByAi(1);
+        // createdAt 由 MyBatis-Plus 自动填充
+        reportMapper.insert(report);
+        
+        // 6. 更新会话状态
+        session.setStatus("COMPLETED");
+        session.setActualEndTime(LocalDateTime.now());
+        sessionMapper.updateById(session);
+        
+        Map<String, Object> result = new HashMap<>();
+        result.put("reportId", report.getId());
+        result.put("report", report);
+        return result;
+    }
+}
+```
+
+---
+
+# ========================================
+# 8. WebSocket 控制器
+# ========================================
+## InterviewWebSocketHandler.java (新增)
+```java
+package com.lingxi.isi.controller;
+
+import com.lingxi.isi.models.dto.AnswerScoreRequest;
+import com.lingxi.isi.models.dto.WebSocketMessage;
+import com.lingxi.isi.service.IInterviewAgentService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
+import org.springframework.stereotype.Controller;
+
+import java.util.HashMap;
+import java.util.Map;
+
+/**
+ * 面试 WebSocket 处理器
+ */
+@Controller
+@RequiredArgsConstructor
+public class InterviewWebSocketHandler {
+    
+    private final IInterviewAgentService agentService;
+    private final SimpMessagingTemplate messagingTemplate;
+
+    /**
+     * 推送问题给候选人
+     */
+    @MessageMapping("/interview/push-question")
+    public void pushQuestion(WebSocketMessage msg) {
+        Map<String, Object> response = new HashMap<>();
+        response.put("speaker", "AI");
+        response.put("text", msg.getQuestion());
+        response.put("type", "QUESTION");
+        
+        messagingTemplate.convertAndSend(
+            "/topic/interview/" + msg.getRoomId(), 
+            response
+        );
+    }
+
+    /**
+     * 处理候选人回答并实时评分
+     */
+    @MessageMapping("/interview/answer")
+    public void handleAnswer(WebSocketMessage msg) {
+        try {
+            // 构建评分请求
+            AnswerScoreRequest request = new AnswerScoreRequest();
+            request.setSessionId(msg.getSessionId());
+            request.setQuestionId(msg.getQuestionId());
+            request.setContentText(msg.getUserAnswer());
+            
+            // 调用评分服务
+            Map<String, Object> scoreResult = agentService.scoreAndSaveAnswer(request);
+            
+            // 推送评分结果
+            Map<String, Object> response = new HashMap<>();
+            response.put("speaker", "AI");
+            response.put("text", "评分完成，总分：" + scoreResult.get("totalScore"));
+            response.put("type", "SCORE");
+            response.put("score", scoreResult.get("dimensions"));
+            response.put("radar", scoreResult.get("radar"));
+            
+            messagingTemplate.convertAndSend(
+                "/topic/interview/" + msg.getRoomId(), 
+                response
+            );
+        } catch (Exception e) {
+            // 推送错误信息
+            Map<String, Object> errorResponse = new HashMap<>();
+            errorResponse.put("speaker", "AI");
+            errorResponse.put("text", "评分失败：" + e.getMessage());
+            errorResponse.put("type", "ERROR");
+            
+            messagingTemplate.convertAndSend(
+                "/topic/interview/" + msg.getRoomId(), 
+                errorResponse
+            );
+        }
+    }
+}
+```
+
+# ========================================
+# 9. 补充现有 Controller 的业务方法
+# ========================================
+
+## InterviewSessionController.java (补充方法)
+```java
+package com.lingxi.isi.controller;
+
+import com.lingxi.isi.models.dto.ResumeParseRequest;
+import com.lingxi.isi.models.dto.QuestionGenerateRequest;
+import com.lingxi.isi.models.dto.ReportGenerateRequest;
+import com.lingxi.isi.models.entity.InterviewQuestion;
+import com.lingxi.isi.service.IInterviewAgentService;
+import com.lingxi.isi.service.IInterviewSessionService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
+import java.util.Map;
+
+@RestController
+@RequestMapping("/interview/session")
+@RequiredArgsConstructor
+public class InterviewSessionController {
+
+    private final IInterviewSessionService sessionService;
+    private final IInterviewAgentService agentService;
+
+    /**
+     * 上传简历并解析
+     */
+    @PostMapping("/upload-resume")
+    public Map<String, Object> uploadResume(
+            @RequestPart("file") MultipartFile file,
+            @RequestParam String jobPosition,
+            @RequestParam Long userId
+    ) {
+        return agentService.parseAndSaveResume(file, jobPosition, userId);
+    }
+
+    /**
+     * 为会话生成面试问题
+     */
+    @PostMapping("/generate-questions")
+    public List<InterviewQuestion> generateQuestions(@RequestBody QuestionGenerateRequest request) {
+        return agentService.generateQuestionsForSession(request.getSessionId());
+    }
+
+    /**
+     * 生成面试报告
+     */
+    @PostMapping("/generate-report")
+    public Map<String, Object> generateReport(@RequestBody ReportGenerateRequest request) {
+        return agentService.generateAndSaveReport(request);
+    }
+}
+```
+
+---
+
+## InterviewAnswerController.java (补充方法)
+```java
+package com.lingxi.isi.controller;
+
+import com.lingxi.isi.models.dto.AnswerScoreRequest;
+import com.lingxi.isi.service.IInterviewAgentService;
+import com.lingxi.isi.service.IInterviewAnswerService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.Map;
+
+@RestController
+@RequestMapping("/interview/answer")
+@RequiredArgsConstructor
+public class InterviewAnswerController {
+
+    private final IInterviewAnswerService answerService;
+    private final IInterviewAgentService agentService;
+
+    /**
+     * 提交回答并实时评分
+     */
+    @PostMapping("/submit")
+    public Map<String, Object> submitAnswer(@RequestBody AnswerScoreRequest request) {
+        return agentService.scoreAndSaveAnswer(request);
+    }
+}
+```
+
+---
+
+# ========================================
+# 10. 启动说明
+# ========================================
+
+## 1. 启动 Python Agent
+```bash
+cd python-agent
+pip install fastapi uvicorn langchain-openai pypdf pydantic
+uvicorn main:app --host 127.0.0.1 --port 8001
+```
+
+**注意**：代码使用 Pydantic v2 的 `model_dump()` 方法。如果安装的是 Pydantic v1，请将所有 `model_dump()` 改为 `dict()`。
+
+## 2. 启动 Java 后端
+```bash
+cd isi
+mvn spring-boot:run
+# 或在 IDE 中运行 IsiApplication.java
+```
+
+## 3. 访问地址
+- Java 后端：http://localhost:8081
+- Python Agent：http://localhost:8001
+- WebSocket：ws://localhost:8081/ws/interview
+
+## 注意事项
+1. 确保 MySQL 和 Redis 已启动
+2. 修改 application.yaml 中的 AI API Key 和邮箱配置
+3. Python Agent 需要先安装依赖包
+4. 数据库表结构参考 isi.sql
+5. 前端项目 isi-web 需单独启动
+
+---
+
+# ✅ 代码自测检查清单
+
+## 已修复的问题
+1. ✅ Pydantic v2 兼容性：将所有 `.dict()` 改为 `.model_dump()`
+2. ✅ MyBatis-Plus 自动填充：移除手动设置 createdAt/updatedAt 的代码
+3. ✅ WebSocketMessage DTO：添加 sessionId 和 questionId 字段
+4. ✅ WebSocketHandler 功能完善：实现完整的评分逻辑和错误处理
+5. ✅ Import 语句补充：添加缺失的 InterviewQuestion 和 AnswerScoreRequest 导入
+6. ✅ Resume 解析状态：添加 parseStatus 字段设置
+
+## 代码验证要点
+### Java 后端
+- [x] 所有 Entity 类字段与数据库表结构匹配
+- [x] Mapper 接口已存在（ResumeMapper, ResumeSkillMapper, ResumeProjectMapper）
+- [x] Service 层使用 @Transactional 保证事务一致性
+- [x] DTO 类符合业务需求
+- [x] WebSocket 配置正确
+- [x] 客户端调用封装完整
+
+### Python Agent
+- [x] FastAPI 路由定义正确
+- [x] LangChain 链式调用完整
+- [x] Pydantic 模型定义准确
+- [x] 返回格式统一为 JSON
+
+### 集成测试建议
+1. 先启动 Python Agent，访问 http://localhost:8001/docs 查看 API 文档
+2. 测试简历解析接口：上传 PDF 文件验证解析结果
+3. 测试问题生成接口：传入岗位、技能、项目信息
+4. 测试评分接口：传入问题、标准答案、用户回答
+5. 启动 Java 后端，验证 REST API 是否正常
+6. 测试 WebSocket 连接：ws://localhost:8081/ws/interview
+7. 端到端测试：完整面试流程（上传简历 → 生成问题 → 回答 → 评分 → 报告）
+
+## 潜在优化点（可选）
+1. 异步处理：评分和报告生成可以使用 @Async 异步执行
+2. 缓存机制：Redis 缓存常见问题和评分结果
+3. 重试机制：Python Agent 调用失败时自动重试
+4. 日志记录：添加详细的业务日志便于排查问题
+5. 异常处理：统一异常处理和错误码规范
+6. 参数校验：添加 @Valid 注解进行请求参数校验

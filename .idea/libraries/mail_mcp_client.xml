@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="mail-mcp-client">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/isi/lib/mail-mcp-client.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

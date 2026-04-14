@@ -61,10 +61,10 @@ public class ShoppingCartController {
      * 减少购物车商品数量
      */
     @PostMapping("/sub")
-    public R<ShoppingCartDTO> sub(@RequestParam Long cartId) {
+    public R<ShoppingCartDTO> sub(@RequestParam String cartId) {
         log.info("减少购物车商品: {}", cartId);
         Long userId = BaseContext.getCurrentId();
-        ShoppingCartDTO cart = shoppingCartService.decreaseCartItem(cartId, userId);
+        ShoppingCartDTO cart = shoppingCartService.decreaseCartItem(Long.parseLong(cartId), userId);
         return R.success(cart);
     }
 }

@@ -1,5 +1,8 @@
 package com.lingxi.scs.application.dto.vo;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
+
 import java.math.BigDecimal;
 
 /**
@@ -16,11 +19,11 @@ import java.math.BigDecimal;
  * @param amount 金额
  */
 public record OrderDetailVO(
-        Long id,
+        @JsonSerialize(using = ToStringSerializer.class) Long id,
         String name,
         String image,
-        Long dishId,
-        Long setmealId,
+        @JsonSerialize(using = ToStringSerializer.class) Long dishId,
+        @JsonSerialize(using = ToStringSerializer.class) Long setmealId,
         String dishFlavor,
         Integer number,
         BigDecimal amount

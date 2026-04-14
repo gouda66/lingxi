@@ -9,8 +9,11 @@ import com.lingxi.scs.application.dto.vo.CheckoutPreviewVO;
 import com.lingxi.scs.application.dto.vo.OrderVO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 /**
@@ -53,9 +56,9 @@ public class OrderController {
      * 查询订单详情
      */
     @GetMapping("/{orderId}/detail")
-    public R<OrderVO> getOrderDetails(@PathVariable Long orderId) {
+    public R<OrderVO> getOrderDetails(@PathVariable String orderId) {
         log.info("查询订单详情: {}", orderId);
-        OrderVO orderVO = orderFacade.getOrderDetail(orderId);
+        OrderVO orderVO = orderFacade.getOrderDetail(Long.parseLong(orderId));
         return R.success(orderVO);
     }
 
@@ -84,9 +87,31 @@ public class OrderController {
      * 更新订单状态
      */
     @PutMapping("/status")
-    public R<String> updateStatus(@RequestParam Long orderId, @RequestParam Integer status) {
+    public R<String> updateStatus(@RequestParam String orderId, @RequestParam Integer status) {
         log.info("更新订单状态: orderId={}, status={}", orderId, status);
-        orderService.updateOrderStatus(orderId, status);
+        orderService.updateOrderStatus(Long.parseLong(orderId), status);
         return R.success("订单状态更新成功");
+    }
+
+    /**
+     * 分页查询订单（管理端）
+     *
+     * @param page 页码
+     * @param pageSize 每页大小
+     * @param number 订单号（可选）
+     * @param beginTime 开始时间（可选）
+     * @param endTime 结束时间（可选）
+     * @return 分页订单数据
+     */
+    @GetMapping("/page")
+    public R<Page<Orders>> page(@RequestParam(defaultValue = "1") int page,
+                                @RequestParam(defaultValue = "10") int pageSize,
+                                @RequestParam(required = false) String number,
+                                @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime beginTime,
+                                @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime endTime) {
+        log.info("分页查询订单，页码：{}, 每页大小：{}, 订单号：{}, 开始时间：{}, 结束时间：{}", 
+                page, pageSize, number, beginTime, endTime);
+        Page<Orders> orderPage = orderService.getOrderPage(page, pageSize, number, beginTime, endTime);
+        return R.success(orderPage);
     }
 }

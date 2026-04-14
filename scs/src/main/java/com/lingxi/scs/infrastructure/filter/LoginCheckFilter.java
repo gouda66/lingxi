@@ -49,7 +49,9 @@ public class LoginCheckFilter implements Filter {
             "/category/list",
             "/dish/list",
             "/setmeal/list",
-            "/setmeal/dish/**"
+            "/setmeal/dish/**",
+            "/sse",
+            "/sse/**"
     );
 
     /**

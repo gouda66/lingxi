@@ -33,7 +33,7 @@
                     >
                     <van-cell v-for="(order,index) in orderList" :key="index" class="item">
                         <div class="timeStatus">
-                            <span>{{order.orderTime}}</span>
+                            <span>{{formatTime(order.orderTime)}}</span>
                             <span>{{getStatus(order.status)}}</span>
                             <!-- <span>正在派送</span> -->
                         </div>
@@ -67,6 +67,7 @@
         <script src="./../js/vant.min.js"></script>    
         <!-- 引入axios -->
         <script src="../../backend/plugins/axios/axios.min.js"></script>
+        <script src="../../backend/js/common.js"></script>
         <script src="./../js/request.js"></script>
         <script src="./../api/order.js"></script>
         <script>
@@ -89,6 +90,7 @@
             },
             mounted(){},
             methods:{
+                formatTime,
                 goBack(){
                     const url = document.referrer
                     //表示是从订单页面跳转过来的

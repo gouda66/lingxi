@@ -1,5 +1,6 @@
 package com.lingxi.scs.infrastructure.config;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.lingxi.scs.common.mapper.JacksonObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Configuration;
@@ -8,18 +9,17 @@ import org.springframework.http.converter.json.MappingJackson2HttpMessageConvert
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupport;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import java.util.List;
 
 /**
  * Web MVC配置（Spring Boot 4.x版本）
- * 
+ *
  * Spring Boot 已自动配置：
  * - Jackson 消息转换器（JSON 序列化/反序列化）
  * - LocalDateTime/LocalDate 等 Java 8 时间类型支持
  * - 常用的 HttpMessageConverter
- * 
+ *
  * 如需自定义 Jackson 配置，可在 application.yml 中配置：
  * spring:
  *   jackson:
@@ -57,16 +57,20 @@ public class WebMvcConfig extends WebMvcConfigurationSupport {
 
     /**
      * 扩展mvc框架的消息转换器
+     * 注意：只在 /api/** 路径下使用自定义的 ObjectMapper
+     * MCP 端点 (/sse, /sse/message) 使用默认的 Jackson 配置
      * @param converters
      */
     @Override
     protected void extendMessageConverters(List<HttpMessageConverter<?>> converters) {
         log.info("扩展消息转换器...");
-        //创建消息转换器对象
+        // 注释掉自定义消息转换器，让所有端点都使用默认配置
+        // 这样可以避免影响 MCP 协议的消息格式
+        /*
         MappingJackson2HttpMessageConverter messageConverter = new MappingJackson2HttpMessageConverter();
-        //设置对象转换器，底层使用Jackson将Java对象转为json
         messageConverter.setObjectMapper(new JacksonObjectMapper());
-        //将上面的消息转换器对象追加到mvc框架的转换器集合中
         converters.add(0,messageConverter);
+        */
+        log.info("使用默认 Jackson 配置，确保 MCP 协议兼容性");
     }
 }
