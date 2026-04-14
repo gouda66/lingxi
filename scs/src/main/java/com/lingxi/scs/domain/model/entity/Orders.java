@@ -1,5 +1,7 @@
 package com.lingxi.scs.domain.model.entity;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import jakarta.persistence.*;
 import lombok.Data;
 import org.hibernate.annotations.Comment;
@@ -26,6 +28,7 @@ public class Orders implements Serializable {
 
     @Id
     @Comment("主键ID")
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long id;
 
     @Column(name = "number", length = 50)
@@ -38,10 +41,12 @@ public class Orders implements Serializable {
 
     @Column(name = "user_id", nullable = false)
     @Comment("下单用户ID")
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long userId;
 
     @Column(name = "address_book_id", nullable = false)
     @Comment("地址ID")
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long addressBookId;
 
     @Column(name = "order_time", nullable = false)

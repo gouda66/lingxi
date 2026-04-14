@@ -22,8 +22,8 @@ public class EmployeeController {
 
     @PostMapping("/login")
     public R<Employee> login(HttpServletRequest request, @RequestBody Employee employee) {
-        log.info("员工登录：{}", employee.getUserName());
-        Employee emp = employeeService.login(employee.getUserName(), employee.getPassword());
+        log.info("员工登录：{}", employee.getUsername());
+        Employee emp = employeeService.login(employee.getUsername(), employee.getPassword());
         request.getSession().setAttribute("employee", emp.getId());
         return R.success(emp);
     }
@@ -67,9 +67,9 @@ public class EmployeeController {
     }
 
     @GetMapping("/{id}")
-    public R<Employee> getById(@PathVariable Long id) {
+    public R<Employee> getById(@PathVariable String id) {
         log.info("查询员工：{}", id);
-        Employee employee = employeeService.getEmployeeById(id);
+        Employee employee = employeeService.getEmployeeById(Long.parseLong(id));
         return R.success(employee);
     }
 }

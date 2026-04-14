@@ -1,5 +1,8 @@
 package com.lingxi.scs.application.dto.vo;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
+
 /**
  * 结算预览数据VO
  *
@@ -14,7 +17,7 @@ package com.lingxi.scs.application.dto.vo;
  * @param label 标签
  */
 public record CheckoutPreviewVO(
-        Long addressId,
+        @JsonSerialize(using = ToStringSerializer.class) Long addressId,
         String consignee,
         String phone,
         String provinceName,

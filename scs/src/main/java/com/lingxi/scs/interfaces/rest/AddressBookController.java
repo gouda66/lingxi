@@ -60,11 +60,11 @@ public class AddressBookController {
      * 根据id查询地址
      */
     @GetMapping("/{id}")
-    public R<AddressBook> get(@PathVariable Long id) {
+    public R<AddressBook> get(@PathVariable String id) {
         Long userId = BaseContext.getCurrentId();
         List<AddressBook> addresses = addressBookService.getUserAddresses(userId);
         return addresses.stream()
-                .filter(a -> a.getId().equals(id))
+                .filter(a -> a.getId().equals(Long.parseLong(id)))
                 .findFirst()
                 .map(R::success)
                 .orElse(R.error("地址不存在"));
@@ -98,10 +98,10 @@ public class AddressBookController {
      * 删除地址
      */
     @DeleteMapping
-    public R<String> delete(@RequestParam Long id) {
+    public R<String> delete(@RequestParam String id) {
         Long userId = BaseContext.getCurrentId();
         log.info("删除地址: {}", id);
-        addressBookService.deleteAddress(id, userId);
+        addressBookService.deleteAddress(Long.parseLong(id), userId);
         return R.success("删除成功");
     }
 }

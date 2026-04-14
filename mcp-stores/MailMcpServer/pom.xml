@@ -58,6 +58,7 @@
                 </exclusion>
             </exclusions>
         </dependency>
+
         <!-- 邮件 -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -79,16 +80,19 @@
             <artifactId>mysql-connector-j</artifactId>
             <scope>runtime</scope>
         </dependency>
+
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
         </dependency>
+
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
             <scope>provided</scope>
         </dependency>
+
         <!-- fastjson2 JSON处理 -->
         <dependency>
             <groupId>com.alibaba.fastjson2</groupId>

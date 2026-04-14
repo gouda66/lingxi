@@ -1,5 +1,7 @@
 package com.lingxi.scs.application.dto;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import lombok.Data;
 
 import java.math.BigDecimal;
@@ -11,7 +13,9 @@ import java.math.BigDecimal;
  */
 @Data
 public class SetmealDTO {
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long id;
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long categoryId;
     private String name;
     private BigDecimal price;

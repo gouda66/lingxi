@@ -1,4 +1,7 @@
 spring:
+
+  application:
+    name: scs-mcp-server
   dtp:
     executors:
       - poolName: dtpExecutor1
@@ -10,10 +13,14 @@ spring:
   jackson:
     date-format: yyyy-MM-dd HH:mm:ss
     time-zone: GMT+8
+    serialization:
+      write-dates-as-timestamps: false
+    generator:
+      write-numbers-as-strings: false
   datasource:
     url: jdbc:mysql://localhost:3306/scs?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=utf-8&zeroDateTimeBehavior=convertToNull&useSSL=false&allowPublicKeyRetrieval=true
-    username: ${DB_USERNAME:root}
-    password: ${DB_PASSWORD}
+    username: root
+    password: Zpg1314521@
     driver-class-name: com.mysql.cj.jdbc.Driver
   jpa:
     hibernate:
@@ -23,6 +30,34 @@ spring:
     properties:
       hibernate:
         dialect: org.hibernate.dialect.MySQLDialect
-
+  ai:
+    mcp:
+      server:
+        # mcp server的名称，在查询tools的接口中会返回给client
+        # 在多个server的情况下，准确的名称有利于大模型选中恰当的server
+        name: ${spring.application.name}
+        version: 1.0.0
+        # 支持SYNC/ASYNC
+        # SYNC：同步服务模式，默认值。专为简单`请求-响应`模式而设计
+        # ASYNC：异步服务模式。针对非阻塞作进行了优化。适合耗时长的复杂任务
+        type: SYNC
+        # Enable/disable stdio transport
+        # 开启后，将通过标准输入/输出进行通讯，通过进程间通信（IPC）实现，适合本地部署场景
+        stdio: false
+        # 调用initialize、notifications/initialized、tools/list、tools/call等接口的content-path
+        # 默认：/sse/message
+        sse-message-endpoint: /sse/message
+        # `Created new SSE connection for sessions`接口的content-path
+        # 默认：/sse
+        sse-endpoint: /sse
+        # 资源更改通知
+        resource-change-notification: true
+        # 工具更改通知
+        tool-change-notification: true
+        # 提示词更改通知
+        prompt-change-notification: true
+  web:
+    resources:
+          static-locations: classpath:/backend/,classpath:/static/
 server:
   port: 8080

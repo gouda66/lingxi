@@ -1,5 +1,8 @@
 package com.lingxi.scs.application.dto.vo;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
+
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -23,7 +26,7 @@ import java.util.List;
  * @param orderDetails 订单详情列表
  */
 public record OrderVO(
-        Long id,
+        @JsonSerialize(using = ToStringSerializer.class) Long id,
         String number,
         Integer status,
         String statusText,

@@ -33,7 +33,7 @@ public interface UserConvert {
      */
     @Mapping(target = "userId", source = "id")
     @Mapping(target = "userName", source = "username")
-    @Mapping(target = "nickName", expression = "java(user.getRealName() != null ? user.getRealName() : user.getUserName())")
+    @Mapping(target = "nickName", expression = "java(user.getRealName() != null ? user.getRealName() : user.getUsername())")
     @Mapping(target = "avatar", source = "avatarUrl")
     @Mapping(target = "token", ignore = true)
     @Mapping(target = "roles", ignore = true)
@@ -47,7 +47,7 @@ public interface UserConvert {
      */
     @Mapping(target = "userId", source = "id")
     @Mapping(target = "userName", source = "username")
-    @Mapping(target = "nickName", expression = "java(user.getRealName() != null ? user.getRealName() : user.getUserName())")
+    @Mapping(target = "nickName", expression = "java(user.getRealName() != null ? user.getRealName() : user.getUsername())")
     @Mapping(target = "email", source = "email")
     @Mapping(target = "phone", source = "phone")
     @Mapping(target = "sex", ignore = true)
@@ -60,7 +60,7 @@ public interface UserConvert {
      */
     @Mapping(target = "userId", source = "id")
     @Mapping(target = "userName", source = "username")
-    @Mapping(target = "nickName", expression = "java(user.getRealName() != null ? user.getRealName() : user.getUserName())")
+    @Mapping(target = "nickName", expression = "java(user.getRealName() != null ? user.getRealName() : user.getUsername())")
     @Mapping(target = "email", source = "email")
     @Mapping(target = "phone", source = "phone")
     @Mapping(target = "message", constant = "注册成功")

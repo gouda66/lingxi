@@ -52,7 +52,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         }
         
         LambdaQueryWrapper<SysUser> queryWrapper = new LambdaQueryWrapper<>();
-        queryWrapper.eq(SysUser::getUserName, request.getUserName());
+        queryWrapper.eq(SysUser::getUsername, request.getUsername());
         queryWrapper.eq(SysUser::getDeleted, 0);
         SysUser user = sysUserMapper.selectOne(queryWrapper);
         
@@ -77,7 +77,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
 
         Map<String, Object> claims = new HashMap<>();
         claims.put("userId", user.getId());
-        String token = JWTUtil.createToken(claims, user.getUserName().getBytes());
+        String token = JWTUtil.createToken(claims, user.getUsername().getBytes());
         response.setToken(token);
         
         // 更新最后登录时间
@@ -133,7 +133,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         }
 
         LambdaQueryWrapper<SysUser> queryWrapper = new LambdaQueryWrapper<>();
-        queryWrapper.eq(SysUser::getUserName, request.getUserName());
+        queryWrapper.eq(SysUser::getUsername, request.getUsername());
         queryWrapper.eq(SysUser::getDeleted, 0);
         SysUser existUser = sysUserMapper.selectOne(queryWrapper);
 

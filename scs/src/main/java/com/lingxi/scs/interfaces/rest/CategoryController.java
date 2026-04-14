@@ -49,9 +49,9 @@ public class CategoryController {
     }
 
     @DeleteMapping
-    public R<String> delete(@RequestParam Long id) {
+    public R<String> delete(@RequestParam String id) {
         log.info("删除分类：{}", id);
-        categoryService.deleteCategory(id);
+        categoryService.deleteCategory(Long.parseLong(id));
         return R.success("分类信息删除成功");
     }
 

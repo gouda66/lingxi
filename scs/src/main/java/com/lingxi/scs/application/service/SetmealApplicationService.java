@@ -35,37 +35,9 @@ public class SetmealApplicationService {
     @Autowired
     private SnowflakeGenerator snowflakeGenerator;
 
-    /**
-     * 新增套餐（包含套餐菜品关系）
-     *
-     * @param setmeal 套餐信息
-     * @param setmealDishes 套餐菜品列表
-     * @param operatorId 操作人ID
-     * @return 保存后的套餐
-     */
     @Transactional
-    public Setmeal addSetmealWithDishes(Setmeal setmeal, List<SetmealDish> setmealDishes, Long operatorId) {
-        setmeal.setStatus(1);
-        setmeal.setCreateTime(LocalDateTime.now());
-        setmeal.setUpdateTime(LocalDateTime.now());
-        setmeal.setCreateUser(operatorId);
-        setmeal.setUpdateUser(operatorId);
-
-        Setmeal savedSetmeal = setmealRepository.save(setmeal);
-
-        if (setmealDishes != null && !setmealDishes.isEmpty()) {
-            for (SetmealDish dish : setmealDishes) {
-                dish.setSetmealId(savedSetmeal.getId());
-            }
-            setmealDishRepository.saveAll(setmealDishes);
-        }
-
-        return savedSetmeal;
-    }
-
-    @Transactional
-    public Setmeal addSetmealWithDishes(com.lingxi.scs.application.dto.SetmealDTO setmealDTO, 
-                                        List<com.lingxi.scs.application.command.SetmealDishCommand> setmealDishCommands, 
+    public Setmeal addSetmealWithDishes(SetmealDTO setmealDTO,
+                                        List<SetmealDishCommand> setmealDishCommands,
                                         Long operatorId) {
         Setmeal setmeal = new Setmeal();
         setmeal.setId(snowflakeGenerator.next());
@@ -104,33 +76,6 @@ public class SetmealApplicationService {
                         return dish;
                     })
                     .collect(Collectors.toList());
-            setmealDishRepository.saveAll(setmealDishes);
-        }
-
-        return savedSetmeal;
-    }
-
-    /**
-     * 更新套餐（包含套餐菜品关系）
-     *
-     * @param setmeal 套餐信息
-     * @param setmealDishes 套餐菜品列表
-     * @param operatorId 操作人ID
-     * @return 更新后的套餐
-     */
-    @Transactional
-    public Setmeal updateSetmealWithDishes(Setmeal setmeal, List<SetmealDish> setmealDishes, Long operatorId) {
-        setmeal.setUpdateTime(LocalDateTime.now());
-        setmeal.setUpdateUser(operatorId);
-
-        Setmeal savedSetmeal = setmealRepository.save(setmeal);
-
-        setmealDishRepository.deleteBySetmealId(setmeal.getId());
-
-        if (setmealDishes != null && !setmealDishes.isEmpty()) {
-            for (SetmealDish dish : setmealDishes) {
-                dish.setSetmealId(savedSetmeal.getId());
-            }
             setmealDishRepository.saveAll(setmealDishes);
         }
 
@@ -219,23 +164,6 @@ public class SetmealApplicationService {
      */
     public List<SetmealDish> getSetmealDishes(Long setmealId) {
         return setmealDishRepository.findBySetmealId(setmealId);
-    }
-
-    /**
-     * 启用/禁用套餐
-     *
-     * @param id 套餐ID
-     * @param status 状态
-     * @param operatorId 操作人ID
-     */
-    @Transactional
-    public void updateStatus(Long id, Integer status, Long operatorId) {
-        Setmeal setmeal = setmealRepository.findById(id)
-                .orElseThrow(() -> new CustomException("套餐不存在"));
-        setmeal.setStatus(status);
-        setmeal.setUpdateTime(LocalDateTime.now());
-        setmeal.setUpdateUser(operatorId);
-        setmealRepository.save(setmeal);
     }
 
     @Transactional

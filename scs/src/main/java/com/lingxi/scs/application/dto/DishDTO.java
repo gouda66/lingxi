@@ -1,5 +1,7 @@
 package com.lingxi.scs.application.dto;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import lombok.Data;
 
 import java.math.BigDecimal;
@@ -18,6 +20,7 @@ public class DishDTO {
     /**
      * 菜品ID
      */
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long id;
 
     /**
@@ -28,6 +31,7 @@ public class DishDTO {
     /**
      * 分类ID
      */
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long categoryId;
 
     /**

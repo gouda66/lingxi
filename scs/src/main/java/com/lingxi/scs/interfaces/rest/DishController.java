@@ -28,9 +28,9 @@ public class DishController {
     }
 
     @GetMapping("/{id}")
-    public R<DishDTO> get(@PathVariable Long id) {
+    public R<DishDTO> get(@PathVariable String id) {
         log.info("查询菜品：{}", id);
-        DishDTO dish = dishFacade.getDishById(id);
+        DishDTO dish = dishFacade.getDishById(Long.parseLong(id));
         return R.success(dish);
     }
 
@@ -59,17 +59,19 @@ public class DishController {
     }
 
     @PostMapping("/status/{status}")
-    public R<String> updateStatus(@PathVariable Integer status, @RequestParam List<Long> ids) {
+    public R<String> updateStatus(@PathVariable Integer status, @RequestParam List<String> ids) {
         log.info("批量修改菜品状态：ids={}, status={}", ids, status);
         Long operatorId = BaseContext.getCurrentId();
-        dishFacade.batchUpdateStatus(ids, status, operatorId);
+        List<Long> longIds = ids.stream().map(Long::parseLong).collect(java.util.stream.Collectors.toList());
+        dishFacade.batchUpdateStatus(longIds, status, operatorId);
         return R.success("菜品状态修改成功");
     }
 
     @DeleteMapping
-    public R<String> batchDelete(@RequestParam List<Long> ids) {
+    public R<String> batchDelete(@RequestParam List<String> ids) {
         log.info("批量删除菜品：ids={}", ids);
-        dishFacade.batchDelete(ids);
+        List<Long> longIds = ids.stream().map(Long::parseLong).collect(java.util.stream.Collectors.toList());
+        dishFacade.batchDelete(longIds);
         return R.success("批量删除成功");
     }
 }
