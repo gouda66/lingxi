@@ -5,7 +5,7 @@
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>灵犀外卖管理端</title>
+  <title>灵犀外卖管理端 - 注册</title>
   <link rel="shortcut icon" href="../../favicon.ico">
   <!-- 引入样式 -->
   <link rel="stylesheet" href="../../plugins/element-ui/index.css" />
@@ -20,31 +20,31 @@
 </head> 
 
 <body>
-  <div class="login" id="login-app">
+  <div class="login" id="register-app">
     <div class="login-box">
       <img src="../../images/login/login-l.png" alt="">
       <div class="login-form">
-        <el-form ref="loginForm" :model="loginForm" :rules="loginRules" >
+        <el-form ref="registerForm" :model="registerForm" :rules="registerRules" >
           <div class="login-form-title">
             <img src="../../images/login/logo.png" style="width:139px;height:42px;" alt="" />
           </div>
           <el-form-item prop="username">
-            <el-input v-model="loginForm.username" type="text" auto-complete="off" placeholder="账号" maxlength="20"
+            <el-input v-model="registerForm.username" type="text" auto-complete="off" placeholder="账号" maxlength="20"
               prefix-icon="iconfont icon-user" />
           </el-form-item>
           <el-form-item prop="password">
-            <el-input v-model="loginForm.password" type="password" placeholder="密码" prefix-icon="iconfont icon-lock" maxlength="20"
-              @keyup.enter.native="handleLogin" />
+            <el-input v-model="registerForm.password" type="password" placeholder="密码" prefix-icon="iconfont icon-lock" maxlength="20"
+              @keyup.enter.native="handleRegister" />
           </el-form-item>
           <el-form-item style="width:100%;">
             <el-button :loading="loading" class="login-btn" size="medium" type="primary" style="width:100%;"
-              @click.native.prevent="handleLogin">
-              <span v-if="!loading">登录</span>
-              <span v-else>登录中...</span>
+              @click.native.prevent="handleRegister">
+              <span v-if="!loading">注册</span>
+              <span v-else>注册中...</span>
             </el-button>
           </el-form-item>
           <el-form-item style="width:100%; text-align: center;">
-            <el-link type="primary" href="./register.html">还没有账号？立即注册</el-link>
+            <el-link type="primary" href="./login.html">已有账号？立即登录</el-link>
           </el-form-item>
         </el-form>
       </div>
@@ -59,31 +59,31 @@
   <script src="../../plugins/axios/axios.min.js"></script>
   <script src="../../js/request.js"></script>
   <script src="../../js/validate.js"></script>
-  <script src="../../api/login.js"></script>
+  <script src="../../api/register.js"></script>
 
   <script>
     new Vue({
-      el: '#login-app',
+      el: '#register-app',
       data() {
         return {
-          loginForm:{
-            username: 'admin',
-            password: '123456'
+          registerForm:{
+            username: '',
+            password: ''
           },
           loading: false
         }
       },
       computed: {
-        loginRules() {
+        registerRules() {
           const validateUsername = (rule, value, callback) => {
-            if (value.length < 1 ) {
-              callback(new Error('请输入用户名'))
+            if (!value || value.length < 1) {
+              callback(new Error('请输入账号'))
             } else {
               callback()
             }
           }
           const validatePassword = (rule, value, callback) => {
-            if (value.length < 6) {
+            if (!value || value.length < 6) {
               callback(new Error('密码必须在6位以上'))
             } else {
               callback()
@@ -98,27 +98,33 @@
       created() {
       },
       methods: {
-        async handleLogin() {
-          this.$refs.loginForm.validate(async (valid) => {
+        async handleRegister() {
+          this.$refs.registerForm.validate(async (valid) => {
             if (valid) {
               try {
                 this.loading = true
-                let res = await loginApi(this.loginForm)
-                console.log('登录结果：', res)
+                let res = await registerApi(this.registerForm)
+                console.log('注册结果：', res)
                 if (String(res.code) === '1') {
-                  localStorage.setItem('userInfo', JSON.stringify(res.data))
-                  window.location.href = '/backend/index.html'
+                  ELEMENT.Message({
+                    message: '注册成功',
+                    type: 'success'
+                  })
+                  // 注册成功后跳转到登录页
+                  setTimeout(() => {
+                    window.location.href = './login.html'
+                  }, 1500)
                 } else {
                   ELEMENT.Message({
-                    message: res.msg || '登录失败',
+                    message: res.msg || '注册失败',
                     type: 'error'
                   })
                   this.loading = false
                 }
               } catch (error) {
-                console.error('登录错误：', error)
+                console.error('注册错误：', error)
                 ELEMENT.Message({
-                  message: error.message || '登录异常，请稍后重试',
+                  message: error.message || '注册异常，请稍后重试',
                   type: 'error'
                 })
                 this.loading = false

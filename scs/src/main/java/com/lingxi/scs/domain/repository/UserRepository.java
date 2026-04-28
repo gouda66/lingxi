@@ -28,6 +28,11 @@ public interface UserRepository {
     Optional<User> findByPhone(String phone);
 
     /**
+     * 根据账号查询用户
+     */
+    Optional<User> findByUsername(String username);
+
+    /**
      * 查询所有用户
      */
     List<User> findAll();

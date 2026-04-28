@@ -5,6 +5,7 @@ import co.paralleluniverse.fibers.SuspendExecution;
 import co.paralleluniverse.strands.Strand;
 import com.lingxi.scs.application.service.UserApplicationService;
 import com.lingxi.scs.common.result.R;
+import com.lingxi.scs.domain.model.entity.Employee;
 import com.lingxi.scs.domain.model.entity.User;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
@@ -53,26 +54,47 @@ public class UserController {
     }
 
     /**
-     * 移动端用户登录
+     * 用户登录
      */
     @PostMapping("/login")
     public R<User> login(@RequestBody Map<String, String> map, HttpSession session) {
         log.info("用户登录: {}", map);
-
-        String phone = map.get("phone");
-        String code = map.get("code");
-        // 从Session中获取保存的验证码
-        Object codeInSession = session.getAttribute(phone);
-        CompletableFuture completableFuture = new CompletableFuture();
-        // 验证码比对
-        if (codeInSession != null && codeInSession.equals(code)) {
-            // 登录成功，查询或创建用户
-            User user = userService.getOrCreateUserByPhone(phone);
+    
+        String username = map.get("username");
+        String password = map.get("password");
+        
+        try {
+            // 验证用户名和密码
+            User user = userService.login(username, password);
             session.setAttribute("user", user.getId());
             return R.success(user);
+        } catch (Exception e) {
+            log.error("登录失败: {}", e.getMessage());
+            return R.error(e.getMessage() != null ? e.getMessage() : "登录失败");
         }
-        return R.error("登录失败");
     }
+    
+    /**
+     * 用户注册
+     */
+    @PostMapping("/register")
+    public R<User> register(@RequestBody Map<String, String> map) {
+        log.info("用户注册: {}", map);
+    
+        String username = map.get("username");
+        String password = map.get("password");
+            
+        try {
+            // 注册用户
+            User user = userService.registerUser(username, password);
+            return R.success(user);
+        } catch (Exception e) {
+            log.error("注册失败: {}", e.getMessage());
+            return R.error(e.getMessage() != null ? e.getMessage() : "注册失败");
+        }
+    }
+
+
 
     /**
      * 用户退出
@@ -81,5 +103,21 @@ public class UserController {
     public R<String> logout(HttpSession session) {
         session.removeAttribute("user");
         return R.success("退出成功");
+    }
+
+    /**
+     * 检查登录状态
+     */
+    @GetMapping("/checkLogin")
+    public R<User> checkLogin(HttpSession session) {
+        Long userId = (Long) session.getAttribute("user");
+        if (userId != null) {
+            // 已登录，返回用户信息
+            User user = userService.getUserById(userId);
+            return R.success(user);
+        } else {
+            // 未登录
+            return R.error("未登录");
+        }
     }
 }

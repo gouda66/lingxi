@@ -18,25 +18,7 @@ CREATE TABLE `sys_user` (
     `role` INT NOT NULL DEFAULT 1 COMMENT '角色：1-面试者 2-HR 3-管理员',
     `status` TINYINT NOT NULL DEFAULT 0 COMMENT '状态：0-正常 1-禁用',
     `last_login_time` DATETIME DEFAULT NULL COMMENT '最后登录时间',
-    `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
-    `updated_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
-    `deleted` TINYINT NOT NULL DEFAULT 0 COMMENT '逻辑删除：0-未删除 1-已删除',
-    `sex` TINYINT DEFAULT NULL COMMENT '性别：0-女 1-男 2-未知',
-    PRIMARY KEY (`id`),
-    UNIQUE KEY `uk_email` (`email`),
-    UNIQUE KEY `uk_user_name` (`user_name`),
-    KEY `idx_role_status` (`role`, `status`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='用户表';
-
--- 系统密钥配置表
-CREATE TABLE `system_secret_key` (
-    `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
-    `key_name` VARCHAR(64) NOT NULL COMMENT '密钥名称',
-    `key_value` TEXT NOT NULL COMMENT 'Base64 编码的密钥值',
-    `algorithm` VARCHAR(32) DEFAULT 'AES' COMMENT '加密算法',
-    `is_active` TINYINT DEFAULT 1 COMMENT '是否激活',
-    `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
-    `updated_at` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    `created_at` DATETIME NOT NULL DEFAULT C T_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     PRIMARY KEY (`id`),
     UNIQUE KEY `uk_key_name` (`key_name`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='系统密钥配置表';

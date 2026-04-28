@@ -3,6 +3,7 @@ package com.lingxi.scs.application.service;
 import cn.hutool.core.util.IdUtil;
 import co.paralleluniverse.common.util.ConcurrentSet;
 import com.lingxi.scs.common.exception.CustomException;
+import com.lingxi.scs.domain.model.entity.Employee;
 import com.lingxi.scs.domain.model.entity.User;
 import com.lingxi.scs.domain.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -82,6 +83,31 @@ public class UserApplicationService {
     private final UserRepository userRepository;
 
     /**
+     * 用户登录（通过账号和密码）
+     *
+     * @param username 账号
+     * @param password 密码
+     * @return 用户信息
+     */
+    public User login(String username, String password) {
+        // 查询用户
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new CustomException("账号或密码错误"));
+        
+        // 验证密码
+        if (!password.equals(user.getPassword())) {
+            throw new CustomException("账号或密码错误");
+        }
+        
+        // 检查用户状态
+        if (user.getStatus() == 0) {
+            throw new CustomException("账号已被禁用");
+        }
+        
+        return user;
+    }
+
+    /**
      * 根据手机号查询或创建用户
      *
      * @param phone 手机号
@@ -128,6 +154,28 @@ public class UserApplicationService {
     @Transactional
     public User updateUser(User user) {
         return userRepository.save(user);
+    }
+
+    /**
+     * 注册用户（通过账号和密码）
+     *
+     * @param username 账号
+     * @param password 密码
+     * @return 注册后的用户信息
+     */
+    @Transactional
+    public User registerUser(String username, String password) {
+        // 检查账号是否已注册
+        if (userRepository.findByUsername(username).isPresent()) {
+            throw new CustomException("该账号已注册");
+        }
+        
+        User newUser = new User();
+        newUser.setId(IdUtil.getSnowflakeNextId());
+        newUser.setUsername(username);
+        newUser.setPassword(password);
+        newUser.setStatus(1);
+        return userRepository.save(newUser);
     }
 
 

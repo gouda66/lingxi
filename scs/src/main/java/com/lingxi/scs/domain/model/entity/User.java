@@ -29,11 +29,19 @@ public class User implements Serializable {
     @JsonSerialize(using = ToStringSerializer.class)
     private Long id;
 
+    @Column(name = "username", unique = true, length = 50)
+    @Comment("账号")
+    private String username;
+
+    @Column(name = "password", length = 100)
+    @Comment("密码")
+    private String password;
+
     @Column(name = "name", length = 50)
     @Comment("姓名")
     private String name;
 
-    @Column(name = "phone", nullable = false, length = 100)
+    @Column(name = "phone", length = 100)
     @Comment("手机号")
     private String phone;
 

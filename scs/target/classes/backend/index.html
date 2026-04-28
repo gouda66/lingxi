@@ -444,14 +444,8 @@
         },
         computed: {},
         created() {
-          const userInfo = window.localStorage.getItem('userInfo')
-          if (userInfo) {
-            this.userInfo = JSON.parse(userInfo)
-            this.closeLoading()
-          } else {
-            // 未登录，直接跳转到登录页
-            window.location.href = '/backend/page/login/login.html'
-          }
+          // 检查登录状态
+          this.checkLoginStatus()
         },
         beforeDestroy() {
           this.timer = null
@@ -635,6 +629,29 @@
                 localStorage.removeItem('userInfo')
                 window.location.href = '/backend/page/login/login.html'
               }
+            })
+          },
+          checkLoginStatus() {
+            // 通过后端接口验证登录状态
+            fetch('/user/checkLogin', {
+              method: 'GET',
+              credentials: 'include' // 携带 cookie/session
+            })
+            .then(response => response.json())
+            .then(res => {
+              if (res.code === 1) {
+                // 已登录，获取用户信息
+                this.userInfo = res.data
+                this.closeLoading()
+              } else {
+                // 未登录，跳转到登录页
+                window.location.href = '/backend/page/login/login.html'
+              }
+            })
+            .catch(error => {
+              console.error('检查登录状态失败:', error)
+              // 出错也跳转到登录页
+              window.location.href = '/backend/page/login/login.html'
             })
           },
           goBack() {
