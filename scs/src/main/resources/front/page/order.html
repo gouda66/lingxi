@@ -18,7 +18,7 @@
         <link rel="stylesheet" href="./../styles/order.css" />
     </head>
     <body>
-        <div id="order" class="app">
+        <div id="order" class="app has-bottom-nav">
             <div class="divHead">
                 <div class="divTitle">
                     <i class="el-icon-arrow-left" @click="goBack"></i>菩提阁
@@ -57,6 +57,26 @@
                     <img src="./../images/no_order.png"/>
                     <div>暂无订单</div>
                 </div>
+            </div>
+            
+            <!-- 底部导航 -->
+            <div class="bottom-nav">
+              <div class="nav-item" @click="goToHome">
+                <div class="nav-icon">🏠</div>
+                <div class="nav-text">首页</div>
+              </div>
+              <div class="nav-item" @click="goToMenu">
+                <div class="nav-icon">🍽️</div>
+                <div class="nav-text">点餐</div>
+              </div>
+              <div class="nav-item active">
+                <div class="nav-icon">📋</div>
+                <div class="nav-text">订单</div>
+              </div>
+              <div class="nav-item" @click="toUserPage">
+                <div class="nav-icon">👤</div>
+                <div class="nav-text">我的</div>
+              </div>
             </div>
         </div>
         <!-- 开发环境版本，包含了有帮助的命令行警告 -->
@@ -117,9 +137,11 @@
                         if(records && Array.isArray(records)){
                             records.forEach(item=>{
                                 let number = 0
-                                item.orderDetails.forEach(ele=>{
-                                    number += ele.number
-                                })
+                                if(item.orderDetails && Array.isArray(item.orderDetails)){
+                                    item.orderDetails.forEach(ele=>{
+                                        number += ele.number
+                                    })
+                                }
                                 item.sumNum = number
                             })
                         }
@@ -163,6 +185,21 @@
 
                     }
                     return str
+                },
+                goToHome(){
+                    window.requestAnimationFrame(()=>{
+                        window.location.href= '/front/home.html'
+                    })
+                },
+                goToMenu(){
+                    window.requestAnimationFrame(()=>{
+                        window.location.href= '/front/menu.html'
+                    })
+                },
+                toUserPage(){
+                    window.requestAnimationFrame(()=>{
+                        window.location.href= '/front/page/user.html'
+                    })
                 }
             }
         })

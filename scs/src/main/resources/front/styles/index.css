@@ -132,3 +132,56 @@ i {
   text-align: left;
   color: #999999;
 }
+
+/* 底部导航栏公共样式 */
+.bottom-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  max-width: 750px;
+  margin: 0 auto;
+  background: #fff;
+  box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.08);
+  display: flex;
+  justify-content: space-around;
+  padding: 8px 0;
+  z-index: 1000;
+}
+
+.nav-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  padding: 4px 12px;
+}
+
+.nav-item:hover {
+  opacity: 0.7;
+}
+
+.nav-item.active {
+  color: #667eea;
+}
+
+.nav-icon {
+  font-size: 24px;
+}
+
+.nav-text {
+  font-size: 12px;
+  color: #666;
+}
+
+.nav-item.active .nav-text {
+  color: #667eea;
+  font-weight: bold;
+}
+
+/* 为有底部导航的页面添加底部留白 */
+.has-bottom-nav {
+  padding-bottom: 70px;
+}

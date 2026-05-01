@@ -16,7 +16,7 @@
     <link rel="stylesheet" href="./../styles/user.css" />
 </head>
 <body>
-    <div id="user" class="app">
+    <div id="user" class="app has-bottom-nav">
         <div class="divHead">
             <div class="divTitle">
                 <i class="el-icon-arrow-left" @click="goBack"></i>个人中心
@@ -48,17 +48,19 @@
                 <div class="timeStatus">
                     <span>{{formatTime(order[0].orderTime)}}</span>
                     <span>{{getStatus(order[0].status)}}</span>
-                    <!-- <span>正在派送</span> -->
                 </div>
-                <div class="dishList">
+                <div class="dishList" v-if="order[0].orderDetails && order[0].orderDetails.length > 0">
                     <div v-for="(item,index) in order[0].orderDetails" :key="index" class="item">
                         <span>{{item.name}}</span>
                         <span>x{{item.number}}</span>
                     </div>
                 </div>
+                <div class="dishList" v-else style="text-align: center; color: #999; padding: 10px;">
+                    暂无商品明细
+                </div>
                 <div class="result">
-                    <span>共{{order[0].sumNum}} 件商品,实付</span>
-                    <span class="price">￥{{order[0].amount}}</span>
+                    <span>共{{order[0].sumNum || 0}} 件商品,实付</span>
+                    <span class="price">￥{{(order[0].amount).toFixed(2)}}</span>
                 </div>
                 <div class="btn" v-if="order[0].status === 4">
                     <div class="btnAgain" @click="addOrderAgain">再来一单</div>
@@ -67,6 +69,26 @@
             <div class="quitLogin" @click="toPageLogin">
                 退出登录
             </div>
+        </div>
+        
+        <!-- 底部导航 -->
+        <div class="bottom-nav">
+          <div class="nav-item" @click="goToHome">
+            <div class="nav-icon">🏠</div>
+            <div class="nav-text">首页</div>
+          </div>
+          <div class="nav-item" @click="goToMenu">
+            <div class="nav-icon">🍽️</div>
+            <div class="nav-text">点餐</div>
+          </div>
+          <div class="nav-item" @click="toOrderPage">
+            <div class="nav-icon">📋</div>
+            <div class="nav-text">订单</div>
+          </div>
+          <div class="nav-item active">
+            <div class="nav-icon">👤</div>
+            <div class="nav-text">我的</div>
+          </div>
         </div>
     </div>
     <!-- 开发环境版本，包含了有帮助的命令行警告 -->
@@ -125,6 +147,16 @@
                     window.requestAnimationFrame(()=>{
                         window.location.href = '/front/page/order.html'
                     }) 
+                },
+                goToHome(){
+                    window.requestAnimationFrame(()=>{
+                        window.location.href = '/front/home.html'
+                    })
+                },
+                goToMenu(){
+                    window.requestAnimationFrame(()=>{
+                        window.location.href = '/front/menu.html'
+                    })
                 },
                 initData(){
                     this.getLatestOrder()

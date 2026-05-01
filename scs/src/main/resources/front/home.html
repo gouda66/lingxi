@@ -25,6 +25,8 @@
       .home-container {
         min-height: 100vh;
         padding-bottom: 70px;
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
       }
 
       /* 顶部横幅 */
@@ -168,6 +170,10 @@
         display: flex;
         flex-direction: column;
         gap: 12px;
+        max-height: calc(100vh - 500px);
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
+        padding-right: 4px;
       }
 
       .dish-item {
@@ -295,7 +301,7 @@
       .ai-assistant-btn {
         position: fixed;
         right: 20px;
-        bottom: 20px;
+        bottom: 100px;
         width: 50px;
         height: 50px;
         background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -512,7 +518,7 @@
     </style>
   </head>
   <body>
-    <div id="main" class="app">
+    <div id="main" class="app has-bottom-nav">
       <div class="home-container">
         <!-- 顶部横幅 -->
         <div class="banner"></div>
@@ -588,7 +594,7 @@
 
       <!-- AI 助手按钮 -->
       <div class="ai-assistant-btn" @click="toggleChat" title="AI 助手">
-        <span class="icon-ai"></span>
+        <span class="icon-ai">🤖</span>
       </div>
 
       <!-- AI 聊天对话框 -->

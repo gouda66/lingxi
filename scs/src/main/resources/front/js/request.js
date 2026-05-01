@@ -2,10 +2,10 @@
   axios.defaults.headers['Content-Type'] = 'application/json;charset=utf-8'
   // 创建axios实例
   const service = axios.create({
-    // axios中请求配置有baseURL选项，表示请求URL公共部分
+    // axios中请求配置有baseURL选项,表示请求URL公共部分
     baseURL: '/',
-    // 超时
-    timeout: 1000000
+    // 优化: 超时时间从1000000ms(16分钟)改为10000ms(10秒),避免长时间等待
+    timeout: 10000
   })
   // request拦截器
   service.interceptors.request.use(config => {

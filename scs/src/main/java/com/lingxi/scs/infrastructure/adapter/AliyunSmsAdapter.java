@@ -17,7 +17,7 @@ public class AliyunSmsAdapter implements SmsService {
     // 实际项目中这些配置应该从配置文件读取
     private static final String ACCESS_KEY_ID = "your-access-key-id";
     private static final String ACCESS_KEY_SECRET = "your-access-key-secret";
-    private static final String SIGN_NAME = "灵犀外卖";
+    private static final String SIGN_NAME = "晨哥外卖";
     private static final String VERIFICATION_CODE_TEMPLATE = "SMS_123456789";
     private static final String ORDER_NOTIFICATION_TEMPLATE = "SMS_987654321";
 

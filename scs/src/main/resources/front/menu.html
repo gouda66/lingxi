@@ -22,7 +22,7 @@
       .ai-assistant-btn {
         position: fixed;
         right: 20px;
-        bottom: 80px;
+        bottom: 120px;
         width: 50px;
         height: 50px;
         background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -59,9 +59,9 @@
       .ai-chat-dialog {
         position: fixed;
         right: 20px;
-        bottom: 140px;
-        width: 340px;
-        height: 500px;
+        bottom: 160px;
+        width: 300px;
+        height: 450px;
         background: #fff;
         border-radius: 12px;
         box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
@@ -435,6 +435,26 @@
             <img src="./images/close.png"/>
           </div>
         </van-dialog>
+
+        <!-- 底部导航 -->
+        <div class="bottom-nav">
+          <div class="nav-item" @click="goToHome">
+            <div class="nav-icon">🏠</div>
+            <div class="nav-text">首页</div>
+          </div>
+          <div class="nav-item active">
+            <div class="nav-icon">🍽️</div>
+            <div class="nav-text">点餐</div>
+          </div>
+          <div class="nav-item" @click="toOrderPage">
+            <div class="nav-icon">📋</div>
+            <div class="nav-text">订单</div>
+          </div>
+          <div class="nav-item" @click="toUserPage">
+            <div class="nav-icon">👤</div>
+            <div class="nav-text">我的</div>
+          </div>
+        </div>
 
         <!-- AI 助手按钮 -->
         <div class="ai-assistant-btn" @click="toggleChat" title="AI 助手">
@@ -894,6 +914,16 @@
                 window.location.href= '/front/page/user.html'
               })
             },
+            goToHome(){
+              window.requestAnimationFrame(()=>{
+                window.location.href= '/front/home.html'
+              })
+            },
+            toOrderPage(){
+              window.requestAnimationFrame(()=>{
+                window.location.href= '/front/page/order.html'
+              })
+            },
             async dishDetails(item){
               //先清除对象数据，如果不行的话dialog使用v-if
               this.detailsDialog.item = {}
@@ -951,7 +981,8 @@
             },
 
             callAIAPI(userMessage, messageIndex) {
-              fetch('http://120.76.242.12:8067/api/scs/chat', {
+              // 优化: 使用相对路径通过Nginx代理,而不是硬编码公网IP
+              fetch('/api/scs/chat', {
                 method: 'POST',
                 headers: {
                   'Content-Type': 'application/json'
