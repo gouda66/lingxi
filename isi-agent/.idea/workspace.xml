@@ -2,13 +2,34 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="9a866ca0-5629-4b1f-9091-e9ed330aae34" name="更改" comment="">
+      <change beforePath="$PROJECT_DIR$/../.idea/sqldialects.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../.idea/sqldialects.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../isi/src/main/resources/db/isi.sql" beforeDir="false" afterPath="$PROJECT_DIR$/../isi/src/main/resources/db/isi.sql" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../isi-web/src/views/interview/session/index.vue" beforeDir="false" afterPath="$PROJECT_DIR$/../isi-web/src/views/interview/session/index.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../isi-web/src/views/lock.vue" beforeDir="false" afterPath="$PROJECT_DIR$/../isi-web/src/views/lock.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../isi-web/src/views/login.vue" beforeDir="false" afterPath="$PROJECT_DIR$/../isi-web/src/views/login.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../isi-web/src/views/monitor/logininfor/index.vue" beforeDir="false" afterPath="$PROJECT_DIR$/../isi-web/src/views/monitor/logininfor/index.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../isi-web/src/views/register.vue" beforeDir="false" afterPath="$PROJECT_DIR$/../isi-web/src/views/register.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../isi-web/src/views/system/role/index.vue" beforeDir="false" afterPath="$PROJECT_DIR$/../isi-web/src/views/system/role/index.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../isi/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../isi/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../isi/src/main/java/com/lingxi/isi/models/dto/RegisterResponseDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/../isi/src/main/java/com/lingxi/isi/models/dto/RegisterResponseDTO.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../isi/src/main/java/com/lingxi/isi/models/dto/UserLoginDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/../isi/src/main/java/com/lingxi/isi/models/dto/UserLoginDTO.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../isi/src/main/java/com/lingxi/isi/utils/OssUploadUtils.java" beforeDir="false" afterPath="$PROJECT_DIR$/../isi/src/main/java/com/lingxi/isi/utils/OssUploadUtils.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../isi/src/main/resources/application.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/../isi/src/main/resources/application.yaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../scs/src/main/java/com/lingxi/scs/ScsApplication.java" beforeDir="false" afterPath="$PROJECT_DIR$/../scs/src/main/java/com/lingxi/scs/ScsApplication.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../scs/src/main/resources/backend/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/../scs/src/main/resources/backend/index.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../scs/src/main/resources/backend/styles/index.css" beforeDir="false" afterPath="$PROJECT_DIR$/../scs/src/main/resources/backend/styles/index.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../scs/target/classes/backend/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/../scs/target/classes/backend/index.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../scs/target/classes/backend/styles/index.css" beforeDir="false" afterPath="$PROJECT_DIR$/../scs/target/classes/backend/styles/index.css" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="CopilotPersistence">
+    <persistenceIdMap>
+      <entry key="_D:/study_project/lingxi/isi-agent" value="3BznDfXuQs69JEfLospLolKx8Qg" />
+    </persistenceIdMap>
   </component>
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
@@ -29,22 +50,22 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;ASKED_SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
-    &quot;FastAPI.isi-agent.executor&quot;: &quot;Debug&quot;,
-    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.typescript.service.memoryLimit.init&quot;: &quot;true&quot;,
-    &quot;codeWithMe.voiceChat.enabledByDefault&quot;: &quot;false&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
-    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable&quot;,
-    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "ASKED_SHARE_PROJECT_CONFIGURATION_FILES": "true",
+    "FastAPI.isi-agent.executor": "Debug",
+    "ModuleVcsDetector.initialDetectionPerformed": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "RunOnceActivity.typescript.service.memoryLimit.init": "true",
+    "codeWithMe.voiceChat.enabledByDefault": "false",
+    "git-widget-placeholder": "main",
+    "nodejs_package_manager_path": "npm",
+    "settings.editor.selected.configurable": "com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable",
+    "vue.rearranger.settings.migration": "true"
   }
-}</component>
+}]]></component>
   <component name="RunManager">
     <configuration name="isi-agent" type="Python.FastAPI">
       <option name="file" value="$PROJECT_DIR$/main.py" />
@@ -67,8 +88,8 @@
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
-        <option value="bundled-js-predefined-d6986cc7102b-3bd3a6803838-JavaScript-PY-261.22158.340" />
-        <option value="bundled-python-sdk-b63d5a1f7c97-b61e75351b1f-com.jetbrains.pycharm.pro.sharedIndexes.bundled-PY-261.22158.340" />
+        <option value="bundled-js-predefined-d6986cc7102b-31caf2ab9e3c-JavaScript-PY-261.23567.174" />
+        <option value="bundled-python-sdk-024ed6589d45-c2ffad84badb-com.jetbrains.pycharm.pro.sharedIndexes.bundled-PY-261.23567.174" />
       </set>
     </attachedChunks>
   </component>
@@ -98,6 +119,8 @@
       <workItem from="1776212649616" duration="2015000" />
       <workItem from="1776259767438" duration="7399000" />
       <workItem from="1776771246554" duration="476000" />
+      <workItem from="1777561762588" duration="1216000" />
+      <workItem from="1777601886119" duration="1792000" />
     </task>
     <servers />
   </component>
@@ -105,6 +128,14 @@
     <option name="version" value="3" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
-    <SUITE FILE_PATH="coverage/isi_agent$isi_agent.coverage" NAME="isi-agent 覆盖结果" MODIFIED="1775721325734" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="" />
+    <SUITE FILE_PATH="coverage/isi_agent$isi_agent.coverage" NAME="isi-agent 覆盖结果" MODIFIED="1777606936979" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="" />
+  </component>
+  <component name="github-copilot-workspace">
+    <instructionFileLocations>
+      <option value=".github/instructions" />
+    </instructionFileLocations>
+    <promptFileLocations>
+      <option value=".github/prompts" />
+    </promptFileLocations>
   </component>
 </project>

@@ -17,6 +17,226 @@
     <link rel="stylesheet" href="styles/index.css" />
     <!--本页面内容的样式-->
     <link rel="stylesheet" href="styles/main.css" />
+    <style>
+      /* AI 助手样式 */
+      .ai-assistant-btn {
+        position: fixed;
+        right: 20px;
+        bottom: 80px;
+        width: 50px;
+        height: 50px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border-radius: 50%;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        transition: all 0.3s ease;
+        z-index: 9999;
+        animation: pulse 2s infinite;
+      }
+
+      .ai-assistant-btn:hover {
+        transform: scale(1.1);
+        box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+      }
+
+      .ai-assistant-btn .icon-ai {
+        font-size: 24px;
+        filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
+      }
+
+      @keyframes pulse {
+        0%, 100% {
+          box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        }
+        50% {
+          box-shadow: 0 4px 25px rgba(102, 126, 234, 0.6);
+        }
+      }
+
+      .ai-chat-dialog {
+        position: fixed;
+        right: 20px;
+        bottom: 140px;
+        width: 340px;
+        height: 500px;
+        background: #fff;
+        border-radius: 12px;
+        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+        z-index: 9998;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+        animation: slideIn 0.3s ease;
+      }
+
+      @keyframes slideIn {
+        from {
+          opacity: 0;
+          transform: translateY(20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .ai-chat-header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: #fff;
+        padding: 14px 18px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+
+      .ai-chat-header h3 {
+        margin: 0;
+        font-size: 15px;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+      }
+
+      .ai-chat-header .close-btn {
+        cursor: pointer;
+        font-size: 20px;
+        opacity: 0.8;
+        transition: opacity 0.2s;
+      }
+
+      .ai-chat-header .close-btn:hover {
+        opacity: 1;
+      }
+
+      .ai-chat-messages {
+        flex: 1;
+        padding: 14px;
+        overflow-y: auto;
+        background: #f5f7fa;
+      }
+
+      .ai-message {
+        margin-bottom: 14px;
+        display: flex;
+        flex-direction: column;
+      }
+
+      .ai-message.user {
+        align-items: flex-end;
+      }
+
+      .ai-message.assistant {
+        align-items: flex-start;
+      }
+
+      .message-bubble {
+        max-width: 80%;
+        padding: 10px 14px;
+        border-radius: 12px;
+        font-size: 13px;
+        line-height: 1.5;
+        word-wrap: break-word;
+      }
+
+      .ai-message.user .message-bubble {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: #fff;
+        border-bottom-right-radius: 4px;
+      }
+
+      .ai-message.assistant .message-bubble {
+        background: #fff;
+        color: #333;
+        border-bottom-left-radius: 4px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+      }
+
+      .message-time {
+        font-size: 11px;
+        color: #999;
+        margin-top: 4px;
+        padding: 0 4px;
+      }
+
+      .ai-chat-input {
+        padding: 14px;
+        background: #fff;
+        border-top: 1px solid #e8e8e8;
+        display: flex;
+        gap: 8px;
+      }
+
+      .ai-chat-input input {
+        flex: 1;
+        padding: 9px 12px;
+        border: 1px solid #dcdfe6;
+        border-radius: 20px;
+        outline: none;
+        font-size: 13px;
+        transition: border-color 0.2s;
+      }
+
+      .ai-chat-input input:focus {
+        border-color: #667eea;
+      }
+
+      .ai-chat-input button {
+        width: 36px;
+        height: 36px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        border-radius: 50%;
+        color: #fff;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.2s;
+      }
+
+      .ai-chat-input button:hover {
+        transform: scale(1.05);
+      }
+
+      .ai-chat-input button:active {
+        transform: scale(0.95);
+      }
+
+      .typing-indicator {
+        display: flex;
+        gap: 4px;
+        padding: 10px 14px;
+      }
+
+      .typing-indicator span {
+        width: 7px;
+        height: 7px;
+        background: #999;
+        border-radius: 50%;
+        animation: typing 1.4s infinite;
+      }
+
+      .typing-indicator span:nth-child(2) {
+        animation-delay: 0.2s;
+      }
+
+      .typing-indicator span:nth-child(3) {
+        animation-delay: 0.4s;
+      }
+
+      @keyframes typing {
+        0%, 60%, 100% {
+          transform: translateY(0);
+        }
+        30% {
+          transform: translateY(-8px);
+        }
+      }
+    </style>
   </head>
   <body>
     <div id="main" class="app">
@@ -57,7 +277,7 @@
                 <div class="divName">{{item.name}}</div>
                 <div class="divDesc">{{item.description}}</div>
                 <div class="divDesc">{{'月销' + (item.saleNum ? item.saleNum : 0)  }}</div>
-                <div class="divBottom"><span>￥</span><span>{{item.price/100}}</span></div>
+                <div class="divBottom"><span>￥</span><span>{{item.price}}</span></div>
                 <div class="divNum">
                   <div class="divSubtract" v-if="item.number > 0">
                     <img src="./images/subtract.png" @click.prevent.stop="subtractCart(item)"/>
@@ -101,7 +321,7 @@
             </div>
           </div>
           <div class="divBottom">
-            <div><span class="spanMoney">￥</span>{{dialogFlavor.price/100}}</div>
+            <div><span class="spanMoney">￥</span>{{dialogFlavor.price}}</div>
             <div @click="dialogFlavorAddCart">加入购物车</div>
           </div>
           <div class="divFlavorClose" @click="dialogFlavor.show = false">
@@ -157,7 +377,7 @@
           </div>
           <div class="divNum">
             <div class="left">
-              <span>￥</span><span>{{detailsDialog.item.price/100}}</span>
+              <span>￥</span><span>{{detailsDialog.item.price}}</span>
             </div>
             <div class="right">
                 <div class="divSubtract" v-if="detailsDialog.item.number > 0">
@@ -190,7 +410,7 @@
                 </el-image>
                 <div class="divSubTitle">{{item.name + '(' + item.copies + '份)' }}
                   <div class="divPrice">
-                    <span>￥</span><span>{{item.price/100}}</span>
+                    <span>￥</span><span>{{item.price}}</span>
                   </div>
                 </div>                
                 <div class="content">{{item.description}}</div>
@@ -198,7 +418,7 @@
             </div>
           <div class="divNum">
               <div class="left">
-                <span>￥</span><span>{{setMealDialog.item.price/100}}</span>
+                <span>￥</span><span>{{setMealDialog.item.price}}</span>
               </div>
               <div class="right">
                   <div class="divSubtract" v-if="setMealDialog.item.number > 0">
@@ -215,6 +435,54 @@
             <img src="./images/close.png"/>
           </div>
         </van-dialog>
+
+        <!-- AI 助手按钮 -->
+        <div class="ai-assistant-btn" @click="toggleChat" title="AI 助手">
+          <span class="icon-ai">🤖</span>
+        </div>
+
+        <!-- AI 聊天对话框 -->
+        <div class="ai-chat-dialog" v-if="showChat">
+          <div class="ai-chat-header">
+            <h3>
+              <span>🤖</span>
+              AI 智能助手
+            </h3>
+            <span class="close-btn" @click="toggleChat">×</span>
+          </div>
+
+          <div class="ai-chat-messages" ref="messagesContainer">
+            <div
+              v-for="(msg, index) in messages"
+              :key="index"
+              class="ai-message"
+              :class="msg.role"
+            >
+              <div class="message-bubble">{{ msg.content }}</div>
+              <div class="message-time">{{ msg.time }}</div>
+            </div>
+
+            <div v-if="isTyping" class="ai-message assistant">
+              <div class="typing-indicator">
+                <span></span>
+                <span></span>
+                <span></span>
+              </div>
+            </div>
+          </div>
+
+          <div class="ai-chat-input">
+            <input
+              type="text"
+              v-model="inputMessage"
+              placeholder="输入消息..."
+              @keyup.enter="sendMessage"
+            />
+            <button @click="sendMessage">
+              <span style="font-size: 16px;">➤</span>
+            </button>
+          </div>
+        </div>
     </div>
         <!-- 开发环境版本，包含了有帮助的命令行警告 -->
         <script src="../backend/plugins/vue/vue.js"></script>
@@ -256,6 +524,17 @@
                 show:false,
                 item:{}
               },
+              // AI 助手相关
+              showChat: false,
+              inputMessage: '',
+              isTyping: false,
+              messages: [
+                {
+                  role: 'assistant',
+                  content: '您好！我是 AI 智能助手，有什么可以帮助您的吗？我可以回答关于菜品推荐、订单查询、配送时间等问题。',
+                  time: this.getCurrentTime()
+                }
+              ]
             }
           },
           computed:{
@@ -273,7 +552,9 @@
             goodsPrice(){
               let price = 0
               this.cartData.forEach(item=>{
-                price += (item.number * item.amount)
+                if(item.amount) {
+                  price += (item.number * item.amount)
+                }
               })
               return price
             }
@@ -386,12 +667,13 @@
             //菜单中往购物车中添加商品
             async addCart(item){
               let params = {
-                amount:item.price/100,//金额
+                amount:item.price,//金额
                 dishFlavor:item.dishFlavor,//口味  如果没有传undefined
                 dishId:undefined,//菜品id
                 setmealId:undefined,//套餐id
                 name:item.name,
-                image:item.image
+                image:item.image,
+                number:1  // 默认添加数量为1
               }
               if(Array.isArray(item.flavors)){//表示是菜品
                 params.dishId = item.id
@@ -400,13 +682,17 @@
               }
               const res = await addCartApi(params)
               if(res.code === 1){
+                // 根据返回的购物车数据更新dishList中的数量
+                const cartItem = res.data;
                 this.dishList.forEach(dish=>{
-                  if(dish.id === item.id){
-                    dish.number = res.data.number
+                  // 通过dishId或setmealId匹配
+                  if((cartItem.dishId && dish.id === cartItem.dishId) || 
+                     (cartItem.setmealId && dish.id === cartItem.setmealId)){
+                    dish.number = cartItem.number
                   }
                 })
                 if(this.setMealDialog.show){
-                  item.number = res.data.number
+                  item.number = cartItem.number
                 }
                 this.getCartData()
               }else{
@@ -426,15 +712,30 @@
                 }
                 const res = await updateCartApi(params)
                 if(res.code === 1){
-                this.dishList.forEach(dish=>{
-                  if(dish.id === item.id){
-                    dish.number = (res.data.number === 0 ? undefined : res.data.number)
+                  // 根据返回的购物车数据更新dishList中的数量
+                  if(res.data) {
+                    const cartItem = res.data;
+                    this.dishList.forEach(dish=>{
+                      if((cartItem.dishId && dish.id === cartItem.dishId) || 
+                         (cartItem.setmealId && dish.id === cartItem.setmealId)){
+                        dish.number = (cartItem.number === 0 ? undefined : cartItem.number)
+                      }
+                    })
+                    if(this.setMealDialog.show){
+                      item.number = (cartItem.number === 0 ? undefined : cartItem.number)
+                    }
+                  } else {
+                    // 如果返回null，说明购物车项已删除
+                    this.dishList.forEach(dish=>{
+                      if(dish.id === item.id){
+                        dish.number = undefined
+                      }
+                    })
+                    if(this.setMealDialog.show){
+                      item.number = undefined
+                    }
                   }
-                })
-                if(this.setMealDialog.show){
-                  item.number = (res.data.number === 0 ? undefined : res.data.number)
-                }
-                this.getCartData()
+                  this.getCartData()
                 }else{
                   this.$notify({ type:'warning', message:res.msg});
                 }
@@ -454,13 +755,17 @@
                 dishId:item.dishId,//菜品id
                 setmealId:item.setmealId,//套餐id
                 name:item.name,
-                image:item.image
+                image:item.image,
+                number:1  // 每次增加1个
               }
               const res = await addCartApi(params)
               if(res.code === 1){
+                // 根据返回的购物车数据更新dishList中的数量
+                const cartItem = res.data;
                 this.dishList.forEach(dish=>{
-                  if(dish.id === (item.dishId || item.setmealId)){
-                    dish.number = res.data.number
+                  if((cartItem.dishId && dish.id === cartItem.dishId) || 
+                     (cartItem.setmealId && dish.id === cartItem.setmealId)){
+                    dish.number = cartItem.number
                   }
                 })
                 console.log(this.dishList)
@@ -477,12 +782,24 @@
                 }
                 const res = await updateCartApi(params)
                 if(res.code === 1){
-                this.dishList.forEach(dish=>{
-                  if(dish.id === (item.dishId || item.setmealId)){
-                    dish.number = (res.data.number === 0 ? undefined : res.data.number)
+                  // 根据返回的购物车数据更新dishList中的数量
+                  if(res.data) {
+                    const cartItem = res.data;
+                    this.dishList.forEach(dish=>{
+                      if((cartItem.dishId && dish.id === cartItem.dishId) || 
+                         (cartItem.setmealId && dish.id === cartItem.setmealId)){
+                        dish.number = (cartItem.number === 0 ? undefined : cartItem.number)
+                      }
+                    })
+                  } else {
+                    // 如果返回null，说明购物车项已删除
+                    this.dishList.forEach(dish=>{
+                      if(dish.id === (item.dishId || item.setmealId)){
+                        dish.number = undefined
+                      }
+                    })
                   }
-                })
-                this.getCartData()
+                  this.getCartData()
                 }else{
                   this.$notify({ type:'warning', message:res.msg});
                 }
@@ -595,6 +912,144 @@
                 }
               }
 
+            },
+            // AI 助手相关方法
+            toggleChat() {
+              this.showChat = !this.showChat;
+              if (this.showChat) {
+                this.$nextTick(() => {
+                  this.scrollToBottom();
+                });
+              }
+            },
+
+            sendMessage() {
+              const message = this.inputMessage.trim();
+              if (!message) return;
+
+              // 添加用户消息
+              this.messages.push({
+                role: 'user',
+                content: message,
+                time: this.getCurrentTime()
+              });
+
+              this.inputMessage = '';
+              this.isTyping = true;
+              this.scrollToBottom();
+
+              // 创建 AI 回复消息占位
+              const aiMessageIndex = this.messages.length;
+              this.messages.push({
+                role: 'assistant',
+                content: '',
+                time: this.getCurrentTime()
+              });
+
+              // 调用后端 AI 接口（流式响应）
+              this.callAIAPI(message, aiMessageIndex);
+            },
+
+            callAIAPI(userMessage, messageIndex) {
+              fetch('http://120.76.242.12:8067/api/scs/chat', {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                  message: userMessage
+                })
+              })
+              .then(response => {
+                if (!response.ok) {
+                  throw new Error(`HTTP error! status: ${response.status}`);
+                }
+            
+                const reader = response.body.getReader();
+                const decoder = new TextDecoder('utf-8');
+                let accumulatedText = '';
+                let buffer = ''; // 添加缓冲区处理不完整的数据块
+            
+                const readStream = () => {
+                  return reader.read().then(({ done, value }) => {
+                    if (done) {
+                      this.isTyping = false;
+                      this.scrollToBottom();
+                      return;
+                    }
+            
+                    // 解码数据块并添加到缓冲区
+                    buffer += decoder.decode(value, { stream: true });
+            
+                    // 按行分割处理
+                    const lines = buffer.split('\n');
+                              
+                    // 保留最后一个可能不完整的行
+                    buffer = lines.pop() || '';
+            
+                    // 处理每一行
+                    lines.forEach(line => {
+                      const trimmedLine = line.trim();
+                                
+                      // 跳过空行
+                      if (!trimmedLine) return;
+            
+                      // 处理 SSE 格式的数据行 (data:xxx)
+                      if (trimmedLine.startsWith('data:')) {
+                        const data = trimmedLine.substring(5);
+                                  
+                        // 只有当 data 不为空时才追加
+                        if (data !== '') {
+                          accumulatedText += data;
+                                    
+                          // 实时更新消息内容
+                          this.$set(this.messages[messageIndex], 'content', accumulatedText);
+                          this.scrollToBottom();
+                        }
+                      }
+                    });
+            
+                    // 继续读取下一块
+                    return readStream();
+                  });
+                };
+            
+                return readStream();
+              })
+              .catch(error => {
+                console.error('AI 接口调用失败:', error);
+                this.isTyping = false;
+            
+                // 如果出错,显示错误信息
+                if (this.messages[messageIndex]) {
+                  this.$set(this.messages[messageIndex], 'content',
+                    '抱歉,服务暂时不可用,请稍后重试。');
+                } else {
+                  this.messages.push({
+                    role: 'assistant',
+                    content: '抱歉,服务暂时不可用,请稍后重试。',
+                    time: this.getCurrentTime()
+                  });
+                }
+            
+                this.scrollToBottom();
+              });
+            },
+
+            getCurrentTime() {
+              const now = new Date();
+              const hours = String(now.getHours()).padStart(2, '0');
+              const minutes = String(now.getMinutes()).padStart(2, '0');
+              return `${hours}:${minutes}`;
+            },
+
+            scrollToBottom() {
+              this.$nextTick(() => {
+                const container = this.$refs.messagesContainer;
+                if (container) {
+                  container.scrollTop = container.scrollHeight;
+                }
+              });
             }
 
           }

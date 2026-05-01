@@ -26,7 +26,7 @@ public class RegisterResponseDTO {
     /**
      * 真实姓名
      */
-    private String nickName;
+    private String realName;
     
     /**
      * 邮箱

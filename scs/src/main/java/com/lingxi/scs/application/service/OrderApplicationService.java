@@ -1,5 +1,6 @@
 package com.lingxi.scs.application.service;
 
+import cn.hutool.core.util.IdUtil;
 import com.lingxi.scs.common.exception.CustomException;
 import com.lingxi.scs.domain.model.entity.OrderDetail;
 import com.lingxi.scs.domain.model.entity.Orders;
@@ -49,6 +50,9 @@ public class OrderApplicationService {
             throw new CustomException("购物车为空，不能下单");
         }
 
+        // 生成订单ID
+        orders.setId(IdUtil.getSnowflakeNextId());
+        
         // 生成订单号
         orders.setNumber(UUID.randomUUID().toString().replace("-", "").substring(0, 20));
         orders.setUserId(userId);
@@ -69,6 +73,8 @@ public class OrderApplicationService {
         List<OrderDetail> orderDetails = cartList.stream()
                 .map(cart -> {
                     OrderDetail detail = new OrderDetail();
+                    // 生成订单明细ID
+                    detail.setId(IdUtil.getSnowflakeNextId());
                     detail.setOrderId(savedOrder.getId());
                     detail.setName(cart.getName());
                     detail.setDishId(cart.getDishId());
@@ -96,6 +102,19 @@ public class OrderApplicationService {
      */
     public List<Orders> getUserOrders(Long userId) {
         return orderRepository.findByUserId(userId);
+    }
+
+    /**
+     * 分页查询用户订单
+     *
+     * @param userId 用户ID
+     * @param page 页码（从1开始）
+     * @param pageSize 每页大小
+     * @return 分页订单数据
+     */
+    public Page<Orders> getUserOrderPage(Long userId, int page, int pageSize) {
+        Pageable pageable = PageRequest.of(page - 1, pageSize, Sort.by(Sort.Direction.DESC, "orderTime"));
+        return orderRepository.findByUserId(userId, pageable);
     }
 
     /**

@@ -41,7 +41,9 @@ public class LoginCheckFilter implements Filter {
     private static final Set<String> WHITE_LIST = Set.of(
             "/employee/login",
             "/user/register",
+            "/user/loginout",
             "/employee/logout",
+            "/user/logout",
             "/backend/**",
             "/front/**",
             "/common/**",

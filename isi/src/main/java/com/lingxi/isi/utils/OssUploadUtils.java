@@ -66,43 +66,23 @@ public class OssUploadUtils {
             String uniqueId = UUID.randomUUID().toString().replace("-", "");
             String fileName = new File(uploadFilePath).getName();
             String checkpointFile = checkpointDir + File.separator + fileName + "." + uniqueId + ".ucp";
-            
+
             ObjectMetadata meta = new ObjectMetadata();
-            // 指定上传的内容类型
-            // meta.setContentType("image/jpeg");
-    
-            // 文件上传时设置访问权限 ACL
-            // meta.setObjectAcl(CannedAccessControlList.Private);
-    
             // 通过 UploadFileRequest 设置多个参数
             UploadFileRequest uploadFileRequest = new UploadFileRequest(bucket, finalObjectKey);
-    
-            // 通过 UploadFileRequest 设置单个参数
             // 填写本地文件的完整路径
             uploadFileRequest.setUploadFile(uploadFilePath);
-                
             // 指定上传并发线程数，默认值为 1
             uploadFileRequest.setTaskNum(5);
-                
             // 指定上传的分片大小，单位为字节，取值范围为 100 KB~5 GB。默认值为 100 KB
             uploadFileRequest.setPartSize(1024 * 1024); // 1MB
-                
             // 开启断点续传，默认关闭
             uploadFileRequest.setEnableCheckpoint(true);
-                
             // 记录本地分片上传结果的文件。上传过程中的进度信息会保存在该文件中
-            // 如果某一分片上传失败，再次上传时会根据文件中记录的点继续上传
-            // 上传完成后，该文件会被删除
-            // 如果未设置该值，默认与待上传的本地文件同路径，名称为${uploadFile}.ucp
             uploadFileRequest.setCheckpointFile(checkpointFile);
                 
             // 文件的元数据
             uploadFileRequest.setObjectMetadata(meta);
-                
-            // 设置上传回调，参数为 Callback 类型
-            // uploadFileRequest.setCallback("yourCallbackEvent");
-    
-            // 断点续传上传
             ossClient.uploadFile(uploadFileRequest);
                 
             System.out.println("文件上传成功！OSS 路径：" + finalObjectKey);

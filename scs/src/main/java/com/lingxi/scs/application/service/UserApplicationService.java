@@ -108,6 +108,18 @@ public class UserApplicationService {
     }
 
     /**
+     * 用户登录（通过手机号）
+     *
+     * @param phone 手机号
+     * @return 用户信息
+     */
+    @Transactional
+    public User loginByPhone(String phone) {
+        // 根据手机号查询或创建用户
+        return getOrCreateUserByPhone(phone);
+    }
+
+    /**
      * 根据手机号查询或创建用户
      *
      * @param phone 手机号

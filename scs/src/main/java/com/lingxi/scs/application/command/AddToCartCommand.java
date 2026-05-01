@@ -36,11 +36,10 @@ public class AddToCartCommand {
     private String dishFlavor;
 
     /**
-     * 数量
+     * 数量（默认为1）
      */
-    @NotNull(message = "数量不能为空")
     @Min(value = 1, message = "数量至少为1")
-    private Integer number;
+    private Integer number = 1;
 
     /**
      * 验证命令的业务规则

@@ -12,4 +12,4 @@ public class ScsApplication {
         SpringApplication.run(ScsApplication.class, args);
     }
 
-}
+} 

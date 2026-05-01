@@ -127,7 +127,9 @@
                     goodsPrice(){
                     let price = 0
                     this.cartData.forEach(item=>{
-                        price += (item.number * item.amount)
+                        if(item.amount) {
+                            price += (item.number * item.amount)
+                        }
                     })
                     return price
                     }

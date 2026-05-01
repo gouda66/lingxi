@@ -53,6 +53,22 @@ public class OrderController {
     }
 
     /**
+     * 分页查询用户订单
+     *
+     * @param page 页码
+     * @param pageSize 每页大小
+     * @return 分页订单数据
+     */
+    @GetMapping("/userPage")
+    public R<Page<Orders>> userPage(@RequestParam(defaultValue = "1") int page,
+                                     @RequestParam(defaultValue = "10") int pageSize) {
+        log.info("分页查询用户订单，页码：{}, 每页大小：{}", page, pageSize);
+        Long userId = BaseContext.getCurrentId();
+        Page<Orders> orderPage = orderService.getUserOrderPage(userId, page, pageSize);
+        return R.success(orderPage);
+    }
+
+    /**
      * 查询订单详情
      */
     @GetMapping("/{orderId}/detail")

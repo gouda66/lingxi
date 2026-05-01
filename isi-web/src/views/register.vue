@@ -2,9 +2,9 @@
   <div class="register">
     <el-form ref="registerRef" :model="registerForm" :rules="registerRules" class="register-form">
       <h3 class="title">{{ title }}</h3>
-      <el-form-item prop="username">
+      <el-form-item prop="userName">
         <el-input 
-          v-model="registerForm.username" 
+          v-model="registerForm.userName"
           type="text" 
           size="large" 
           auto-complete="off" 
@@ -87,7 +87,7 @@ const router = useRouter()
 const { proxy } = getCurrentInstance()
 
 const registerForm = ref({
-  username: "",
+  userName: "",
   password: "",
   confirmPassword: "",
   code: "",
@@ -103,7 +103,7 @@ const equalToPassword = (rule, value, callback) => {
 }
 
 const registerRules = {
-  username: [
+  userName: [
     { required: true, trigger: "blur", message: "请输入您的账号" },
     { min: 2, max: 20, message: "用户账号长度必须介于 2 和 20 之间", trigger: "blur" }
   ],
@@ -128,8 +128,8 @@ function handleRegister() {
     if (valid) {
       loading.value = true
       register(registerForm.value).then(res => {
-        const username = registerForm.value.username
-        ElMessageBox.alert("<font color='red'>恭喜你，您的账号 " + username + " 注册成功！</font>", "系统提示", {
+        const userName = registerForm.value.userName
+        ElMessageBox.alert("<font color='red'>恭喜你，您的账号 " + userName + " 注册成功！</font>", "系统提示", {
           dangerouslyUseHTMLString: true,
           type: "success",
         }).then(() => {

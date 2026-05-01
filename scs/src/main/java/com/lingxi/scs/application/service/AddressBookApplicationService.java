@@ -1,5 +1,6 @@
 package com.lingxi.scs.application.service;
 
+import cn.hutool.core.util.IdUtil;
 import com.lingxi.scs.domain.model.entity.AddressBook;
 import com.lingxi.scs.domain.repository.AddressBookRepository;
 import com.lingxi.scs.domain.service.AddressBookDomainService;
@@ -34,6 +35,9 @@ public class AddressBookApplicationService {
      */
     @Transactional
     public AddressBook addAddress(AddressBook addressBook, Long userId) {
+        // 生成ID
+        addressBook.setId(IdUtil.getSnowflakeNextId());
+        
         addressBook.setUserId(userId);
         addressBook.setCreateTime(LocalDateTime.now());
         addressBook.setUpdateTime(LocalDateTime.now());

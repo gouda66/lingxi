@@ -24,6 +24,11 @@ public interface OrderJpaRepository extends JpaRepository<Orders, Long>, JpaSpec
     
     Page<Orders> findAll(Pageable pageable);
     
+    /**
+     * 根据用户ID分页查询订单
+     */
+    Page<Orders> findByUserId(Long userId, Pageable pageable);
+    
     default Page<Orders> findAllWithFilters(String number, LocalDateTime beginTime, 
                                              LocalDateTime endTime, Pageable pageable) {
         return findAll((org.springframework.data.jpa.domain.Specification<Orders>) (root, query, criteriaBuilder) -> {

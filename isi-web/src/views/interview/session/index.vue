@@ -128,7 +128,7 @@
           <!-- 用户信息标签 -->
           <div class="user-info-tag">
             <el-avatar :size="40" :src="userInfo.avatar" />
-            <span class="username">{{ userInfo.name }}</span>
+            <span class="userName">{{ userInfo.name }}</span>
             <el-tag size="small" :type="isHR ? 'warning' : 'success'">
               {{ isHR ? '面试官' : '面试者' }}
             </el-tag>
@@ -1465,7 +1465,7 @@ onUnmounted(() => {
     border: 1px solid rgba(255, 255, 255, 0.15);
     z-index: 10;
     
-    .username {
+    .userName {
       color: #fff;
       font-size: 14px;
       font-weight: 500;

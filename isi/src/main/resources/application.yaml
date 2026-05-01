@@ -9,12 +9,12 @@ spring:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://localhost:3306/isi?useUnicode=true&characterEncoding=utf8&useSSL=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true
     username: root
-    password: 65d762992c5f79eb
+    password: Zpg1314521@
   data:
     redis:
       host: localhost
       port: 6379
-      password: 123456@
+      password:
       database: 0
       timeout: 5000ms
       lettuce:

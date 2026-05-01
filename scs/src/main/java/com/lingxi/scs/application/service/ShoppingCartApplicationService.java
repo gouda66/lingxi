@@ -1,5 +1,6 @@
 package com.lingxi.scs.application.service;
 
+import cn.hutool.core.util.IdUtil;
 import com.lingxi.scs.application.command.AddToCartCommand;
 import com.lingxi.scs.application.dto.ShoppingCartDTO;
 import com.lingxi.scs.application.mapper.ShoppingCartMapper;
@@ -14,6 +15,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -75,10 +77,12 @@ public class ShoppingCartApplicationService {
             return shoppingCartRepository.save(existingCart);
         } else {
             ShoppingCart cart = new ShoppingCart();
+            cart.setId(IdUtil.getSnowflakeNextId());
             cart.setUserId(userId);
             cart.setDishId(dishId);
             cart.setName(dish.getName());
             cart.setImage(dish.getImage());
+            // 将分转换为元（除以100）
             cart.setAmount(dish.getPrice());
             cart.setNumber(number);
             cart.setDishFlavor(flavor);
@@ -107,11 +111,13 @@ public class ShoppingCartApplicationService {
             return shoppingCartRepository.save(existingCart);
         } else {
             ShoppingCart cart = new ShoppingCart();
+            cart.setId(IdUtil.getSnowflakeNextId());
             cart.setUserId(userId);
             cart.setSetmealId(setmealId);
             cart.setName(setmeal.getName());
             cart.setImage(setmeal.getImage());
-            cart.setAmount(setmeal.getPrice());
+            // 将分转换为元（除以100）
+            cart.setAmount(setmeal.getPrice().divide(new BigDecimal("100")));
             cart.setNumber(number);
             cart.setCreateTime(LocalDateTime.now());
             return shoppingCartRepository.save(cart);
@@ -142,23 +148,35 @@ public class ShoppingCartApplicationService {
     /**
      * 减少购物车项数量
      *
-     * @param cartId 购物车项ID
+     * @param dishId 菜品ID
+     * @param setmealId 套餐ID
      * @param userId 用户ID
-     * @return 更新后的DTO
+     * @return 更新后的DTO，如果数量为0则返回null表示已删除
      */
     @Transactional
-    public ShoppingCartDTO decreaseCartItem(Long cartId, Long userId) {
-        ShoppingCart cart = shoppingCartRepository.findById(cartId)
-                .orElseThrow(() -> new CustomException("购物车项不存在"));
+    public ShoppingCartDTO decreaseCartItem(Long dishId, Long setmealId, Long userId) {
+        // 根据dishId或setmealId查找购物车项
+        ShoppingCart cart;
+        if (dishId != null) {
+            cart = shoppingCartRepository.findByUserIdAndDishId(userId, dishId)
+                    .orElseThrow(() -> new CustomException("购物车项不存在"));
+        } else if (setmealId != null) {
+            cart = shoppingCartRepository.findByUserIdAndSetmealId(userId, setmealId)
+                    .orElseThrow(() -> new CustomException("购物车项不存在"));
+        } else {
+            throw new CustomException("菜品ID和套餐ID不能同时为空");
+        }
 
         if (!cart.getUserId().equals(userId)) {
             throw new CustomException("无权操作");
         }
 
         if (cart.getNumber() <= 1) {
-            shoppingCartRepository.deleteById(cartId);
+            // 数量为1或更少，直接删除
+            shoppingCartRepository.deleteById(cart.getId());
             return null;
         } else {
+            // 数量减1
             cart.setNumber(cart.getNumber() - 1);
             return shoppingCartMapper.toDTO(shoppingCartRepository.save(cart));
         }

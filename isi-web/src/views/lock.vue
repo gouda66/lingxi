@@ -13,7 +13,7 @@
         <img :src="userStore.avatar" class="lock-avatar" @error="onAvatarError" />
         <div class="lock-icon">🔒</div>
       </div>
-      <div class="lock-username">{{ userStore.nickName }}</div>
+      <div class="lock-userName">{{ userStore.nickName }}</div>
       <div class="lock-hint">系统已锁定，请输入密码解锁</div>
 
       <div class="input-wrap" :class="{ shake: isShaking }">
@@ -258,7 +258,7 @@ onBeforeUnmount(() => {
   backdrop-filter: blur(8px);
 }
 
-.lock-username {
+.lock-userName {
   color: #fff;
   font-size: 18px;
   font-weight: 600;

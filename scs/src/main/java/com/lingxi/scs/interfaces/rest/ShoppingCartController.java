@@ -10,6 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * 购物车管理
@@ -61,10 +62,15 @@ public class ShoppingCartController {
      * 减少购物车商品数量
      */
     @PostMapping("/sub")
-    public R<ShoppingCartDTO> sub(@RequestParam String cartId) {
-        log.info("减少购物车商品: {}", cartId);
+    public R<ShoppingCartDTO> sub(@RequestBody Map<String, Long> params) {
+        log.info("减少购物车商品: {}", params);
         Long userId = BaseContext.getCurrentId();
-        ShoppingCartDTO cart = shoppingCartService.decreaseCartItem(Long.parseLong(cartId), userId);
+        
+        // 获取dishId或setmealId
+        Long dishId = params.get("dishId");
+        Long setmealId = params.get("setmealId");
+        
+        ShoppingCartDTO cart = shoppingCartService.decreaseCartItem(dishId, setmealId, userId);
         return R.success(cart);
     }
 }

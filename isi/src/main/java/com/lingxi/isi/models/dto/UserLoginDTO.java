@@ -28,12 +28,12 @@ public class UserLoginDTO implements Serializable {
     /**
      * 用户名
      */
-    private String username;
+    private String userName;
 
     /**
      * 昵称
      */
-    private String nickname;
+    private String realName;
 
     /**
      * 邮箱
