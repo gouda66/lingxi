@@ -34,14 +34,20 @@
   box-shadow: 2px 0 6px rgba(0, 21, 41, 0.35);
   z-index: 1001;
 }
-
 .sidebar-container .logo-container {
-  height: 60px;
+  height: 150px;
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: #2b3a4d;
-  border-bottom: 1px solid #3e5068;
+  padding: 10px;
+}
+
+.sidebar-container .logo-container .logo-img {
+  width: 90px;
+  height: 90px;
+  margin-right: 12px;
+  border-radius: 8px;
+  object-fit: contain;
 }
 
 .sidebar-container .logo-container .logo-title {
@@ -53,9 +59,10 @@
 }
 
 .sidebar-container .el-menu {
+  top: -10px;
   border: none !important;
   background-color: #304156 !important;
-  height: calc(100% - 60px);
+  height: calc(100% - 100px);
 }
 
 .sidebar-container .el-menu-item {
@@ -341,6 +348,7 @@
 
 .el-menu {
   border: none;
+  top: 50px;
   height: 100%;
   width: 100% !important;
 }
