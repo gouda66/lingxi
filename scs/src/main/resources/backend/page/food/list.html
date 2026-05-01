@@ -58,7 +58,7 @@
           <template slot-scope="{ row }">
             <el-image style="width: auto; height: 40px; border:none;cursor: pointer;" 
             :src="getImage(row.image)" 
-            :preview-src-list="[ `/common/download?name=${row.image}` ]" >
+            :preview-src-list="getPreviewList(row.image)" >
             <div slot="error" class="image-slot">
               <img src="./../../images/noImg.png"  style="width: auto; height: 40px; border:none;" >
             </div>  
@@ -71,7 +71,7 @@
         ></el-table-column>
         <el-table-column label="售价">
           <template slot-scope="scope">
-            <span style="margin-right: 10px;">￥{{ scope.row.price/100 }}</span>
+            <span style="margin-right: 10px;">￥{{ scope.row.price }}</span>
           </template>
         </el-table-column>
         <el-table-column label="售卖状态">
@@ -179,7 +179,18 @@
             })
           },
           getImage (image) {
-            return `/common/download?name=${image}`
+            if (!image) {
+              return './../../images/noImg.png';
+            }
+            // 直接使用 OSS URL（不再经过后端下载接口）
+            return image;
+          },
+          getPreviewList (image) {
+            if (!image) {
+              return [];
+            }
+            // 直接使用 OSS URL（不再经过后端下载接口）
+            return [image];
           },
           handleQuery() {
             this.page = 1;

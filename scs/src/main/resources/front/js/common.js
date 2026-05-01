@@ -1,7 +1,15 @@
 var web_prefix = '/front'
 
 function imgPath(path){
-    return '/common/download?name=' + path
+    if (!path) {
+        return '/front/images/noImg.png';
+    }
+    // 如果已经是完整路径或http开头，直接返回
+    if (path.startsWith('http') || path.startsWith('/')) {
+        return path;
+    }
+    // 否则通过后端接口下载
+    return '/common/download?name=' + path;
 }
 
 //将url传参转换为数组

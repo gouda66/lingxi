@@ -338,13 +338,12 @@
               console.log(res)
               if (String(res.code) === '1') {
                 this.ruleForm = { ...res.data }
-                this.ruleForm.price = String(res.data.price/100)
+                this.ruleForm.price = String(res.data.price)
                 this.ruleForm.status = res.data.status == '1'
                 this.dishFlavors = res.data.flavors && res.data.flavors.map(obj => ({ ...obj, value: JSON.parse(obj.value),showOption: false }))
                 console.log('this.dishFlavors',this.dishFlavors)
-                // this.ruleForm.id = res.data.data.categoryId
-                // this.imageUrl = res.data.data.image
-                this.imageUrl = `/common/download?name=${res.data.image}`
+                // 直接使用 OSS URL 显示图片（不再经过后端下载接口）
+                this.imageUrl = res.data.image
               } else {
                 this.$message.error(res.msg || '操作失败')
               }
@@ -449,7 +448,7 @@
                 let params = {...this.ruleForm}
                 // params.flavors = this.dishFlavors
                 params.status = this.ruleForm ? 1 : 0
-                params.price *= 100
+                params.price
                 params.categoryId = this.ruleForm.categoryId
                 params.flavors = this.dishFlavors.map(obj => ({ ...obj, value: JSON.stringify(obj.value) }))
                 delete params.dishFlavors
@@ -506,11 +505,11 @@
           },
 
           handleAvatarSuccess (response, file, fileList) {
-            // 拼接down接口预览
+            // 直接使用 OSS URL 显示图片（不再经过后端下载接口）
             if(response.code === 0 && response.msg === '未登录'){
               window.top.location.href = '/backend/page/login/login.html'
             }else{
-              this.imageUrl = `/common/download?name=${response.data}`
+              this.imageUrl = response.data  // 直接使用 OSS URL
               this.ruleForm.image = response.data
             }
           },
@@ -518,16 +517,17 @@
           onChange (file) {
             if(file){
               const suffix = file.name.split('.')[1]
-              const size = file.size / 1024 / 1024 < 2
+              // 解除大小限制（原来限制 2MB）
+              // const size = file.size / 1024 / 1024 < 2
               if(['png','jpeg','jpg'].indexOf(suffix) < 0){
                 this.$message.error('上传图片只支持 png、jpeg、jpg 格式！')
                 this.$refs.upload.clearFiles()
                 return false
               }
-              if(!size){
-                this.$message.error('上传文件大小不能超过 2MB!')
-                return false
-              }
+              // if(!size){
+              //   this.$message.error('上传文件大小不能超过 2MB!')
+              //   return false
+              // }
               return file
             }
           },

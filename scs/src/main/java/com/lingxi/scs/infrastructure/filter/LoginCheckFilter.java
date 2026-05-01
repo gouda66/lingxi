@@ -42,6 +42,7 @@ public class LoginCheckFilter implements Filter {
             "/employee/login",
             "/user/register",
             "/user/loginout",
+            "/user/loginin",
             "/employee/logout",
             "/user/logout",
             "/backend/**",

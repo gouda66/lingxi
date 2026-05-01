@@ -1,5 +1,6 @@
 package com.lingxi.scs.interfaces.rest;
 
+import ch.qos.logback.core.util.MD5Util;
 import co.paralleluniverse.fibers.Fiber;
 import co.paralleluniverse.fibers.SuspendExecution;
 import co.paralleluniverse.strands.Strand;
@@ -117,15 +118,49 @@ public class UserController {
     }
 
     /**
-     * 用户登录（手机号验证码登录）
+     * 用户登录（用户名密码登录）
      */
     @PostMapping("/login")
     public R<User> login(@RequestBody Map<String, String> map, HttpSession session) {
         log.info("用户登录: {}", map);
-    
+
+        String username = map.get("username");
+        String password = map.get("password");
+        
+        // 参数校验
+        if (username == null || username.isEmpty()) {
+            return R.error("用户名不能为空");
+        }
+        if (password == null || password.isEmpty()) {
+            return R.error("密码不能为空");
+        }
+
+        try {
+            // 根据用户名和密码查询用户
+            User user = userService.login(username, password);
+            
+            if (user == null) {
+                return R.error("用户名或密码错误");
+            }
+
+            // 将用户ID保存到session
+            session.setAttribute("user", user.getId());
+
+            log.info("用户登录成功: username={}, userId={}", username, user.getId());
+            return R.success(user);
+        } catch (Exception e) {
+            log.error("登录失败: {}", e.getMessage());
+            return R.error(e.getMessage() != null ? e.getMessage() : "登录失败");
+        }
+    }
+
+    @PostMapping("/loginin")
+    public R<User> loginin(@RequestBody Map<String, String> map, HttpSession session) {
+        log.info("用户登录: {}", map);
+
         String phone = map.get("phone");
         String code = map.get("code");
-        
+
         // 参数校验
         if (phone == null || phone.isEmpty()) {
             return R.error("手机号不能为空");
@@ -133,29 +168,29 @@ public class UserController {
         if (code == null || code.isEmpty()) {
             return R.error("验证码不能为空");
         }
-        
+
         try {
             // 从session中获取之前发送的验证码
             String savedCode = (String) session.getAttribute(phone);
-            
+
             if (savedCode == null) {
                 return R.error("验证码已过期，请重新获取");
             }
-            
+
             // 验证验证码是否正确
             if (!savedCode.equals(code)) {
                 return R.error("验证码错误");
             }
-            
+
             // 验证码正确，根据手机号查询或创建用户
             User user = userService.loginByPhone(phone);
-            
+
             // 将用户ID保存到session
             session.setAttribute("user", user.getId());
-            
+
             // 清除session中的验证码（一次性使用）
             session.removeAttribute(phone);
-            
+
             log.info("用户登录成功: phone={}, userId={}", phone, user.getId());
             return R.success(user);
         } catch (Exception e) {

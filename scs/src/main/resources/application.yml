@@ -2,6 +2,13 @@ spring:
 
   application:
     name: scs-mcp-server
+  
+  # 文件上传大小配置（解除 2MB 限制）
+  servlet:
+    multipart:
+      max-file-size: 100MB      # 单个文件最大 100MB
+      max-request-size: 100MB   # 整个请求最大 100MB
+  
   dtp:
     executors:
       - poolName: dtpExecutor1
@@ -61,3 +68,11 @@ spring:
           static-locations: classpath:/backend/,classpath:/static/
 server:
   port: 8080
+
+# 文件上传路径配置
+lingxi:
+  upload-path: ./uploads/
+  # 阿里云 OSS 配置
+  oss:
+    bucket-name: scs2  # 替换成你实际的 Bucket 名称
+    endpoint: https://oss-cn-shenzhen.aliyuncs.com  # 替换成你实际的 Endpoint

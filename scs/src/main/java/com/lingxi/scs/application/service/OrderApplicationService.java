@@ -2,13 +2,16 @@ package com.lingxi.scs.application.service;
 
 import cn.hutool.core.util.IdUtil;
 import com.lingxi.scs.common.exception.CustomException;
+import com.lingxi.scs.domain.model.entity.AddressBook;
 import com.lingxi.scs.domain.model.entity.OrderDetail;
 import com.lingxi.scs.domain.model.entity.Orders;
 import com.lingxi.scs.domain.model.entity.ShoppingCart;
+import com.lingxi.scs.domain.repository.AddressBookRepository;
 import com.lingxi.scs.domain.repository.OrderDetailRepository;
 import com.lingxi.scs.domain.repository.OrderRepository;
 import com.lingxi.scs.domain.repository.ShoppingCartRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -27,6 +30,7 @@ import java.util.UUID;
  *
  * @author system
  */
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class OrderApplicationService {
@@ -34,6 +38,7 @@ public class OrderApplicationService {
     private final OrderRepository orderRepository;
     private final OrderDetailRepository orderDetailRepository;
     private final ShoppingCartRepository shoppingCartRepository;
+    private final AddressBookRepository addressBookRepository;
 
     /**
      * 提交订单
@@ -50,6 +55,10 @@ public class OrderApplicationService {
             throw new CustomException("购物车为空，不能下单");
         }
 
+        // 获取用户的默认地址
+        AddressBook defaultAddress = addressBookRepository.findDefaultByUserId(userId)
+                .orElseThrow(() -> new CustomException("请先添加收货地址"));
+
         // 生成订单ID
         orders.setId(IdUtil.getSnowflakeNextId());
         
@@ -59,6 +68,28 @@ public class OrderApplicationService {
         orders.setStatus(2); // 待派送
         orders.setOrderTime(LocalDateTime.now());
         orders.setCheckoutTime(LocalDateTime.now());
+        
+        // 填充用户地址信息
+        orders.setAddressBookId(defaultAddress.getId());
+        orders.setConsignee(defaultAddress.getConsignee());
+        orders.setPhone(defaultAddress.getPhone());
+        
+        // 组装完整地址
+        StringBuilder addressBuilder = new StringBuilder();
+        if (defaultAddress.getProvinceName() != null) {
+            addressBuilder.append(defaultAddress.getProvinceName());
+        }
+        if (defaultAddress.getCityName() != null) {
+            addressBuilder.append(defaultAddress.getCityName());
+        }
+        if (defaultAddress.getDistrictName() != null) {
+            addressBuilder.append(defaultAddress.getDistrictName());
+        }
+        if (defaultAddress.getDetail() != null) {
+            addressBuilder.append(defaultAddress.getDetail());
+        }
+        orders.setAddress(addressBuilder.toString());
+        orders.setUserName(defaultAddress.getConsignee());
 
         // 计算总金额
         BigDecimal totalAmount = cartList.stream()
@@ -164,7 +195,60 @@ public class OrderApplicationService {
     public Page<Orders> getOrderPage(int page, int pageSize, String number, 
                                       LocalDateTime beginTime, LocalDateTime endTime) {
         Pageable pageable = PageRequest.of(page - 1, pageSize, Sort.by(Sort.Direction.DESC, "orderTime"));
-        return orderRepository.findAllWithFilters(number, beginTime, endTime, pageable);
+        Page<Orders> orderPage = orderRepository.findAllWithFilters(number, beginTime, endTime, pageable);
+        
+        // 为每个订单补充用户信息（如果为空）
+        orderPage.forEach(order -> enrichOrderWithUserInfo(order));
+        
+        return orderPage;
+    }
+    
+    /**
+     * 补充订单的用户信息（如果为空）
+     */
+    private void enrichOrderWithUserInfo(Orders order) {
+        // 如果已有用户信息，则跳过
+        if (order.getUserName() != null && order.getPhone() != null && order.getAddress() != null) {
+            return;
+        }
+        
+        try {
+            // 查询用户的默认地址
+            AddressBook address = addressBookRepository.findDefaultByUserId(order.getUserId())
+                    .orElse(null);
+            
+            if (address != null) {
+                // 补充缺失的字段
+                if (order.getUserName() == null) {
+                    order.setUserName(address.getConsignee());
+                }
+                if (order.getConsignee() == null) {
+                    order.setConsignee(address.getConsignee());
+                }
+                if (order.getPhone() == null) {
+                    order.setPhone(address.getPhone());
+                }
+                if (order.getAddress() == null) {
+                    StringBuilder addressBuilder = new StringBuilder();
+                    if (address.getProvinceName() != null) {
+                        addressBuilder.append(address.getProvinceName());
+                    }
+                    if (address.getCityName() != null) {
+                        addressBuilder.append(address.getCityName());
+                    }
+                    if (address.getDistrictName() != null) {
+                        addressBuilder.append(address.getDistrictName());
+                    }
+                    if (address.getDetail() != null) {
+                        addressBuilder.append(address.getDetail());
+                    }
+                    order.setAddress(addressBuilder.toString());
+                }
+            }
+        } catch (Exception e) {
+            // 如果查询失败，记录日志但不影响主流程
+            log.warn("补充订单用户信息失败，orderId: {}", order.getId(), e);
+        }
     }
 
     public Map<String, Object> getStatistics() {

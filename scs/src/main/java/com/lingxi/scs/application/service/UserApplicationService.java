@@ -1,6 +1,7 @@
 package com.lingxi.scs.application.service;
 
 import cn.hutool.core.util.IdUtil;
+import cn.hutool.crypto.digest.BCrypt;
 import co.paralleluniverse.common.util.ConcurrentSet;
 import com.lingxi.scs.common.exception.CustomException;
 import com.lingxi.scs.domain.model.entity.Employee;
@@ -94,8 +95,8 @@ public class UserApplicationService {
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new CustomException("账号或密码错误"));
         
-        // 验证密码
-        if (!password.equals(user.getPassword())) {
+        // 验证密码（Hutool BCrypt 加密比对）
+        if (!BCrypt.checkpw(password, user.getPassword())) {
             throw new CustomException("账号或密码错误");
         }
         
@@ -185,7 +186,8 @@ public class UserApplicationService {
         User newUser = new User();
         newUser.setId(IdUtil.getSnowflakeNextId());
         newUser.setUsername(username);
-        newUser.setPassword(password);
+        // Hutool BCrypt 加密密码
+        newUser.setPassword(BCrypt.hashpw(password, BCrypt.gensalt()));
         newUser.setStatus(1);
         return userRepository.save(newUser);
     }
