@@ -6,6 +6,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0,user-scalable=no,minimal-ui">
     <title>素晨堂餐厅</title>
     <link rel="icon" href="images/favico.ico">
+    
+    <!-- DNS预解析 -->
+    <link rel="dns-prefetch" href="//120.76.242.12">
+    <link rel="preconnect" href="//120.76.242.12" crossorigin>
+    
+    <!-- 关键资源预加载 -->
+    <link rel="preload" href="../backend/plugins/vue/vue.min.js" as="script">
+    <link rel="preload" href="../backend/plugins/element-ui/index.css" as="style">
+    <link rel="preload" href="styles/vant.min.css" as="style">
     <!--不同屏幕尺寸根字体设置-->
     <script src="./js/base.js"></script>
     <!--element-ui的样式-->
@@ -526,20 +535,20 @@
         <!-- 商家信息卡片 -->
         <div class="shop-card">
           <div class="shop-header">
-            <img src="../backend/images/login/stu_logo.png" alt="素晨堂餐厅" class="shop-logo"/>
+            <img src="../backend/images/login/stu_logo.png" alt="素晨堂餐厅" class="shop-logo" loading="lazy"/>
             <div class="shop-info">
               <div class="shop-name">素晨堂餐厅</div>
               <div class="shop-stats">
                 <div class="stat-item">
-                  <img src="./images/time.png"/>
+                  <img src="./images/time.png" loading="lazy"/>
                   <span>距离1.5km</span>
                 </div>
                 <div class="stat-item">
-                  <img src="./images/money.png"/>
-                  <span>配送费6元</span>
+                  <img src="./images/money.png" loading="lazy"/>
+                  <span>配送贶6元</span>
                 </div>
                 <div class="stat-item">
-                  <img src="./images/location.png"/>
+                  <img src="./images/location.png" loading="lazy"/>
                   <span>预计12min</span>
                 </div>
               </div>
@@ -558,7 +567,7 @@
           <div class="section-title">🔥 人气推荐</div>
           <div class="dish-list">
             <div class="dish-item" v-for="(dish, index) in recommendDishes" :key="index" @click="goToMenu">
-              <img :src="dish.image" class="dish-image" />
+              <img :src="dish.image" class="dish-image" loading="lazy" />
               <div class="dish-info">
                 <div class="dish-name">{{ dish.name }}</div>
                 <div class="dish-desc">{{ dish.desc }}</div>
@@ -641,8 +650,8 @@
       </div>
     </div>
 
-    <!-- 开发环境版本，包含了有帮助的命令行警告 -->
-    <script src="../backend/plugins/vue/vue.js"></script>
+    <!-- 生产环境版本，体积小、速度快 -->
+    <script src="../backend/plugins/vue/vue.min.js"></script>
     <!-- 引入组件库 -->
     <script src="../backend/plugins/element-ui/index.js"></script>
     <!-- 引入vant样式 -->
@@ -702,6 +711,12 @@
         }
       },
       mounted() {
+        // 初始化图片懒加载
+        if (typeof lazyLoadImages === 'function') {
+          this.$nextTick(() => {
+            lazyLoadImages();
+          });
+        }
       },
       methods: {
         // 跳转到点餐页面
@@ -757,7 +772,8 @@
         },
 
         callAIAPI(userMessage, messageIndex) {
-          fetch('http://120.76.242.12:8067/api/scs/chat', {
+          // 使用相对路径，通过Nginx代理
+          fetch('/api/scs/chat', {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json'

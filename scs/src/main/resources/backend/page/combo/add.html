@@ -461,19 +461,36 @@
           async init() {
             querySetmealById(this.id).then((res) => {
               if (String(res.code) === '1') {
-                this.ruleForm = res.data
-                this.ruleForm.status = res.data.status === '1'
-                this.ruleForm.price = res.data.price / 100
-                // 直接使用 OSS URL 显示图片（不再经过后端下载接口）
-                this.imageUrl = res.data.image
-                this.checkList = res.data.setmealDishes
-                this.dishTable = res.data.setmealDishes
-                this.ruleForm.idType = res.data.categoryId
+                const data = res.data
+                this.ruleForm.name = data.name
+                this.ruleForm.categoryId = data.categoryId
+                this.ruleForm.idType = data.categoryId
+                this.ruleForm.price = data.price / 100
+                this.ruleForm.code = data.code
+                this.ruleForm.image = data.image
+                this.ruleForm.description = data.description
+                this.ruleForm.status = data.status === '1'
+                
+                // 直接使用 OSS URL 显示图片
+                this.imageUrl = data.image
+                
+                // 处理套餐菜品数据
+                if(data.setmealDishes && data.setmealDishes.length > 0) {
+                  this.checkList = data.setmealDishes.map(item => ({
+                    ...item,
+                    dishId: item.dishId,
+                    dishName: item.name,
+                    copies: item.copies || 1
+                  }))
+                  this.dishTable = JSON.parse(JSON.stringify(this.checkList))
+                }
               } else {
                 this.$message.error(res.msg || '操作失败')
               }
+            }).catch(err => {
+              this.$message.error('请求出错：' + err)
             })
-          }
+          },
           seachHandle() {
             this.seachKey = this.value
           },
@@ -519,34 +536,45 @@
           addTableList() {
             this.dishTable = JSON.parse(JSON.stringify(this.checkList))
             this.dishTable.forEach((n) => {
-              n.copies = 1
+              if(!n.copies) {
+                n.copies = 1
+              }
             })
             this.dialogVisible = false
             // 添加处理逻辑清空选中list
-            this.checkList = []
+            this.checkedList = []
           },
           submitForm(formName, st) {
             this.$refs[formName].validate((valid) => {
               if (valid) {
-                let prams = { ...this.ruleForm }
-                prams.price *= 100
-                prams.setmealDishes = this.dishTable.map((obj) => ({
-                  copies: obj.copies,
-                  dishId: obj.dishId,
-                  name: obj.name,
-                  price: obj.price,
-                }))
-                prams.status = this.ruleForm ? 1 : 0
-                prams.categoryId = this.ruleForm.idType
-                if(prams.setmealDishes.length < 1){
+                // 验证菜品
+                if(this.dishTable.length < 1){
                   this.$message.error('请选择菜品！')
                   return 
                 }
+                // 验证图片
                 if(!this.imageUrl){
                   this.$message.error('请上传套餐图片')
                   return 
                 }
-                // delete prams.dishList
+                
+                let prams = {
+                  id: this.ruleForm.id,
+                  name: this.ruleForm.name,
+                  categoryId: this.ruleForm.idType,
+                  price: Math.round(this.ruleForm.price * 100),
+                  code: this.ruleForm.code,
+                  image: this.imageUrl,
+                  description: this.ruleForm.description,
+                  status: this.ruleForm.status ? 1 : 0,
+                  setmealDishes: this.dishTable.map((obj) => ({
+                    dishId: obj.dishId,
+                    name: obj.dishName || obj.name,
+                    price: obj.price,
+                    copies: obj.copies || 1
+                  }))
+                }
+                
                 if (this.actionType == 'add') {
                   delete prams.id
                   addSetmeal(prams)
@@ -581,7 +609,6 @@
                       this.$message.error('请求出错了：' + err)
                     })
                 } else {
-                  delete prams.updateTime
                   editSetmeal(prams)
                     .then((res) => {
                       if (res.code === 1) {
@@ -608,7 +635,7 @@
               this.imageUrl = response.data  // 直接使用 OSS URL
               this.ruleForm.image = response.data
             }
-          }
+          },
 
           onChange (file) {
             if(file){
@@ -642,7 +669,9 @@
             getCategoryList({'type':1}).then(res => {
               if (res.code === 1) {
                 this.dishType = res.data
-                this.getDishList(res.data[0].id)
+                if(this.dishType.length > 0){
+                  this.getDishList(res.data[0].id)
+                }
               } else {
                 this.$message.error(res.msg)
               }
@@ -662,13 +691,14 @@
                 newArr.forEach((n) => {
                   n.dishId = n.id
                   n.copies = 1
-                  // n.dishCopies = 1
                   n.dishName = n.name
                 })
                 this.dishAddList = newArr
               } else {
                 this.$message.error(res.msg)
               }
+            }).catch(err => {
+              this.$message.error('请求出错：' + err)
             })
           },
 
@@ -685,6 +715,8 @@
               } else {
                 this.$message.error(res.msg)
               }
+            }).catch(err => {
+              this.$message.error('请求出错：' + err)
             })
           },
 

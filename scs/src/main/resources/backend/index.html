@@ -6,6 +6,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>晨哥外卖管理端</title>
     <link rel="shortcut icon" href="images/login/stu_logo.png" type="image/png">
+    
+    <!-- DNS预解析 -->
+    <link rel="dns-prefetch" href="//120.76.242.12">
+    <link rel="preconnect" href="//120.76.242.12" crossorigin>
     <!-- 引入样式 -->
 
     <link rel="stylesheet" href="plugins/element-ui/index.css" />
@@ -356,7 +360,7 @@
       </div>
     </div>
     <!-- 开发环境版本，包含了有帮助的命令行警告 -->
-    <script src="plugins/vue/vue.js"></script>
+    <script src="plugins/vue/vue.min.js"></script>
     <!-- 引入组件库 -->
     <script src="plugins/element-ui/index.js"></script>
     <!-- 引入axios -->
@@ -479,7 +483,8 @@
           },
 
           callAIAPI(userMessage, messageIndex) {
-            fetch('http://120.76.242.12:8067/api/scs/chat', {
+            // 使用相对路径，通过Nginx代理
+            fetch('/api/scs/chat', {
               method: 'POST',
               headers: {
                 'Content-Type': 'application/json'

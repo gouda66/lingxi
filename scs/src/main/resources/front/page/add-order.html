@@ -6,6 +6,15 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0,user-scalable=no,minimal-ui">
         <title>素晨堂</title>
         <link rel="icon" href="../../../../../uploads/favico.ico">
+        
+        <!-- DNS预解析和预连接 -->
+        <link rel="dns-prefetch" href="//120.76.242.12">
+        <link rel="preconnect" href="//120.76.242.12" crossorigin>
+        
+        <!-- 关键资源预加载 -->
+        <link rel="preload" href="../../backend/plugins/vue/vue.min.js" as="script">
+        <link rel="preload" href="../../backend/plugins/element-ui/index.css" as="style">
+        
         <!--不同屏幕尺寸根字体设置-->
         <script src="./../js/base.js"></script>
         <!--element-ui的样式-->
@@ -82,8 +91,8 @@
                 <div :class="{btnSubmitActive: cartData && cartData.length > 0, btnSubmit:!cartData || cartData.length<1}" @click="goToPaySuccess">去支付</div>
               </div>
         </div>
-        <!-- 开发环境版本，包含了有帮助的命令行警告 -->
-        <script src="../../backend/plugins/vue/vue.js"></script>
+        <!-- 生产环境版本，优化了尺寸和速度 -->
+        <script src="../../backend/plugins/vue/vue.min.js"></script>
         <!-- 引入组件库 -->
         <script src="../../backend/plugins/element-ui/index.js"></script>
         <!-- 引入vant样式 -->
@@ -109,7 +118,8 @@
                         },
                         finishTime:'',//送达时间
                         cartData:[],
-                        note:''//备注信息
+                        note:'',//备注信息
+                        isSubmitting: false // 防止重复提交
                     }
                 },
                 computed:{
@@ -128,10 +138,11 @@
                     let price = 0
                     this.cartData.forEach(item=>{
                         if(item.amount) {
+                            // item.amount 已经是元单位，直接计算
                             price += (item.number * item.amount)
                         }
                     })
-                    return price
+                    return price.toFixed(2) // 保留两位小数
                     }
                 },
                 created(){
@@ -178,28 +189,63 @@
                             window.location.href = '/front/page/address.html'
                         })
                     },
-                    //获取购物车数据
+                    //获取购物车数据（优化：添加错误处理和加载状态）
                     async getCartData(){
-                        const res = await cartListApi({})
-                        if(res.code === 1){
-                            this.cartData = res.data
-                        }else{
-                            this.$notify({ type:'warning', message:res.msg});
+                        try {
+                            const res = await cartListApi({})
+                            if(res.code === 1){
+                                this.cartData = res.data || []
+                                // 如果购物车为空，提示用户
+                                if(this.cartData.length === 0) {
+                                    this.$notify({ type:'warning', message:'购物车为空，请先添加商品'});
+                                }
+                            }else{
+                                this.$notify({ type:'warning', message:res.msg || '获取购物车数据失败'});
+                            }
+                        } catch(error) {
+                            console.error('获取购物车数据失败:', error)
+                            this.$notify({ type:'warning', message:'网络错误，请重试'});
                         }
                     },
                     async goToPaySuccess(){
-                        const params = {
-                            remark:this.note,
-                            payMethod:1,
-                            addressBookId:this.address.id
+                        // 防止重复提交
+                        if(this.isSubmitting) {
+                            return;
                         }
-                        const res = await addOrderApi(params)
-                        if(res.code === 1){
-                            window.requestAnimationFrame(()=>{
-                                window.location.replace('/front/page/pay-success.html')
-                            })
-                        }else{
-                            this.$notify({ type:'warning', message:res.msg});
+                        
+                        // 验证购物车数据
+                        if(!this.cartData || this.cartData.length === 0) {
+                            this.$notify({ type:'warning', message:'购物车为空，请先添加商品'});
+                            return;
+                        }
+                        
+                        // 验证地址
+                        if(!this.address || !this.address.id) {
+                            this.$notify({ type:'warning', message:'请选择收货地址'});
+                            return;
+                        }
+                        
+                        this.isSubmitting = true;
+                        
+                        try {
+                            const params = {
+                                remark:this.note,
+                                payMethod:1,
+                                addressBookId:this.address.id
+                            }
+                            const res = await addOrderApi(params)
+                            if(res.code === 1){
+                                window.requestAnimationFrame(()=>{
+                                    window.location.replace('/front/page/pay-success.html')
+                                })
+                            }else{
+                                this.$notify({ type:'warning', message:res.msg || '订单提交失败'});
+                                this.isSubmitting = false;
+                            }
+                        } catch(error) {
+                            console.error('订单提交失败:', error)
+                            this.$notify({ type:'warning', message:'网络错误，请重试'});
+                            this.isSubmitting = false;
                         }
                     },
                     //网络图片路径转换

@@ -34,6 +34,16 @@
   box-shadow: 2px 0 6px rgba(0, 21, 41, 0.35);
   z-index: 1001;
 }
+
+/* 隐藏侧边栏滚动条 */
+.sidebar-container::-webkit-scrollbar {
+  display: none;
+}
+
+.sidebar-container {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+}
 .sidebar-container .logo-container {
   height: 150px;
   display: flex;
