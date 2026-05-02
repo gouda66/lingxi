@@ -12,7 +12,7 @@
     <!--引入vant样式-->
     <link rel="stylesheet" href="../styles/vant.min.css"/>
     <!--本页面内容的样式-->
-    <link rel="stylesheet" href="./../styles/user.css" />
+    <link rel="stylesheet" href="../styles/user.css" />
 </head>
 <body>
     <div id="user" class="app has-bottom-nav">
@@ -21,9 +21,9 @@
                 <i class="el-icon-arrow-left" @click="goBack"></i>个人中心
             </div>
             <div class="divUser">
-                <img src="./../images/headPage.png"/>
+                <img src="../images/headPage.png"/>
                 <div class="desc">
-                    <div class="divName">林之迷 <img src="./../images/women.png"/></div>
+                    <div class="divName">林之迷 <img src="../images/women.png"/></div>
                     <div class="divPhone">{{userPhone}}</div>
                 </div>
             </div>
@@ -31,13 +31,13 @@
         <div class="divContent">
             <div class="divLinks">
                 <div class="item" @click="toAddressPage">
-                    <img src="./../images/locations.png"/>
+                    <img src="../images/locations.png"/>
                     <span>地址管理</span>
                     <i class="el-icon-arrow-right"></i>
                 </div>
                 <div class="divSplit"></div>
                 <div class="item" @click="toOrderPage">
-                    <img src="./../images/orders.png"/>
+                    <img src="../images/orders.png"/>
                     <span>历史订单</span>
                     <i class="el-icon-arrow-right"></i>
                 </div>
@@ -95,15 +95,15 @@
     <!-- 引入组件库 -->
     <script src="../../backend/plugins/element-ui/index.js"></script>
     <!-- 引入vant组件 -->
-    <script src="./../js/vant.min.js"></script>    
+    <script src="../js/vant.min.js"></script>
     <!--不同屏幕尺寸根字体设置-->
-    <script src="./../js/base.js"></script>
+    <script src="../js/base.js"></script>
     <!-- 引入axios -->
     <script src="../../backend/plugins/axios/axios.min.js"></script>
     <script src="../../backend/js/common.js"></script>
-    <script src="./../js/request.js"></script>
-    <script src="./../api/order.js"></script>
-    <script src="./../api/login.js"></script>
+    <script src="../js/request.js"></script>
+    <script src="../api/order.js"></script>
+    <script src="../api/login.js"></script>
     <script>
         new Vue({
             el:"#user",
@@ -139,22 +139,22 @@
                 },
                 toAddressPage(){
                     window.requestAnimationFrame(()=>{
-                        window.location.href = '/front/page/address.html'
+                        window.location.href = 'address.html'
                     })  
                 },
                 toOrderPage(){
                     window.requestAnimationFrame(()=>{
-                        window.location.href = '/front/page/order.html'
+                        window.location.href = 'order.html'
                     }) 
                 },
                 goToHome(){
                     window.requestAnimationFrame(()=>{
-                        window.location.href = '/front/home.html'
+                        window.location.href = '../home.html'
                     })
                 },
                 goToMenu(){
                     window.requestAnimationFrame(()=>{
-                        window.location.href = '/front/menu.html'
+                        window.location.href = '../menu.html'
                     })
                 },
                 initData(){
@@ -205,7 +205,7 @@
                     const res = await orderAgainApi({id:this.order[0].id})
                     if(res.code === 1){
                         window.requestAnimationFrame(()=>{
-                            window.location.href = '/front/home.html'
+                            window.location.href = '../home.html'
                         }) 
                     }else{
                         this.$notify({ type:'warning', message:res.msg});
@@ -215,7 +215,7 @@
                     const res = await loginoutApi()
                     if(res.code === 1){
                         window.requestAnimationFrame(()=>{
-                            window.location.href = '/front/page/login.html'
+                            window.location.href = 'login.html'
                         }) 
                     }else{
                         this.$notify({ type:'warning', message:res.msg});

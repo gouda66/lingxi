@@ -507,7 +507,7 @@
           handleAvatarSuccess (response, file, fileList) {
             // 直接使用 OSS URL 显示图片（不再经过后端下载接口）
             if(response.code === 0 && response.msg === '未登录'){
-              window.top.location.href = '/backend/page/login/login.html'
+              window.top.location.href = '../../page/login/login.html'
             }else{
               this.imageUrl = response.data  // 直接使用 OSS URL
               this.ruleForm.image = response.data

@@ -15,10 +15,10 @@
     <!-- 关键资源预加载 -->
     <link rel="preload" href="../backend/plugins/vue/vue.min.js" as="script">
     <link rel="preload" href="../backend/plugins/element-ui/index.css" as="style">
-    <link rel="preload" href="./js/base.js" as="script">
+    <link rel="preload" href="js/base.js" as="script">
     
     <!--不同屏幕尺寸根字体设置-->
-    <script src="./js/base.js"></script>
+    <script src="js/base.js"></script>
     <!--element-ui的样式（已压缩）-->
     <link rel="stylesheet" href="../backend/plugins/element-ui/index.css" />
     <!--引入vant样式（已压缩）-->
@@ -251,17 +251,17 @@
   <body>
     <div id="main" class="app">
       <div class="divHead">
-        <img src="./images/user.png" @click="toUserPage" loading="lazy"/>
+        <img src="images/user.png" @click="toUserPage" loading="lazy"/>
       </div>
       <div class="divTitle">
         <div class="divStatic">
-          <img src="../backend/images/login/stu_logo.png"  class="logo" loading="lazy"/>
+          <img src="../backend/images/login/stu_logo.png" class="logo" loading="lazy"/>
           <div class="divDesc">
             <div class="divName">素晨堂餐厅</div>
             <div class="divSend">
-                <span><img src="./images/time.png" loading="lazy"/> 距离1.5km</span>
-                <span><img src="./images/money.png" loading="lazy"/> 配送贶6元</span>
-                <span><img src="./images/location.png" loading="lazy"/> 预计时长12min</span>
+                <span><img src="images/time.png" loading="lazy"/> 距离1.5km</span>
+                <span><img src="images/money.png" loading="lazy"/> 配送贶6元</span>
+                <span><img src="images/location.png" loading="lazy"/> 预计时长12min</span>
             </div>
           </div>
         </div>
@@ -280,7 +280,7 @@
             <div class="divItem" v-for="(item,index) in dishList" :key="index" @click="dishDetails(item)">
               <el-image :src="imgPathConvert(item.image)" >
                 <div slot="error" class="image-slot">
-                  <img src="./images/noImg.png"/>
+                  <img src="images/noImg.png"/>
                 </div>
               </el-image>
               <div>
@@ -290,12 +290,12 @@
                 <div class="divBottom"><span>￥</span><span>{{item.price}}</span></div>
                 <div class="divNum">
                   <div class="divSubtract" v-if="item.number > 0">
-                    <img src="./images/subtract.png" @click.prevent.stop="subtractCart(item)"/>
+                    <img src="images/subtract.png" @click.prevent.stop="subtractCart(item)"/>
                   </div>
                   <div class="divDishNum">{{item.number}}</div>
                   <div class="divTypes" v-if="item.flavors && item.flavors.length > 0 && !item.number " @click.prevent.stop="chooseFlavorClick(item)">选择规格</div>
                   <div class="divAdd" v-else>
-                    <img src="./images/add.png" @click.prevent.stop="addCart(item)"/>
+                    <img src="images/add.png" @click.prevent.stop="addCart(item)"/>
                   </div>
                 </div>
               </div>
@@ -335,7 +335,7 @@
             <div @click="dialogFlavorAddCart">加入购物车</div>
           </div>
           <div class="divFlavorClose" @click="dialogFlavor.show = false">
-            <img src="./images/close.png"/>
+            <img src="images/close.png"/>
           </div>
         </van-dialog>
         <van-popup v-model="cartDialogShow" position="bottom" :style="{ height: '50%' }" class="dialogCart">
@@ -349,7 +349,7 @@
             <div v-for="item in cartData" :key="item.id" class="divCartItem">
               <el-image :src="imgPathConvert(item.image)" >
                 <div slot="error" class="image-slot">
-                  <img src="./images/noImg.png"/>
+                  <img src="images/noImg.png"/>
                 </div>
               </el-image>
               <div class="divDesc">
@@ -359,11 +359,11 @@
               </div>
               <div class="divNum">
                 <div class="divSubtract">
-                  <img src="./images/subtract.png" @click="cartNumberSubtract(item)"/>
+                  <img src="images/subtract.png" @click="cartNumberSubtract(item)"/>
                 </div>
                 <div class="divDishNum">{{item.number}}</div>
                 <div class="divAdd">
-                  <img src="./images/add.png" @click="cartNumAdd(item)"/>
+                  <img src="images/add.png" @click="cartNumAdd(item)"/>
                 </div>
               </div>
               <div class="divSplit"></div>
@@ -379,7 +379,7 @@
           <div class="divContainer">
             <el-image :src="imgPathConvert(detailsDialog.item.image)" >
               <div slot="error" class="image-slot">
-                <img src="./images/noImg.png"/>
+                <img src="images/noImg.png"/>
               </div>
             </el-image>
             <div class="title">{{detailsDialog.item.name}}</div>
@@ -391,17 +391,17 @@
             </div>
             <div class="right">
                 <div class="divSubtract" v-if="detailsDialog.item.number > 0">
-                  <img src="./images/subtract.png" @click="subtractCart(detailsDialog.item)"/>
+                  <img src="images/subtract.png" @click="subtractCart(detailsDialog.item)"/>
                 </div>
                 <div class="divDishNum">{{detailsDialog.item.number}}</div>
                 <div class="divTypes" v-if="detailsDialog.item.flavors && detailsDialog.item.flavors.length > 0 && !detailsDialog.item.number " @click ="chooseFlavorClick(detailsDialog.item)">选择规格</div>
                 <div class="divAdd" v-else>
-                  <img src="./images/add.png" @click="addCart(detailsDialog.item)"/>
+                  <img src="images/add.png" @click="addCart(detailsDialog.item)"/>
                 </div>
             </div>
           </div>
           <div class="detailsDialogClose" @click="detailsDialog.show = false">
-            <img src="./images/close.png"/>
+            <img src="images/close.png"/>
           </div>
         </van-dialog>
         <van-dialog v-model="setMealDialog.show" 
@@ -415,7 +415,7 @@
               <div class="item" v-for="(item,index) in setMealDialog.item.list" :key="index">
                 <el-image :src="imgPathConvert(item.image)">
                   <div slot="error" class="image-slot">
-                    <img src="./images/noImg.png"/>
+                    <img src="images/noImg.png"/>
                   </div>
                 </el-image>
                 <div class="divSubTitle">{{item.name + '(' + item.copies + '份)' }}
@@ -432,17 +432,17 @@
               </div>
               <div class="right">
                   <div class="divSubtract" v-if="setMealDialog.item.number > 0">
-                    <img src="./images/subtract.png" @click="subtractCart(setMealDialog.item)"/>
+                    <img src="images/subtract.png" @click="subtractCart(setMealDialog.item)"/>
                   </div>
                   <div class="divDishNum">{{setMealDialog.item.number}}</div>
                   <div class="divAdd" v-if="setMealDialog.item.number">
-                    <img src="./images/add.png" @click="addCart(setMealDialog.item)"/>
+                    <img src="images/add.png" @click="addCart(setMealDialog.item)"/>
                   </div>
                   <div class="addCart"  @click="addCart(setMealDialog.item)" v-if="!setMealDialog.item.number">加入购物车</div>
               </div>
           </div>
           <div class="detailsDialogClose" @click="setMealDialog.show = false">
-            <img src="./images/close.png"/>
+            <img src="images/close.png"/>
           </div>
         </van-dialog>
 
@@ -519,12 +519,12 @@
         <!-- 引入组件库 -->
         <script src="../backend/plugins/element-ui/index.js"></script>
         <!-- 引入vant样式 -->
-        <script src="./js/vant.min.js"></script>        
+        <script src="js/vant.min.js"></script>
         <!-- 引入axios -->
         <script src="../backend/plugins/axios/axios.min.js"></script>
-        <script src="./js/request.js"></script>
-        <script src="./js/common.js"></script>
-        <script src="./api/main.js"></script>
+        <script src="js/request.js"></script>
+        <script src="js/common.js"></script>
+        <script src="api/main.js"></script>
   </body>
   <script>
       new Vue({
@@ -1133,7 +1133,7 @@
               // 使用 goodsNum 计算属性来判断，它已经综合了 dishList 的数据
               if(this.goodsNum > 0){
                 window.requestAnimationFrame(()=>{
-                  window.location.href ='/front/page/add-order.html'
+                  window.location.href ='page/add-order.html'
                 })
               } else {
                 this.$notify({ type:'warning', message:'购物车为空，请先添加商品'});
@@ -1141,17 +1141,17 @@
             },
             toUserPage(){
               window.requestAnimationFrame(()=>{
-                window.location.href= '/front/page/user.html'
+                window.location.href= 'page/user.html'
               })
             },
             goToHome(){
               window.requestAnimationFrame(()=>{
-                window.location.href= '/front/home.html'
+                window.location.href= 'home.html'
               })
             },
             toOrderPage(){
               window.requestAnimationFrame(()=>{
-                window.location.href= '/front/page/order.html'
+                window.location.href= 'page/order.html'
               })
             },
             async dishDetails(item){

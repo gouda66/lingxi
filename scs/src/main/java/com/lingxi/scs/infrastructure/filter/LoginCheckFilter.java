@@ -11,7 +11,6 @@ import jakarta.servlet.http.HttpSession;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.MediaType;
-import org.springframework.stereotype.Component;
 import org.springframework.util.AntPathMatcher;
 
 import java.io.IOException;
@@ -45,8 +44,8 @@ public class LoginCheckFilter implements Filter {
             "/user/loginin",
             "/employee/logout",
             "/user/logout",
-            "/backend/**",
-            "/front/**",
+            "/scs-web/backend/**",
+            "/scs-web/front/**",
             "/common/**",
             "/user/sendMsg",
             "/user/login",

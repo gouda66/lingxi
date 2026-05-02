@@ -7,7 +7,7 @@
         <title>素晨堂</title>
         <link rel="icon" href="../images/favico.ico">
         <!--不同屏幕尺寸根字体设置-->
-        <script src="./../js/base.js"></script>
+        <script src="../js/base.js"></script>
         <!--element-ui的样式-->
         <link rel="stylesheet" href="../../backend/plugins/element-ui/index.css" />
         <!-- 引入样式  -->
@@ -15,7 +15,7 @@
         <!--引入vant样式-->
         <link rel="stylesheet" href="../styles/vant.min.css"/>
         <!--本页面内容的样式-->
-        <link rel="stylesheet" href="./../styles/order.css" />
+        <link rel="stylesheet" href="../styles/order.css" />
     </head>
     <body>
         <div id="order" class="app has-bottom-nav">
@@ -54,7 +54,7 @@
             </div>
             <div class="divNoData" v-else>
                 <div class="divContainer">
-                    <img src="./../images/no_order.png"/>
+                    <img src="../images/no_order.png"/>
                     <div>暂无订单</div>
                 </div>
             </div>
@@ -84,12 +84,12 @@
         <!-- 引入组件库 -->
         <script src="../../backend/plugins/element-ui/index.js"></script>
         <!-- 引入vant组件 -->
-        <script src="./../js/vant.min.js"></script>    
+        <script src="../js/vant.min.js"></script>
         <!-- 引入axios -->
         <script src="../../backend/plugins/axios/axios.min.js"></script>
         <script src="../../backend/js/common.js"></script>
-        <script src="./../js/request.js"></script>
-        <script src="./../api/order.js"></script>
+        <script src="../js/request.js"></script>
+        <script src="../api/order.js"></script>
         <script>
         new Vue({
             el:"#order",
@@ -116,7 +116,7 @@
                     //表示是从订单页面跳转过来的
                     if(url.includes('success')){
                         window.requestAnimationFrame(()=>{
-                                window.location.href= '/front/home.html'
+                                window.location.href= '../home.html'
                         })   
                     }else{
                         history.go(-1)
@@ -158,7 +158,7 @@
                     const res = await orderAgainApi({id:order.id})
                     if(res.code === 1){
                         window.requestAnimationFrame(()=>{
-                            window.location.href= '/front/home.html'
+                            window.location.href= '../home.html'
                         })
                     }else{
                         this.$notify({ type:'warning', message:res.msg});
@@ -188,17 +188,17 @@
                 },
                 goToHome(){
                     window.requestAnimationFrame(()=>{
-                        window.location.href= '/front/home.html'
+                        window.location.href= '../home.html'
                     })
                 },
                 goToMenu(){
                     window.requestAnimationFrame(()=>{
-                        window.location.href= '/front/menu.html'
+                        window.location.href= '../menu.html'
                     })
                 },
                 toUserPage(){
                     window.requestAnimationFrame(()=>{
-                        window.location.href= '/front/page/user.html'
+                        window.location.href= 'user.html'
                     })
                 }
             }

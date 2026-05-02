@@ -1,11 +1,8 @@
 package com.lingxi.scs.infrastructure.config;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.lingxi.scs.common.mapper.JacksonObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.converter.HttpMessageConverter;
-import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupport;
@@ -38,10 +35,10 @@ public class WebMvcConfig extends WebMvcConfigurationSupport {
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
         log.info("开始进行静态资源映射...");
-        registry.addResourceHandler("/backend/**")
+        registry.addResourceHandler("/scs-web/backend/**")
                 .addResourceLocations("classpath:/backend/")
                 .setCachePeriod(0);
-        registry.addResourceHandler("/front/**")
+        registry.addResourceHandler("/scs-web/front/**")
                 .addResourceLocations("classpath:/front/")
                 .setCachePeriod(0);
     }
@@ -51,8 +48,8 @@ public class WebMvcConfig extends WebMvcConfigurationSupport {
      */
     @Override
     public void addViewControllers(ViewControllerRegistry registry) {
-        registry.addRedirectViewController("/front", "/front/index.html");
-        registry.addRedirectViewController("/backend", "/backend/index.html");
+        registry.addRedirectViewController("/scs-web/front", "/scs-web/front/index.html");
+        registry.addRedirectViewController("/scs-web/backend", "/scs-web/backend/index.html");
     }
 
     /**
