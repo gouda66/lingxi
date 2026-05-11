@@ -399,6 +399,240 @@
       .order-btn-secondary:hover {
         background: rgba(255, 255, 255, 0.3);
       }
+
+      /* 地址选择弹窗样式 */
+      .address-dialog-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 10000;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        animation: fadeIn 0.2s ease;
+      }
+
+      @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+      }
+
+      .address-dialog {
+        background: #fff;
+        border-radius: 12px;
+        width: 90%;
+        max-width: 500px;
+        max-height: 70vh;
+        display: flex;
+        flex-direction: column;
+        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
+        animation: slideUp 0.3s ease;
+      }
+
+      @keyframes slideUp {
+        from {
+          opacity: 0;
+          transform: translateY(30px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .address-dialog-header {
+        padding: 16px 20px;
+        border-bottom: 1px solid #e8e8e8;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+
+      .address-dialog-header h3 {
+        margin: 0;
+        font-size: 16px;
+        font-weight: 600;
+      }
+
+      .address-dialog-close {
+        cursor: pointer;
+        font-size: 24px;
+        color: #999;
+        line-height: 1;
+      }
+
+      .address-dialog-close:hover {
+        color: #333;
+      }
+
+      .address-dialog-body {
+        flex: 1;
+        overflow-y: auto;
+        padding: 16px;
+      }
+
+      .address-item {
+        padding: 14px;
+        border: 2px solid #e8e8e8;
+        border-radius: 8px;
+        margin-bottom: 12px;
+        cursor: pointer;
+        transition: all 0.2s;
+      }
+
+      .address-item:hover {
+        border-color: #667eea;
+        background: #f5f7ff;
+      }
+
+      .address-item.selected {
+        border-color: #667eea;
+        background: #f0f2ff;
+      }
+
+      .address-item-header {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 8px;
+      }
+
+      .address-name {
+        font-weight: 600;
+        font-size: 15px;
+        color: #333;
+      }
+
+      .address-phone {
+        font-size: 13px;
+        color: #666;
+      }
+
+      .address-detail {
+        font-size: 13px;
+        color: #666;
+        line-height: 1.6;
+      }
+
+      .address-default-tag {
+        display: inline-block;
+        padding: 2px 8px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: #fff;
+        border-radius: 4px;
+        font-size: 11px;
+        margin-left: 8px;
+      }
+
+      .address-dialog-footer {
+        padding: 16px;
+        border-top: 1px solid #e8e8e8;
+        display: flex;
+        gap: 10px;
+      }
+
+      .address-btn {
+        flex: 1;
+        padding: 10px;
+        border: none;
+        border-radius: 8px;
+        font-size: 14px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.2s;
+      }
+
+      .address-btn-cancel {
+        background: #f5f5f5;
+        color: #666;
+      }
+
+      .address-btn-cancel:hover {
+        background: #e8e8e8;
+      }
+
+      .address-btn-confirm {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: #fff;
+      }
+
+      .address-btn-confirm:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+      }
+
+      .address-btn-confirm:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+        transform: none;
+      }
+
+      .no-address-tip {
+        text-align: center;
+        padding: 40px 20px;
+        color: #999;
+      }
+
+      .no-address-tip i {
+        font-size: 48px;
+        display: block;
+        margin-bottom: 12px;
+      }
+
+      /* 备注输入框样式 */
+      .note-input-container {
+        padding: 16px;
+        background: #f9fafb;
+        border-top: 1px solid #e8e8e8;
+      }
+
+      .note-label {
+        font-size: 13px;
+        color: #666;
+        margin-bottom: 8px;
+        display: block;
+      }
+
+      .note-textarea {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #dcdfe6;
+        border-radius: 6px;
+        font-size: 13px;
+        resize: none;
+        outline: none;
+        transition: border-color 0.2s;
+      }
+
+      .note-textarea:focus {
+        border-color: #667eea;
+      }
+
+      .note-counter {
+        text-align: right;
+        font-size: 11px;
+        color: #999;
+        margin-top: 4px;
+      }
+
+      /* 订单通知样式 */
+      .order-notification {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+        border: none !important;
+        box-shadow: 0 8px 24px rgba(102, 126, 234, 0.4) !important;
+      }
+
+      .order-notification .el-notification__title {
+        color: #fff !important;
+        font-weight: 600 !important;
+      }
+
+      .order-notification .el-notification__content {
+        color: #fff !important;
+      }
     </style>
   </head>
 
@@ -489,6 +723,7 @@
               
               <!-- 列表数据 -->
               <div v-else-if="msg.dataType === 'list'" class="data-list-container">
+                <div class="message-bubble" style="margin-bottom: 10px;">{{ msg.content }}</div>
                 <div 
                   v-for="(item, itemIndex) in msg.dataList" 
                   :key="itemIndex"
@@ -507,6 +742,7 @@
               
               <!-- 单个数据详情 -->
               <div v-else-if="msg.dataType === 'detail'" class="data-list-container">
+                <div class="message-bubble" style="margin-bottom: 10px;">{{ msg.content }}</div>
                 <div class="data-list-item">
                   <div class="item-title">{{ getItemTitle(msg.data) }}</div>
                   <div class="item-info">
@@ -527,11 +763,11 @@
                 <div class="order-card-body">
                   <div v-for="(item, itemIndex) in msg.orderItems" :key="itemIndex" class="order-card-row">
                     <span class="order-card-label">{{ item.name }}</span>
-                    <span class="order-card-value">{{ item.quantity }} x ¥{{ item.price }}</span>
+                    <span class="order-card-value">{{ item.quantity }} x ¥{{ formatPrice(item.price) }}</span>
                   </div>
                   <div class="order-card-total">
                     <span>总计</span>
-                    <span>¥{{ msg.totalAmount }}</span>
+                    <span>¥{{ formatPrice(msg.totalAmount) }}</span>
                   </div>
                 </div>
                 <div class="order-card-actions">
@@ -562,6 +798,66 @@
             <button @click="sendMessage">
               <span style="font-size: 18px;">➤</span>
             </button>
+          </div>
+        </div>
+
+        <!-- 地址选择弹窗 -->
+        <div class="address-dialog-overlay" v-if="showAddressDialog" @click.self="closeAddressDialog">
+          <div class="address-dialog">
+            <div class="address-dialog-header">
+              <h3>选择收货地址</h3>
+              <span class="address-dialog-close" @click="closeAddressDialog">×</span>
+            </div>
+            <div class="address-dialog-body">
+              <div v-if="loadingAddresses" style="text-align: center; padding: 40px; color: #999;">
+                加载中...
+              </div>
+              <div v-else-if="addressList.length === 0" class="no-address-tip">
+                <i>📍</i>
+                <div>暂无收货地址</div>
+                <div style="font-size: 12px; margin-top: 8px;">请先到地址管理页面添加地址</div>
+              </div>
+              <div v-else>
+                <div 
+                  v-for="addr in addressList" 
+                  :key="addr.id"
+                  class="address-item"
+                  :class="{ selected: selectedAddressId === addr.id }"
+                  @click="selectAddress(addr)"
+                >
+                  <div class="address-item-header">
+                    <span class="address-name">{{ addr.consignee }}</span>
+                    <span class="address-phone">{{ addr.phone }}</span>
+                    <span v-if="addr.isDefault === 1" class="address-default-tag">默认</span>
+                  </div>
+                  <div class="address-detail">
+                    {{ addr.provinceName }}{{ addr.cityName }}{{ addr.districtName }}{{ addr.detail }}
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="address-dialog-footer">
+              <button class="address-btn address-btn-cancel" @click="closeAddressDialog">取消</button>
+              <button 
+                class="address-btn address-btn-confirm" 
+                @click="confirmAddressSelection"
+                :disabled="!selectedAddressId"
+              >
+                确认选择
+              </button>
+            </div>
+            <!-- 订单备注 -->
+            <div class="note-input-container">
+              <label class="note-label">订单备注（可选）</label>
+              <textarea 
+                v-model="note" 
+                class="note-textarea" 
+                rows="2" 
+                maxlength="50"
+                placeholder="请输入您需要备注的信息，如：不要辣、少盐等"
+              ></textarea>
+              <div class="note-counter">{{ note.length }}/50</div>
+            </div>
           </div>
         </div>
 
@@ -638,7 +934,26 @@
                 content: '您好！我是 AI 智能助手，有什么可以帮助您的吗？我可以回答关于系统使用、菜品管理、订单处理等问题。',
                 time: this.getCurrentTime()
               }
-            ]
+            ],
+            
+            // 下单相关数据
+            note: '',
+            address: {
+              id: null
+            },
+            isSubmitting: false,
+            
+            // 地址选择相关
+            showAddressDialog: false,
+            addressList: [],
+            loadingAddresses: false,
+            selectedAddressId: null,
+            pendingOrderData: null,
+            
+            // 订单提醒相关
+            orderCheckTimer: null,
+            lastOrderNumber: null,  // 记录最后检查的订单号（使用订单号而不是ID，避免精度问题）
+            currentOrderId: null,   // 当前通知的订单ID，用于快速接单
           }
         },
         computed: {},
@@ -649,9 +964,15 @@
         beforeDestroy() {
           this.timer = null
           clearTimeout(this.timer)
+          // 清除订单检查定时器
+          if (this.orderCheckTimer) {
+            clearInterval(this.orderCheckTimer)
+          }
         },
         mounted() {
           window.menuHandle = this.menuHandle
+          // 启动订单检查
+          this.startOrderCheck()
         },
         methods: {
           toggleChat() {
@@ -691,7 +1012,7 @@
           },
 
           callAIAPI(userMessage, messageIndex) {
-            // 直接请求 scs-agent 服务（8067端口）
+            // 使用相对路径，通过Nginx代理
             fetch('http://localhost:8067/api/scs/chat', {
               method: 'POST',
               headers: {
@@ -781,7 +1102,6 @@
 
           // 解析并格式化消息
           parseAndFormatMessage(messageIndex, text) {
-            console.log('text:', text)
             try {
               // 尝试从 markdown 代码块中提取 JSON
               let jsonData = null;
@@ -800,17 +1120,14 @@
                   textPart = text.replace(jsonMatch[0], '').trim();
                 }
               }
-              console.log('textPart:', textPart)
-
+              
               if (jsonData) {
                 // 判断数据类型并设置展示方式
                 if (Array.isArray(jsonData)) {
                   // 数组数据 - 列表展示
                   this.$set(this.messages[messageIndex], 'dataType', 'list');
                   this.$set(this.messages[messageIndex], 'dataList', jsonData);
-                  // 确保content不为空,如果后端没有返回说明文字,则使用默认标题
-                  const defaultText = textPart && textPart.trim() ? textPart : `为您找到 ${jsonData.length} 条结果：`;
-                  this.$set(this.messages[messageIndex], 'content', defaultText);
+                  this.$set(this.messages[messageIndex], 'content', textPart || '查询结果：');
                 } else if (jsonData.type === 'order') {
                   // 下单卡片
                   this.$set(this.messages[messageIndex], 'dataType', 'order');
@@ -839,33 +1156,13 @@
           getItemInfoList(item) {
             const infoList = [];
             
-            // 调试:打印完整数据结构
-            console.log('菜品数据:', item);
-            
-            // 菜品/套餐信息 - 兼容多种价格字段名称和格式
-            let priceValue = null;
-            
-            // 尝试多种可能的价格字段名(包括不同命名风格)
-            const priceFields = ['price', 'amount', 'Price', 'Amount', 'priceAmount', 'foodPrice'];
-            for (let field of priceFields) {
-              if (item[field] !== undefined && item[field] !== null && item[field] !== '') {
-                priceValue = item[field];
-                break;
-              }
-            }
-            
-            // 如果找到了价格值,进行格式化显示
-            if (priceValue !== null) {
-              // 如果是数字,可能需要转换单位(分转元)
-              let displayPrice = priceValue;
-              if (typeof priceValue === 'number' && priceValue > 100) {
-                // 如果价格大于100,可能是以分为单位,需要除以100
-                displayPrice = (priceValue / 100).toFixed(2);
-              }
-              
+            // 菜品/套餐信息
+            if (item.price !== undefined) {
+              // 确保价格显示两位小数
+              const priceValue = parseFloat(item.price).toFixed(2);
               infoList.push({
                 label: '价格',
-                value: `¥${displayPrice}`,
+                value: `¥${priceValue}`,
                 class: 'item-price'
               });
             }
@@ -874,6 +1171,44 @@
               infoList.push({
                 label: '描述',
                 value: item.description
+              });
+            }
+            
+            if (item.status !== undefined) {
+              infoList.push({
+                label: '状态',
+                value: item.status === 1 ? '售卖中' : '已停售'
+              });
+            }
+            
+            if (item.phone) {
+              infoList.push({
+                label: '电话',
+                value: item.phone
+              });
+            }
+            
+            if (item.address) {
+              infoList.push({
+                label: '地址',
+                value: item.address
+              });
+            }
+            
+            if (item.orderTime) {
+              infoList.push({
+                label: '时间',
+                value: this.formatTime(item.orderTime)
+              });
+            }
+            
+            if (item.amount !== undefined) {
+              // 确保金额显示两位小数
+              const amountValue = parseFloat(item.amount).toFixed(2);
+              infoList.push({
+                label: '金额',
+                value: `¥${amountValue}`,
+                class: 'item-price'
               });
             }
             
@@ -908,35 +1243,284 @@
 
           // 确认下单
           confirmOrder(orderData) {
-            this.$confirm('确认要提交这个订单吗？', '提示', {
-              confirmButtonText: '确定',
-              cancelButtonText: '取消',
-              type: 'warning'
-            }).then(() => {
-              // 调用下单API
-              this.submitOrder(orderData);
+            // 保存订单数据，待地址选择和支付后使用
+            this.pendingOrderData = orderData;
+            console.log('下单数据:', orderData);
+            // 打开地址选择弹窗
+            this.openAddressDialog();
+          },
+
+          // 打开地址选择弹窗
+          async openAddressDialog() {
+            this.showAddressDialog = true;
+            this.selectedAddressId = this.address.id;
+            await this.loadAddressList();
+          },
+
+          // 关闭地址选择弹窗
+          closeAddressDialog() {
+            this.showAddressDialog = false;
+            this.addressList = [];
+            this.selectedAddressId = null;
+          },
+
+          // 加载地址列表
+          async loadAddressList() {
+            this.loadingAddresses = true;
+            try {
+              const response = await fetch('/addressBook/list', {
+                method: 'GET',
+                credentials: 'include'
+              });
+              
+              const res = await response.json();
+              
+              if (res.code === 1) {
+                this.addressList = res.data || [];
+                // 如果没有选择地址，默认选中第一个
+                if (!this.selectedAddressId && this.addressList.length > 0) {
+                  this.selectedAddressId = this.addressList[0].id;
+                }
+              } else {
+                this.$notify({ type: 'warning', message: res.msg || '获取地址列表失败' });
+                this.addressList = [];
+              }
+            } catch (error) {
+              console.error('获取地址列表失败:', error);
+              this.$notify({ type: 'warning', message: '网络错误，请重试' });
+              this.addressList = [];
+            } finally {
+              this.loadingAddresses = false;
+            }
+          },
+
+          // 选择地址
+          selectAddress(addr) {
+            this.selectedAddressId = addr.id;
+          },
+
+          // 确认地址选择
+          confirmAddressSelection() {
+            if (!this.selectedAddressId) {
+              this.$message.warning('请选择一个地址');
+              return;
+            }
+            
+            // 找到选中的地址
+            const selectedAddr = this.addressList.find(addr => addr.id === this.selectedAddressId);
+            if (selectedAddr) {
+              this.address = selectedAddr;
+              this.$message.success(`已选择地址：${selectedAddr.detail}`);
+            }
+            
+            this.closeAddressDialog();
+            
+            // 地址选择后，进入支付流程
+            this.showPaymentDialog();
+          },
+
+          // 显示支付对话框
+          showPaymentDialog() {
+            const totalAmount = this.pendingOrderData ? this.pendingOrderData.totalAmount : 0;
+            
+            this.$confirm(
+              `<div style="text-align: center; padding: 20px;">
+                <div style="font-size: 18px; font-weight: 600; margin-bottom: 15px;">确认支付</div>
+                <div style="font-size: 32px; color: #ff6b6b; font-weight: 600; margin-bottom: 20px;">¥${this.formatPrice(totalAmount)}</div>
+                <div style="font-size: 13px; color: #999;">支付方式：微信支付（模拟）</div>
+              </div>`,
+              '支付确认',
+              {
+                dangerouslyUseHTMLString: true,
+                confirmButtonText: '立即支付',
+                cancelButtonText: '取消',
+                type: 'warning',
+                confirmButtonClass: 'el-button--primary'
+              }
+            ).then(() => {
+              // 模拟支付过程
+              this.simulatePayment();
             }).catch(() => {
-              this.$message.info('已取消');
+              this.$message.info('已取消支付');
+              this.pendingOrderData = null;
             });
           },
 
-          // 提交订单
-          submitOrder(orderData) {
-            // 这里需要调用实际的下单API
-            console.log('提交订单:', orderData);
-            this.$message.success('订单提交成功！');
+          // 模拟支付过程
+          simulatePayment() {
+            const loading = this.$loading({
+              lock: true,
+              text: '正在处理支付...',
+              spinner: 'el-icon-loading',
+              background: 'rgba(0, 0, 0, 0.7)'
+            });
+          
+            // 模拟支付延迟（1.5秒）
+            setTimeout(() => {
+              loading.close();
+                        
+              // 模拟支付成功（实际项目中应该调用支付接口并等待回调）
+              this.$message.success('支付成功！');
+                        
+              // 支付成功后，先将商品添加到购物车，再提交订单
+              setTimeout(async () => {
+                await this.addToCartAndSubmit(this.pendingOrderData);
+              }, 500);
+            }, 1500);
+          },
+          
+          // 添加商品到购物车并提交订单
+          async addToCartAndSubmit(orderData) {
+            if (!orderData || !orderData.orderItems || orderData.orderItems.length === 0) {
+              this.$notify({ type: 'warning', message: '订单商品为空' });
+              this.isSubmitting = false;
+              return;
+            }
+
+            const totalItems = orderData.orderItems.length;
+            let completedItems = 0;
+          
+            const loading = this.$loading({
+              lock: true,
+              text: `正在添加商品到购物车... (0/${totalItems})`,
+              spinner: 'el-icon-loading',
+              background: 'rgba(0, 0, 0, 0.7)'
+            });
+          
+            try {
+              // 遍历所有商品，逐个添加到购物车
+              for (const item of orderData.orderItems) {
+                completedItems++;
+                // 更新加载提示
+                loading.setText(`正在添加商品到购物车... (${completedItems}/${totalItems})`);
+                
+                // 验证必要参数：菜品ID和套餐ID不能同时为空
+                if (!item.dishId && !item.setmealId) {
+                  throw new Error(`商品 "${item.name}" 缺少菜品ID或套餐ID`);
+                }
+                
+                // 构建购物车参数
+                const cartParams = {
+                  amount: item.price * item.quantity,  // 总金额
+                  dishFlavor: item.flavor || '',  // 口味（如果有）
+                  dishId: item.dishId || null,      // 菜品ID（如果是菜品）
+                  setmealId: item.setmealId || null, // 套餐ID（如果是套餐）
+                  name: item.name,
+                  image: item.image || '',
+                  number: item.quantity  // 数量
+                };
+          
+                // 调用添加购物车接口
+                const response = await fetch('/shoppingCart/add', {
+                  method: 'POST',
+                  headers: {
+                    'Content-Type': 'application/json'
+                  },
+                  credentials: 'include',
+                  body: JSON.stringify(cartParams)
+                });
+          
+                const res = await response.json();
+          
+                if (res.code !== 1) {
+                  throw new Error(res.msg || `添加 ${item.name} 失败`);
+                }
+              }
+          
+              loading.close();
+              this.$message.success(`已成功添加 ${totalItems} 个商品到购物车！`);
+          
+              // 购物车添加成功后，再提交订单
+              setTimeout(() => {
+                this.submitOrder(orderData);
+              }, 300);
+          
+            } catch (error) {
+              loading.close();
+              console.error('添加购物车失败:', error);
+              this.$notify({ type: 'warning', message: error.message || '添加购物车失败，请重试' });
+              this.isSubmitting = false;
+            }
           },
 
-          // 格式化时间
+          // 提交订单
+          async submitOrder(orderData) {
+            if (this.isSubmitting) {
+              this.$message.warning('订单正在提交中，请勿重复点击');
+              return;
+            }
+            
+            this.isSubmitting = true;
+            
+            try {
+              // 验证必要参数
+              if (!this.address || !this.address.id) {
+                this.$notify({ type: 'warning', message: '请先选择收货地址' });
+                this.isSubmitting = false;
+                return;
+              }
+              
+              const params = {
+                remark: this.note || '',
+                payMethod: 1,
+                addressBookId: this.address.id
+              };
+              
+              // 调用后端下单接口
+              const response = await fetch('/order/submit', {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json'
+                },
+                credentials: 'include',
+                body: JSON.stringify(params)
+              });
+              
+              const res = await response.json();
+              
+              if (res.code === 1) {
+                this.$message.success('订单提交成功！');
+                // 延迟跳转，让用户看到成功提示
+                setTimeout(() => {
+                  window.location.replace('/front/page/pay-success.html');
+                }, 500);
+              } else {
+                this.$notify({ type: 'warning', message: res.msg || '订单提交失败' });
+                this.isSubmitting = false;
+              }
+            } catch (error) {
+              console.error('订单提交失败:', error);
+              this.$notify({ type: 'warning', message: '网络错误，请重试' });
+              this.isSubmitting = false;
+            }
+          },
+
+          // 格式化时间（支持数组格式和字符串格式）
           formatTime(timeStr) {
             if (!timeStr) return '';
+            
+            // 如果是数组格式 [年, 月, 日, 时, 分, 秒]
+            if (Array.isArray(timeStr)) {
+              if (timeStr.length < 6) return '';
+              const [year, month, day, hours, minutes, seconds] = timeStr;
+              return `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')} ${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}`;
+            }
+            
+            // 如果是字符串格式
             const date = new Date(timeStr);
+            if (isNaN(date.getTime())) return '';
             const year = date.getFullYear();
             const month = String(date.getMonth() + 1).padStart(2, '0');
             const day = String(date.getDate()).padStart(2, '0');
             const hours = String(date.getHours()).padStart(2, '0');
             const minutes = String(date.getMinutes()).padStart(2, '0');
             return `${year}-${month}-${day} ${hours}:${minutes}`;
+          },
+
+          // 格式化价格（确保两位小数）
+          formatPrice(price) {
+            if (price === undefined || price === null) return '0.00';
+            return parseFloat(price).toFixed(2);
           },
 
 
@@ -1042,6 +1626,174 @@
             this.timer = setTimeout(()=>{
               this.loading = false
             },1000)
+          },
+          
+          // 启动订单检查（每5秒检查一次）
+          startOrderCheck() {
+            console.log('🔔 启动订单检查机制...')
+            // 先获取最新的订单
+            this.checkNewOrders()
+            
+            // 设置定时器，每5秒检查一次
+            this.orderCheckTimer = setInterval(() => {
+              this.checkNewOrders()
+            }, 5000)
+            console.log('✅ 订单检查定时器已启动，每5秒检查一次')
+          },
+          
+          // 检查新订单
+          async checkNewOrders() {
+            try {
+              const response = await fetch('/order/page?page=1&pageSize=1', {
+                method: 'GET',
+                credentials: 'include'
+              })
+              
+              const res = await response.json()
+              
+              console.log(' 检查订单响应:', res)
+              
+              if (res.code === 1 && res.data && res.data.content && res.data.content.length > 0) {
+                const latestOrder = res.data.content[0]
+                const orderNumber = latestOrder.number
+                
+                console.log(' 最新订单号:', orderNumber, '上次订单号:', this.lastOrderNumber)
+                
+                // 如果是第一次加载，记录当前最新订单号，不提示
+                if (!this.lastOrderNumber) {
+                  this.lastOrderNumber = orderNumber
+                  console.log('✅ 初始化订单号:', orderNumber)
+                  return
+                }
+                
+                // 如果发现了新的订单号，弹出提示
+                if (orderNumber !== this.lastOrderNumber) {
+                  console.log(' 发现新订单！订单号:', orderNumber)
+                  this.lastOrderNumber = orderNumber
+                  this.showOrderNotification(latestOrder)
+                }
+              } else {
+                console.log('️ 没有获取到订单数据')
+              }
+            } catch (error) {
+              console.error('❌ 检查订单失败:', error)
+            }
+          },
+
+          showOrderNotification(order) {
+            this.currentOrderId = order.id
+
+            // 生成唯一ID
+            const btnId = 'accept-btn-' + Date.now()
+
+            this.$notify({
+              title: '🔔 新订单提醒',
+              message: `
+      <div style="padding: 10px;">
+        <div style="font-size: 14px; margin-bottom: 8px;">
+          <strong>订单号：</strong>${order.number || '未知'}
+        </div>
+        <div style="font-size: 14px; margin-bottom: 8px;">
+          <strong>金额：</strong><span style="color: #ff6b6b; font-weight: 600;">¥${parseFloat(order.amount || 0).toFixed(2)}</span>
+        </div>
+        <div style="font-size: 13px; color: #666;">
+          <strong>下单时间：</strong>${this.formatTime(order.orderTime)}
+        </div>
+        <div style="margin-top: 12px; text-align: center; display: flex; gap: 10px; justify-content: center;">
+          <button id="${btnId}"
+                  style="padding: 8px 20px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: #fff; border: none; border-radius: 6px; cursor: pointer; font-size: 13px;">
+            立即接单
+          </button>
+          <button onclick="window.location.href='backend/page/order/list.html'"
+                  style="padding: 8px 20px; background: #fff; color: #667eea; border: 1px solid #667eea; border-radius: 6px; cursor: pointer; font-size: 13px;">
+            查看详情
+          </button>
+        </div>
+      </div>
+    `,
+              type: 'success',
+              duration: 0,
+              dangerouslyUseHTMLString: true,
+              position: 'top-right',
+              customClass: 'order-notification',
+              onClose: () => {
+                // 清理事件监听，避免内存泄漏
+                const btn = document.getElementById(btnId)
+                if (btn) btn.removeEventListener('click', this._handleAccept)
+              }
+            })
+
+            // 使用 $nextTick 确保 DOM 已渲染
+            this.$nextTick(() => {
+              const btn = document.getElementById(btnId)
+              if (btn) {
+                // 绑定点击事件，this 指向 Vue 实例
+                this._handleAccept = () => this.quickAcceptOrder()
+                btn.addEventListener('click', this._handleAccept)
+              }
+            })
+          },
+          
+          // 快速接单
+          async quickAcceptOrder() {
+            if (!this.currentOrderId) {
+              this.$message.warning('订单信息不存在')
+              return
+            }
+            
+            try {
+              const response = await fetch('/order/status', {
+                method: 'PUT',
+                headers: {
+                  'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                  id: this.currentOrderId,
+                  status: 3
+                })
+              })
+              
+              const result = await response.json()
+              console.log('当前订单',result)
+              
+              if (result.code === 1) {
+                this.$message.success('订单已确认，开始派送')
+                // 关闭通知
+                this.$notify.closeAll()
+                // 刷新订单列表
+                this.checkNewOrders()
+              } else {
+                this.$message.error(result.msg || '操作失败')
+              }
+            } catch (error) {
+              console.error('接单失败:', error)
+              this.$message.error('接单失败，请重试')
+            }
+          },
+          
+          // 播放提示音（可选）
+          playNotificationSound() {
+            try {
+              // 创建一个简单的提示音
+              const audioContext = new (window.AudioContext || window.webkitAudioContext)()
+              const oscillator = audioContext.createOscillator()
+              const gainNode = audioContext.createGain()
+              
+              oscillator.connect(gainNode)
+              gainNode.connect(audioContext.destination)
+              
+              oscillator.frequency.value = 800
+              oscillator.type = 'sine'
+              
+              gainNode.gain.setValueAtTime(0.3, audioContext.currentTime)
+              gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5)
+              
+              oscillator.start(audioContext.currentTime)
+              oscillator.stop(audioContext.currentTime + 0.5)
+            } catch (e) {
+              // 如果浏览器不支持或用户禁止音频，忽略错误
+              console.log('提示音播放失败', e)
+            }
           }
         }
       })

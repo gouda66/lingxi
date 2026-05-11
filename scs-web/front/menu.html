@@ -646,6 +646,7 @@
               
               <!-- 列表数据 -->
               <div v-else-if="msg.dataType === 'list'" class="data-list-container">
+                <div class="message-bubble" style="margin-bottom: 10px;">{{ msg.content }}</div>
                 <div 
                   v-for="(item, itemIndex) in msg.dataList" 
                   :key="itemIndex"
@@ -664,6 +665,7 @@
               
               <!-- 单个数据详情 -->
               <div v-else-if="msg.dataType === 'detail'" class="data-list-container">
+                <div class="message-bubble" style="margin-bottom: 10px;">{{ msg.content }}</div>
                 <div class="data-list-item">
                   <div class="item-title">{{ getItemTitle(msg.data) }}</div>
                   <div class="item-info">
@@ -684,11 +686,11 @@
                 <div class="order-card-body">
                   <div v-for="(item, itemIndex) in msg.orderItems" :key="itemIndex" class="order-card-row">
                     <span class="order-card-label">{{ item.name }}</span>
-                    <span class="order-card-value">{{ item.quantity }} x ¥{{ item.price.toFixed(2) }}</span>
+                    <span class="order-card-value">{{ item.quantity }} x ¥{{ (item.price / 100).toFixed(2) }}</span>
                   </div>
                   <div class="order-card-total">
                     <span>总计</span>
-                    <span>¥{{ msg.totalAmount.toFixed(2) }}</span>
+                    <span>¥{{ (msg.totalAmount / 100).toFixed(2) }}</span>
                   </div>
                 </div>
                 <div class="order-card-actions">
@@ -1419,7 +1421,7 @@
             },
 
             callAIAPI(userMessage, messageIndex) {
-              // 直接请求 scs-agent 服务（8067端口）
+              // 优化: 使用相对路径通过Nginx代理,而不是硬编码公网IP
               fetch('http://localhost:8067/api/scs/chat', {
                 method: 'POST',
                 headers: {
@@ -1534,7 +1536,7 @@
                     // 数组数据 - 列表展示
                     this.$set(this.messages[messageIndex], 'dataType', 'list');
                     this.$set(this.messages[messageIndex], 'dataList', jsonData);
-                    this.$set(this.messages[messageIndex], 'content', '');
+                    this.$set(this.messages[messageIndex], 'content', textPart || '查询结果：');
                   } else if (jsonData.type === 'order') {
                     // 下单卡片
                     this.$set(this.messages[messageIndex], 'dataType', 'order');
@@ -1545,7 +1547,7 @@
                     // 单个对象 - 详情展示
                     this.$set(this.messages[messageIndex], 'dataType', 'detail');
                     this.$set(this.messages[messageIndex], 'data', jsonData);
-                    this.$set(this.messages[messageIndex], 'content', '');
+                    this.$set(this.messages[messageIndex], 'content', textPart || '详细信息：');
                   }
                 }
               } catch (e) {
@@ -1567,7 +1569,7 @@
               if (item.price !== undefined) {
                 infoList.push({
                   label: '价格',
-                  value: `¥${item.price.toFixed(2)}`,
+                  value: `¥${(item.price / 100).toFixed(2)}`,
                   class: 'item-price'
                 });
               }

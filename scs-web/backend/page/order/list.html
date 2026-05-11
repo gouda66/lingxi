@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+ <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -88,11 +88,11 @@
               查看
             </el-button>
             <el-divider v-if="row.status === 2" direction="vertical"></el-divider>
-            <el-button v-if="row.status === 2" type="text" @click="cancelOrDeliveryOrComplete(3, row.id)" class="blueBug">
-              派送
+            <el-button v-if="row.status === 2" type="text" @click="confirmOrder(row.id)" class="blueBug">
+              确认接单
             </el-button>
             <el-divider v-if="row.status === 3" direction="vertical"></el-divider>
-            <el-button v-if="row.status === 3" type="text" @click="cancelOrDeliveryOrComplete(4, row.id)" class="blueBug">
+            <el-button v-if="row.status === 3" type="text" @click="completeOrder(4, row.id)" class="blueBug">
               完成
             </el-button>
           </template>
@@ -243,10 +243,10 @@
                     str =  '待付款'
                 break;
                 case 2:
-                    str =  '正在派送'
+                    str =  '待接单'
                 break;
                 case 3:
-                    str =  '已派送'
+                    str =  '派送中'
                 break;
                 case 4:
                     str =  '已完成'
@@ -264,16 +264,20 @@
             this.dialogVisible = true
             this.diaForm = { ...row }
           },
-          // 取消，派送，完成
-          cancelOrDeliveryOrComplete (status, id) {
-            this.$confirm('确认更改该订单状态?', '提示', {
+          // 确认接单
+          confirmOrder (id) {
+            this.$confirm('确认接此订单?', '提示', {
                 'confirmButtonText': '确定',
                 'cancelButtonText': '取消',
                 'type': 'warning'
               }).then(() => {
+                const params = {
+                  status: 3,
+                  id: id
+                }
                 editOrderDetail(params).then(res => {
                   if (res.code === 1) {
-                    this.$message.success(status === 3 ? '订单已派送' : '订单已完成')
+                    this.$message.success('订单已确认，开始派送')
                     this.init()
                   } else {
                     this.$message.error(res.msg || '操作失败')
@@ -282,10 +286,29 @@
                   this.$message.error('请求出错了：' + err)
                 })
             })
-            const params = {
-              status,
-              id
-            }
+          },
+          // 完成订单
+          completeOrder (status, id) {
+            this.$confirm('确认该订单已完成?', '提示', {
+                'confirmButtonText': '确定',
+                'cancelButtonText': '取消',
+                'type': 'warning'
+              }).then(() => {
+                const params = {
+                  status,
+                  id
+                }
+                editOrderDetail(params).then(res => {
+                  if (res.code === 1) {
+                    this.$message.success('订单已完成')
+                    this.init()
+                  } else {
+                    this.$message.error(res.msg || '操作失败')
+                  }
+                }).catch(err => {
+                  this.$message.error('请求出错了：' + err)
+                })
+            })
           },
           handleClose () {
             this.dialogVisible = false
