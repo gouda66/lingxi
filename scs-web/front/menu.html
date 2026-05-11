@@ -246,6 +246,159 @@
           transform: translateY(-8px);
         }
       }
+
+      /* 数据展示样式 */
+      .data-list-container {
+        max-width: 100%;
+        width: 100%;
+      }
+
+      .data-list-item {
+        background: #fff;
+        border-radius: 8px;
+        padding: 12px;
+        margin-bottom: 8px;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+        cursor: pointer;
+        transition: all 0.2s;
+      }
+
+      .data-list-item:hover {
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+        transform: translateY(-2px);
+      }
+
+      .data-list-item:last-child {
+        margin-bottom: 0;
+      }
+
+      .item-title {
+        font-size: 14px;
+        font-weight: 600;
+        color: #333;
+        margin-bottom: 6px;
+      }
+
+      .item-info {
+        font-size: 12px;
+        color: #666;
+        line-height: 1.6;
+      }
+
+      .item-info-row {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 4px;
+      }
+
+      .item-info-row:last-child {
+        margin-bottom: 0;
+      }
+
+      .item-label {
+        color: #999;
+      }
+
+      .item-value {
+        color: #333;
+        font-weight: 500;
+      }
+
+      .item-price {
+        color: #ff6b6b;
+        font-size: 16px;
+        font-weight: 600;
+      }
+
+      /* 下单卡片样式 */
+      .order-card {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border-radius: 12px;
+        padding: 16px;
+        color: #fff;
+        box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+      }
+
+      .order-card-header {
+        font-size: 16px;
+        font-weight: 600;
+        margin-bottom: 12px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .order-card-body {
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 8px;
+        padding: 12px;
+        margin-bottom: 12px;
+      }
+
+      .order-card-row {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 8px;
+        font-size: 13px;
+      }
+
+      .order-card-row:last-child {
+        margin-bottom: 0;
+      }
+
+      .order-card-label {
+        opacity: 0.9;
+      }
+
+      .order-card-value {
+        font-weight: 500;
+      }
+
+      .order-card-total {
+        border-top: 1px solid rgba(255, 255, 255, 0.3);
+        padding-top: 12px;
+        margin-top: 12px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 16px;
+        font-weight: 600;
+      }
+
+      .order-card-actions {
+        display: flex;
+        gap: 10px;
+      }
+
+      .order-btn {
+        flex: 1;
+        padding: 10px;
+        border: none;
+        border-radius: 8px;
+        font-size: 14px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.2s;
+      }
+
+      .order-btn-primary {
+        background: #fff;
+        color: #667eea;
+      }
+
+      .order-btn-primary:hover {
+        background: #f0f0f0;
+        transform: translateY(-2px);
+      }
+
+      .order-btn-secondary {
+        background: rgba(255, 255, 255, 0.2);
+        color: #fff;
+      }
+
+      .order-btn-secondary:hover {
+        background: rgba(255, 255, 255, 0.3);
+      }
     </style>
   </head>
   <body>
@@ -488,7 +641,62 @@
               class="ai-message"
               :class="msg.role"
             >
-              <div class="message-bubble">{{ msg.content }}</div>
+              <!-- 普通文本消息 -->
+              <div v-if="!msg.dataType || msg.dataType === 'text'" class="message-bubble">{{ msg.content }}</div>
+              
+              <!-- 列表数据 -->
+              <div v-else-if="msg.dataType === 'list'" class="data-list-container">
+                <div 
+                  v-for="(item, itemIndex) in msg.dataList" 
+                  :key="itemIndex"
+                  class="data-list-item"
+                  @click="handleItemClick(item, msg.dataType)"
+                >
+                  <div class="item-title">{{ getItemTitle(item) }}</div>
+                  <div class="item-info">
+                    <div v-for="(info, infoIndex) in getItemInfoList(item)" :key="infoIndex" class="item-info-row">
+                      <span class="item-label">{{ info.label }}:</span>
+                      <span class="item-value" :class="info.class">{{ info.value }}</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+              <!-- 单个数据详情 -->
+              <div v-else-if="msg.dataType === 'detail'" class="data-list-container">
+                <div class="data-list-item">
+                  <div class="item-title">{{ getItemTitle(msg.data) }}</div>
+                  <div class="item-info">
+                    <div v-for="(info, infoIndex) in getItemInfoList(msg.data)" :key="infoIndex" class="item-info-row">
+                      <span class="item-label">{{ info.label }}:</span>
+                      <span class="item-value" :class="info.class">{{ info.value }}</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+              <!-- 下单卡片 -->
+              <div v-else-if="msg.dataType === 'order'" class="order-card">
+                <div class="order-card-header">
+                  <span>🛒</span>
+                  <span>{{ msg.content || '确认订单' }}</span>
+                </div>
+                <div class="order-card-body">
+                  <div v-for="(item, itemIndex) in msg.orderItems" :key="itemIndex" class="order-card-row">
+                    <span class="order-card-label">{{ item.name }}</span>
+                    <span class="order-card-value">{{ item.quantity }} x ¥{{ item.price.toFixed(2) }}</span>
+                  </div>
+                  <div class="order-card-total">
+                    <span>总计</span>
+                    <span>¥{{ msg.totalAmount.toFixed(2) }}</span>
+                  </div>
+                </div>
+                <div class="order-card-actions">
+                  <button class="order-btn order-btn-secondary" @click="cancelOrder">取消</button>
+                  <button class="order-btn order-btn-primary" @click="confirmOrder(msg)">确认下单</button>
+                </div>
+              </div>
+              
               <div class="message-time">{{ msg.time }}</div>
             </div>
 
@@ -1211,8 +1419,8 @@
             },
 
             callAIAPI(userMessage, messageIndex) {
-              // 优化: 使用相对路径通过Nginx代理,而不是硬编码公网IP
-              fetch('/api/scs/chat', {
+              // 直接请求 scs-agent 服务（8067端口）
+              fetch('http://localhost:8067/api/scs/chat', {
                 method: 'POST',
                 headers: {
                   'Content-Type': 'application/json'
@@ -1236,6 +1444,8 @@
                     if (done) {
                       this.isTyping = false;
                       this.scrollToBottom();
+                      // 流结束后，尝试解析数据结构
+                      this.parseAndFormatMessage(messageIndex, accumulatedText);
                       return;
                     }
             
@@ -1295,6 +1505,171 @@
             
                 this.scrollToBottom();
               });
+            },
+
+            // 解析并格式化消息
+            parseAndFormatMessage(messageIndex, text) {
+              try {
+                // 尝试从 markdown 代码块中提取 JSON
+                let jsonData = null;
+                let textPart = text;
+                
+                // 匹配 ```json ... ``` 格式
+                const jsonCodeBlock = text.match(/```json\s*([\s\S]*?)\s*```/);
+                if (jsonCodeBlock) {
+                  jsonData = JSON.parse(jsonCodeBlock[1]);
+                  textPart = text.replace(jsonCodeBlock[0], '').trim();
+                } else {
+                  // 尝试直接匹配 JSON 对象或数组
+                  const jsonMatch = text.match(/\{[\s\S]*\}|\[[\s\S]*\]/);
+                  if (jsonMatch) {
+                    jsonData = JSON.parse(jsonMatch[0]);
+                    textPart = text.replace(jsonMatch[0], '').trim();
+                  }
+                }
+                
+                if (jsonData) {
+                  // 判断数据类型并设置展示方式
+                  if (Array.isArray(jsonData)) {
+                    // 数组数据 - 列表展示
+                    this.$set(this.messages[messageIndex], 'dataType', 'list');
+                    this.$set(this.messages[messageIndex], 'dataList', jsonData);
+                    this.$set(this.messages[messageIndex], 'content', '');
+                  } else if (jsonData.type === 'order') {
+                    // 下单卡片
+                    this.$set(this.messages[messageIndex], 'dataType', 'order');
+                    this.$set(this.messages[messageIndex], 'orderItems', jsonData.items || []);
+                    this.$set(this.messages[messageIndex], 'totalAmount', jsonData.totalAmount || 0);
+                    this.$set(this.messages[messageIndex], 'content', jsonData.title || '确认订单');
+                  } else if (typeof jsonData === 'object') {
+                    // 单个对象 - 详情展示
+                    this.$set(this.messages[messageIndex], 'dataType', 'detail');
+                    this.$set(this.messages[messageIndex], 'data', jsonData);
+                    this.$set(this.messages[messageIndex], 'content', '');
+                  }
+                }
+              } catch (e) {
+                // 如果不是JSON格式，保持原文本显示
+                console.log('非结构化数据，保持文本显示', e);
+              }
+            },
+
+            // 获取列表项标题
+            getItemTitle(item) {
+              return item.name || item.title || item.number || '未知';
+            },
+
+            // 获取列表项信息列表
+            getItemInfoList(item) {
+              const infoList = [];
+              
+              // 菜品/套餐信息
+              if (item.price !== undefined) {
+                infoList.push({
+                  label: '价格',
+                  value: `¥${item.price.toFixed(2)}`,
+                  class: 'item-price'
+                });
+              }
+              
+              if (item.description) {
+                infoList.push({
+                  label: '描述',
+                  value: item.description
+                });
+              }
+              
+              if (item.status !== undefined) {
+                infoList.push({
+                  label: '状态',
+                  value: item.status === 1 ? '售卖中' : '已停售'
+                });
+              }
+              
+              if (item.phone) {
+                infoList.push({
+                  label: '电话',
+                  value: item.phone
+                });
+              }
+              
+              if (item.address) {
+                infoList.push({
+                  label: '地址',
+                  value: item.address
+                });
+              }
+              
+              if (item.orderTime) {
+                infoList.push({
+                  label: '时间',
+                  value: this.formatTime(item.orderTime)
+                });
+              }
+              
+              if (item.amount !== undefined) {
+                infoList.push({
+                  label: '金额',
+                  value: `¥${item.amount}`,
+                  class: 'item-price'
+                });
+              }
+              
+              // 如果没有特定字段，显示所有键值对
+              if (infoList.length === 0) {
+                Object.keys(item).slice(0, 5).forEach(key => {
+                  if (item[key] && typeof item[key] !== 'object') {
+                    infoList.push({
+                      label: key,
+                      value: String(item[key])
+                    });
+                  }
+                });
+              }
+              
+              return infoList;
+            },
+
+            // 处理列表项点击
+            handleItemClick(item, type) {
+              if (type === 'list') {
+                console.log('点击了列表项:', item);
+              }
+            },
+
+            // 取消订单
+            cancelOrder() {
+              this.$toast('已取消下单');
+            },
+
+            // 确认下单
+            confirmOrder(orderData) {
+              this.$dialog.confirm({
+                title: '提示',
+                message: '确认要提交这个订单吗？'
+              }).then(() => {
+                this.submitOrder(orderData);
+              }).catch(() => {
+                this.$toast('已取消');
+              });
+            },
+
+            // 提交订单
+            submitOrder(orderData) {
+              console.log('提交订单:', orderData);
+              this.$toast.success('订单提交成功！');
+            },
+
+            // 格式化时间
+            formatTime(timeStr) {
+              if (!timeStr) return '';
+              const date = new Date(timeStr);
+              const year = date.getFullYear();
+              const month = String(date.getMonth() + 1).padStart(2, '0');
+              const day = String(date.getDate()).padStart(2, '0');
+              const hours = String(date.getHours()).padStart(2, '0');
+              const minutes = String(date.getMinutes()).padStart(2, '0');
+              return `${year}-${month}-${day} ${hours}:${minutes}`;
             },
 
             getCurrentTime() {

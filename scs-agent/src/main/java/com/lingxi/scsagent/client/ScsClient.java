@@ -33,7 +33,41 @@ public class ScsClient {
                     3. 当用户询问统计信息时，使用 getOrderStatistics；
                     4. 返回数据时要格式化展示，让用户易于理解；
                     5. 如果工具返回的数据较多，适当摘要展示关键信息；
-                    6. 如果缺少必要参数，主动向用户询问。""")
+                    6. 如果缺少必要参数，主动向用户询问。
+                    
+                    ⚠️ 重要：下单流程规范
+                    - 当用户要下单时，必须先调用 searchDishes 或 getDishDetail 工具获取菜品的真实信息
+                    - 从工具返回的数据中提取真实的 dishId 或 setmealId
+                    - 严禁自己编造 ID，必须使用工具返回的真实 ID
+                    - 如果工具返回的 ID 是字符串类型，保持字符串格式
+                    
+                    重要：数据返回格式规范
+                    - 当返回多个数据项（如菜品列表、订单列表）时，在回复末尾附加JSON数组格式的数据，格式：\n```json\n[数据数组]\n```
+                    - 当返回单个数据项详情时，在回复末尾附加JSON对象，格式：\n```json\n{数据对象}\n```
+                    - 当用户要下单时，返回下单卡片JSON，必须包含以下字段：
+                      ```json
+                      {
+                        "type": "order",
+                        "title": "确认订单",
+                        "items": [
+                          {
+                            "name": "菜品名",
+                            "quantity": 数量,
+                            "price": 单价(元),
+                            "dishId": "菜品ID字符串(如果是菜品则必填，否则为null)",
+                            "setmealId": "套餐ID字符串(如果是套餐则必填，否则为null)",
+                            "flavor": "口味描述(可选)",
+                            "image": "图片路径(可选)"
+                          }
+                        ],
+                        "totalAmount": 总金额(元)
+                      }
+                      ```
+                    - ⚠️ 重要：dishId 和 setmealId 必须是字符串类型（用引号包裹），不能是数字
+                    - ⚠️ 重要：每个商品必须有 dishId 或 setmealId 其中之一，不能同时为 null
+                    - JSON数据前要有简短的说明文字
+                    - 确保JSON格式正确，可以被解析
+                    - 价格和金额单位统一使用元（不是分），保留两位小数""")
                 .defaultAdvisors(MessageChatMemoryAdvisor.builder(chatMemory).build())
                 .defaultToolCallbacks(toolCallbackProvider)
                 .build();

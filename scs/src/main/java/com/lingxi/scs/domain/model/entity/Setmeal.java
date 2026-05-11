@@ -33,7 +33,6 @@ public class Setmeal implements Serializable {
 
     @Column(name = "category_id", nullable = false)
     @Comment("分类ID")
-    @JsonSerialize(using = ToStringSerializer.class)
     private Long categoryId;
 
     @Column(name = "name", nullable = false, length = 64, unique = true)

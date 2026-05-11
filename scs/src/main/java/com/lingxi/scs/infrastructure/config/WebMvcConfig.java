@@ -35,10 +35,10 @@ public class WebMvcConfig extends WebMvcConfigurationSupport {
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
         log.info("开始进行静态资源映射...");
-        registry.addResourceHandler("/scs-web/backend/**")
+        registry.addResourceHandler("/backend/**")
                 .addResourceLocations("classpath:/backend/")
                 .setCachePeriod(0);
-        registry.addResourceHandler("/scs-web/front/**")
+        registry.addResourceHandler("/front/**")
                 .addResourceLocations("classpath:/front/")
                 .setCachePeriod(0);
     }
@@ -48,8 +48,8 @@ public class WebMvcConfig extends WebMvcConfigurationSupport {
      */
     @Override
     public void addViewControllers(ViewControllerRegistry registry) {
-        registry.addRedirectViewController("/scs-web/front", "/scs-web/front/index.html");
-        registry.addRedirectViewController("/scs-web/backend", "/scs-web/backend/index.html");
+        registry.addRedirectViewController("/front", "/front/index.html");
+        registry.addRedirectViewController("/backend", "/backend/index.html");
     }
 
     /**

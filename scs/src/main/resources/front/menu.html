@@ -1,0 +1,1696 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <!-- 上述3个meta标签*必须*放在最前面，任何其他内容都*必须*跟随其后！ -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0,user-scalable=no,minimal-ui">
+    <title>素晨堂</title>
+    <link rel="icon" href="images/favico.ico">
+    
+    <!-- DNS预解析和预连接 -->
+    <link rel="dns-prefetch" href="//120.76.242.12">
+    <link rel="preconnect" href="//120.76.242.12" crossorigin>
+    
+    <!-- 关键资源预加载 -->
+    <link rel="preload" href="../backend/plugins/vue/vue.min.js" as="script">
+    <link rel="preload" href="../backend/plugins/element-ui/index.css" as="style">
+    <link rel="preload" href="js/base.js" as="script">
+    
+    <!--不同屏幕尺寸根字体设置-->
+    <script src="js/base.js"></script>
+    <!--element-ui的样式（已压缩）-->
+    <link rel="stylesheet" href="../backend/plugins/element-ui/index.css" />
+    <!--引入vant样式（已压缩）-->
+    <link rel="stylesheet" href="styles/vant.min.css"/>
+    <!-- 引入样式  -->
+    <link rel="stylesheet" href="styles/index.css" />
+    <!--本页面内容的样式-->
+    <link rel="stylesheet" href="styles/main.css" />
+    <style>
+      /* AI 助手样式 */
+      .ai-assistant-btn {
+        position: fixed;
+        right: 20px;
+        bottom: 120px;
+        width: 50px;
+        height: 50px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border-radius: 50%;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        transition: all 0.3s ease;
+        z-index: 9999;
+        animation: pulse 2s infinite;
+      }
+
+      .ai-assistant-btn:hover {
+        transform: scale(1.1);
+        box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+      }
+
+      .ai-assistant-btn .icon-ai {
+        font-size: 24px;
+        filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
+      }
+
+      @keyframes pulse {
+        0%, 100% {
+          box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        }
+        50% {
+          box-shadow: 0 4px 25px rgba(102, 126, 234, 0.6);
+        }
+      }
+
+      .ai-chat-dialog {
+        position: fixed;
+        right: 20px;
+        bottom: 160px;
+        width: 300px;
+        height: 450px;
+        background: #fff;
+        border-radius: 12px;
+        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+        z-index: 9998;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+        animation: slideIn 0.3s ease;
+      }
+
+      @keyframes slideIn {
+        from {
+          opacity: 0;
+          transform: translateY(20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .ai-chat-header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: #fff;
+        padding: 14px 18px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+
+      .ai-chat-header h3 {
+        margin: 0;
+        font-size: 15px;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+      }
+
+      .ai-chat-header .close-btn {
+        cursor: pointer;
+        font-size: 20px;
+        opacity: 0.8;
+        transition: opacity 0.2s;
+      }
+
+      .ai-chat-header .close-btn:hover {
+        opacity: 1;
+      }
+
+      .ai-chat-messages {
+        flex: 1;
+        padding: 14px;
+        overflow-y: auto;
+        background: #f5f7fa;
+      }
+
+      .ai-message {
+        margin-bottom: 14px;
+        display: flex;
+        flex-direction: column;
+      }
+
+      .ai-message.user {
+        align-items: flex-end;
+      }
+
+      .ai-message.assistant {
+        align-items: flex-start;
+      }
+
+      .message-bubble {
+        max-width: 80%;
+        padding: 10px 14px;
+        border-radius: 12px;
+        font-size: 13px;
+        line-height: 1.5;
+        word-wrap: break-word;
+      }
+
+      .ai-message.user .message-bubble {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: #fff;
+        border-bottom-right-radius: 4px;
+      }
+
+      .ai-message.assistant .message-bubble {
+        background: #fff;
+        color: #333;
+        border-bottom-left-radius: 4px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+      }
+
+      .message-time {
+        font-size: 11px;
+        color: #999;
+        margin-top: 4px;
+        padding: 0 4px;
+      }
+
+      .ai-chat-input {
+        padding: 14px;
+        background: #fff;
+        border-top: 1px solid #e8e8e8;
+        display: flex;
+        gap: 8px;
+      }
+
+      .ai-chat-input input {
+        flex: 1;
+        padding: 9px 12px;
+        border: 1px solid #dcdfe6;
+        border-radius: 20px;
+        outline: none;
+        font-size: 13px;
+        transition: border-color 0.2s;
+      }
+
+      .ai-chat-input input:focus {
+        border-color: #667eea;
+      }
+
+      .ai-chat-input button {
+        width: 36px;
+        height: 36px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        border-radius: 50%;
+        color: #fff;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.2s;
+      }
+
+      .ai-chat-input button:hover {
+        transform: scale(1.05);
+      }
+
+      .ai-chat-input button:active {
+        transform: scale(0.95);
+      }
+
+      .typing-indicator {
+        display: flex;
+        gap: 4px;
+        padding: 10px 14px;
+      }
+
+      .typing-indicator span {
+        width: 7px;
+        height: 7px;
+        background: #999;
+        border-radius: 50%;
+        animation: typing 1.4s infinite;
+      }
+
+      .typing-indicator span:nth-child(2) {
+        animation-delay: 0.2s;
+      }
+
+      .typing-indicator span:nth-child(3) {
+        animation-delay: 0.4s;
+      }
+
+      @keyframes typing {
+        0%, 60%, 100% {
+          transform: translateY(0);
+        }
+        30% {
+          transform: translateY(-8px);
+        }
+      }
+
+      /* 数据展示样式 */
+      .data-list-container {
+        max-width: 100%;
+        width: 100%;
+      }
+
+      .data-list-item {
+        background: #fff;
+        border-radius: 8px;
+        padding: 12px;
+        margin-bottom: 8px;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+        cursor: pointer;
+        transition: all 0.2s;
+      }
+
+      .data-list-item:hover {
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+        transform: translateY(-2px);
+      }
+
+      .data-list-item:last-child {
+        margin-bottom: 0;
+      }
+
+      .item-title {
+        font-size: 14px;
+        font-weight: 600;
+        color: #333;
+        margin-bottom: 6px;
+      }
+
+      .item-info {
+        font-size: 12px;
+        color: #666;
+        line-height: 1.6;
+      }
+
+      .item-info-row {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 4px;
+      }
+
+      .item-info-row:last-child {
+        margin-bottom: 0;
+      }
+
+      .item-label {
+        color: #999;
+      }
+
+      .item-value {
+        color: #333;
+        font-weight: 500;
+      }
+
+      .item-price {
+        color: #ff6b6b;
+        font-size: 16px;
+        font-weight: 600;
+      }
+
+      /* 下单卡片样式 */
+      .order-card {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border-radius: 12px;
+        padding: 16px;
+        color: #fff;
+        box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+      }
+
+      .order-card-header {
+        font-size: 16px;
+        font-weight: 600;
+        margin-bottom: 12px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .order-card-body {
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 8px;
+        padding: 12px;
+        margin-bottom: 12px;
+      }
+
+      .order-card-row {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 8px;
+        font-size: 13px;
+      }
+
+      .order-card-row:last-child {
+        margin-bottom: 0;
+      }
+
+      .order-card-label {
+        opacity: 0.9;
+      }
+
+      .order-card-value {
+        font-weight: 500;
+      }
+
+      .order-card-total {
+        border-top: 1px solid rgba(255, 255, 255, 0.3);
+        padding-top: 12px;
+        margin-top: 12px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 16px;
+        font-weight: 600;
+      }
+
+      .order-card-actions {
+        display: flex;
+        gap: 10px;
+      }
+
+      .order-btn {
+        flex: 1;
+        padding: 10px;
+        border: none;
+        border-radius: 8px;
+        font-size: 14px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.2s;
+      }
+
+      .order-btn-primary {
+        background: #fff;
+        color: #667eea;
+      }
+
+      .order-btn-primary:hover {
+        background: #f0f0f0;
+        transform: translateY(-2px);
+      }
+
+      .order-btn-secondary {
+        background: rgba(255, 255, 255, 0.2);
+        color: #fff;
+      }
+
+      .order-btn-secondary:hover {
+        background: rgba(255, 255, 255, 0.3);
+      }
+    </style>
+  </head>
+  <body>
+    <div id="main" class="app">
+      <div class="divHead">
+        <img src="images/user.png" @click="toUserPage" loading="lazy"/>
+      </div>
+      <div class="divTitle">
+        <div class="divStatic">
+          <img src="../backend/images/login/stu_logo.png" class="logo" loading="lazy"/>
+          <div class="divDesc">
+            <div class="divName">素晨堂餐厅</div>
+            <div class="divSend">
+                <span><img src="images/time.png" loading="lazy"/> 距离1.5km</span>
+                <span><img src="images/money.png" loading="lazy"/> 配送贶6元</span>
+                <span><img src="images/location.png" loading="lazy"/> 预计时长12min</span>
+            </div>
+          </div>
+        </div>
+        <div class="divDesc">
+          简介: 素晨堂中餐厅是素晨堂点餐的独立的品牌，定位“大众 化的美食外送餐饮”，旨为顾客打造专业美食。
+        </div>
+      </div>
+      <div class="divBody">
+        <div class="divType">
+          <ul>
+            <li v-for="(item,index) in categoryList" :key="index" @click="categoryClick(index,item.id,item.type)" :class="{active:activeType === index}">{{item.name}}</li>
+          </ul>
+        </div>
+        <div class="divMenu">
+          <div>
+            <div class="divItem" v-for="(item,index) in dishList" :key="index" @click="dishDetails(item)">
+              <el-image :src="imgPathConvert(item.image)" >
+                <div slot="error" class="image-slot">
+                  <img src="images/noImg.png"/>
+                </div>
+              </el-image>
+              <div>
+                <div class="divName">{{item.name}}</div>
+                <div class="divDesc">{{item.description}}</div>
+                <div class="divDesc">{{'月销' + (item.saleNum ? item.saleNum : 0)  }}</div>
+                <div class="divBottom"><span>￥</span><span>{{item.price}}</span></div>
+                <div class="divNum">
+                  <div class="divSubtract" v-if="item.number > 0">
+                    <img src="images/subtract.png" @click.prevent.stop="subtractCart(item)"/>
+                  </div>
+                  <div class="divDishNum">{{item.number}}</div>
+                  <div class="divTypes" v-if="item.flavors && item.flavors.length > 0 && !item.number " @click.prevent.stop="chooseFlavorClick(item)">选择规格</div>
+                  <div class="divAdd" v-else>
+                    <img src="images/add.png" @click.prevent.stop="addCart(item)"/>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+      <div class="divLayer">
+        <div class="divLayerLeft"></div>
+        <div class="divLayerRight"></div>
+      </div>
+      <div class="divCart" v-if="categoryList.length > 0">
+          <div :class="{imgCartActive: goodsNum > 0, imgCart: goodsNum <= 0}" @click="openCart"></div>
+          <div :class="{divGoodsNum:1===1, moreGoods:goodsNum > 99}" v-if="goodsNum > 0">{{ goodsNum }}</div>
+          <div class="divNum">
+              <span>￥</span>
+              <span>{{goodsPrice}}</span>
+          </div>
+          <div class="divPrice"></div>
+          <div :class="{btnSubmitActive: goodsNum > 0, btnSubmit: goodsNum <= 0}" @click="toAddOrderPage">去结算</div>
+        </div>
+        <van-dialog v-model="dialogFlavor.show" :show-confirm-button="false" class="dialogFlavor" ref="flavorDialog">
+          <div class="dialogTitle">{{dialogFlavor.name}}</div>
+          <div class="divContent">
+            <div v-for="flavor in dialogFlavor.flavors" :key="flavor.id">
+                <div class="divFlavorTitle">{{flavor.name}}</div>
+                <span v-for="item in JSON.parse(flavor.value)" 
+                :key="item"  
+                @click="flavorClick(flavor,item)"
+                :class="{spanActive:flavor.dishFlavor === item}"
+                >{{item}}</span>
+            </div>
+          </div>
+          <div class="divBottom">
+            <div><span class="spanMoney">￥</span>{{dialogFlavor.price}}</div>
+            <div @click="dialogFlavorAddCart">加入购物车</div>
+          </div>
+          <div class="divFlavorClose" @click="dialogFlavor.show = false">
+            <img src="images/close.png"/>
+          </div>
+        </van-dialog>
+        <van-popup v-model="cartDialogShow" position="bottom" :style="{ height: '50%' }" class="dialogCart">
+          <div class="divCartTitle">
+            <div class="title">购物车</div>
+            <div class="clear" @click="clearCart">
+              <i class="el-icon-delete"></i> 清空
+            </div>
+          </div>
+          <div class="divCartContent">
+            <div v-for="item in cartData" :key="item.id" class="divCartItem">
+              <el-image :src="imgPathConvert(item.image)" >
+                <div slot="error" class="image-slot">
+                  <img src="images/noImg.png"/>
+                </div>
+              </el-image>
+              <div class="divDesc">
+                <div class="name">{{item.name}}</div>
+                <div class="price">
+                  <span class="spanMoney">￥</span>{{item.amount}}</div>
+              </div>
+              <div class="divNum">
+                <div class="divSubtract">
+                  <img src="images/subtract.png" @click="cartNumberSubtract(item)"/>
+                </div>
+                <div class="divDishNum">{{item.number}}</div>
+                <div class="divAdd">
+                  <img src="images/add.png" @click="cartNumAdd(item)"/>
+                </div>
+              </div>
+              <div class="divSplit"></div>
+              </div>
+          </div>
+        </van-popup>
+        <van-dialog v-model="detailsDialog.show" 
+                    :show-confirm-button="false" 
+                    class="detailsDialog" 
+                    ref="detailsDialog"
+                    v-if="detailsDialog.show"
+                    >
+          <div class="divContainer">
+            <el-image :src="imgPathConvert(detailsDialog.item.image)" >
+              <div slot="error" class="image-slot">
+                <img src="images/noImg.png"/>
+              </div>
+            </el-image>
+            <div class="title">{{detailsDialog.item.name}}</div>
+            <div class="content">{{detailsDialog.item.description}}</div>
+          </div>
+          <div class="divNum">
+            <div class="left">
+              <span>￥</span><span>{{detailsDialog.item.price}}</span>
+            </div>
+            <div class="right">
+                <div class="divSubtract" v-if="detailsDialog.item.number > 0">
+                  <img src="images/subtract.png" @click="subtractCart(detailsDialog.item)"/>
+                </div>
+                <div class="divDishNum">{{detailsDialog.item.number}}</div>
+                <div class="divTypes" v-if="detailsDialog.item.flavors && detailsDialog.item.flavors.length > 0 && !detailsDialog.item.number " @click ="chooseFlavorClick(detailsDialog.item)">选择规格</div>
+                <div class="divAdd" v-else>
+                  <img src="images/add.png" @click="addCart(detailsDialog.item)"/>
+                </div>
+            </div>
+          </div>
+          <div class="detailsDialogClose" @click="detailsDialog.show = false">
+            <img src="images/close.png"/>
+          </div>
+        </van-dialog>
+        <van-dialog v-model="setMealDialog.show" 
+                    :show-confirm-button="false" 
+                    class="setMealDetailsDialog" 
+                    ref="setMealDetailsDialogd"
+                    v-if="setMealDialog.show"
+                    >
+          <div class="divContainer">
+            <div class="title">{{setMealDialog.item.name}}</div>
+              <div class="item" v-for="(item,index) in setMealDialog.item.list" :key="index">
+                <el-image :src="imgPathConvert(item.image)">
+                  <div slot="error" class="image-slot">
+                    <img src="images/noImg.png"/>
+                  </div>
+                </el-image>
+                <div class="divSubTitle">{{item.name + '(' + item.copies + '份)' }}
+                  <div class="divPrice">
+                    <span>￥</span><span>{{item.price}}</span>
+                  </div>
+                </div>                
+                <div class="content">{{item.description}}</div>
+              </div>
+            </div>
+          <div class="divNum">
+              <div class="left">
+                <span>￥</span><span>{{setMealDialog.item.price}}</span>
+              </div>
+              <div class="right">
+                  <div class="divSubtract" v-if="setMealDialog.item.number > 0">
+                    <img src="images/subtract.png" @click="subtractCart(setMealDialog.item)"/>
+                  </div>
+                  <div class="divDishNum">{{setMealDialog.item.number}}</div>
+                  <div class="divAdd" v-if="setMealDialog.item.number">
+                    <img src="images/add.png" @click="addCart(setMealDialog.item)"/>
+                  </div>
+                  <div class="addCart"  @click="addCart(setMealDialog.item)" v-if="!setMealDialog.item.number">加入购物车</div>
+              </div>
+          </div>
+          <div class="detailsDialogClose" @click="setMealDialog.show = false">
+            <img src="images/close.png"/>
+          </div>
+        </van-dialog>
+
+        <!-- 底部导航 -->
+        <div class="bottom-nav">
+          <div class="nav-item" @click="goToHome">
+            <div class="nav-icon">🏠</div>
+            <div class="nav-text">首页</div>
+          </div>
+          <div class="nav-item active">
+            <div class="nav-icon">🍽️</div>
+            <div class="nav-text">点餐</div>
+          </div>
+          <div class="nav-item" @click="toOrderPage">
+            <div class="nav-icon">📋</div>
+            <div class="nav-text">订单</div>
+          </div>
+          <div class="nav-item" @click="toUserPage">
+            <div class="nav-icon">👤</div>
+            <div class="nav-text">我的</div>
+          </div>
+        </div>
+
+        <!-- AI 助手按钮 -->
+        <div class="ai-assistant-btn" @click="toggleChat" title="AI 助手">
+          <span class="icon-ai">🤖</span>
+        </div>
+
+        <!-- AI 聊天对话框 -->
+        <div class="ai-chat-dialog" v-if="showChat">
+          <div class="ai-chat-header">
+            <h3>
+              <span>🤖</span>
+              AI 智能助手
+            </h3>
+            <span class="close-btn" @click="toggleChat">×</span>
+          </div>
+
+          <div class="ai-chat-messages" ref="messagesContainer">
+            <div
+              v-for="(msg, index) in messages"
+              :key="index"
+              class="ai-message"
+              :class="msg.role"
+            >
+              <!-- 普通文本消息 -->
+              <div v-if="!msg.dataType || msg.dataType === 'text'" class="message-bubble">{{ msg.content }}</div>
+              
+              <!-- 列表数据 -->
+              <div v-else-if="msg.dataType === 'list'" class="data-list-container">
+                <div class="message-bubble" style="margin-bottom: 10px;">{{ msg.content }}</div>
+                <div 
+                  v-for="(item, itemIndex) in msg.dataList" 
+                  :key="itemIndex"
+                  class="data-list-item"
+                  @click="handleItemClick(item, msg.dataType)"
+                >
+                  <div class="item-title">{{ getItemTitle(item) }}</div>
+                  <div class="item-info">
+                    <div v-for="(info, infoIndex) in getItemInfoList(item)" :key="infoIndex" class="item-info-row">
+                      <span class="item-label">{{ info.label }}:</span>
+                      <span class="item-value" :class="info.class">{{ info.value }}</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+              <!-- 单个数据详情 -->
+              <div v-else-if="msg.dataType === 'detail'" class="data-list-container">
+                <div class="message-bubble" style="margin-bottom: 10px;">{{ msg.content }}</div>
+                <div class="data-list-item">
+                  <div class="item-title">{{ getItemTitle(msg.data) }}</div>
+                  <div class="item-info">
+                    <div v-for="(info, infoIndex) in getItemInfoList(msg.data)" :key="infoIndex" class="item-info-row">
+                      <span class="item-label">{{ info.label }}:</span>
+                      <span class="item-value" :class="info.class">{{ info.value }}</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+              <!-- 下单卡片 -->
+              <div v-else-if="msg.dataType === 'order'" class="order-card">
+                <div class="order-card-header">
+                  <span>🛒</span>
+                  <span>{{ msg.content || '确认订单' }}</span>
+                </div>
+                <div class="order-card-body">
+                  <div v-for="(item, itemIndex) in msg.orderItems" :key="itemIndex" class="order-card-row">
+                    <span class="order-card-label">{{ item.name }}</span>
+                    <span class="order-card-value">{{ item.quantity }} x ¥{{ (item.price / 100).toFixed(2) }}</span>
+                  </div>
+                  <div class="order-card-total">
+                    <span>总计</span>
+                    <span>¥{{ (msg.totalAmount / 100).toFixed(2) }}</span>
+                  </div>
+                </div>
+                <div class="order-card-actions">
+                  <button class="order-btn order-btn-secondary" @click="cancelOrder">取消</button>
+                  <button class="order-btn order-btn-primary" @click="confirmOrder(msg)">确认下单</button>
+                </div>
+              </div>
+              
+              <div class="message-time">{{ msg.time }}</div>
+            </div>
+
+            <div v-if="isTyping" class="ai-message assistant">
+              <div class="typing-indicator">
+                <span></span>
+                <span></span>
+                <span></span>
+              </div>
+            </div>
+          </div>
+
+          <div class="ai-chat-input">
+            <input
+              type="text"
+              v-model="inputMessage"
+              placeholder="输入消息..."
+              @keyup.enter="sendMessage"
+            />
+            <button @click="sendMessage">
+              <span style="font-size: 16px;">➤</span>
+            </button>
+          </div>
+        </div>
+    </div>
+        <!-- 生产环境版本，优化了尺寸和速度 -->
+        <script src="../backend/plugins/vue/vue.min.js"></script>
+        <!-- 引入组件库 -->
+        <script src="../backend/plugins/element-ui/index.js"></script>
+        <!-- 引入vant样式 -->
+        <script src="js/vant.min.js"></script>
+        <!-- 引入axios -->
+        <script src="../backend/plugins/axios/axios.min.js"></script>
+        <script src="js/request.js"></script>
+        <script src="js/common.js"></script>
+        <script src="api/main.js"></script>
+  </body>
+  <script>
+      new Vue({
+          el:'#main',
+          data(){
+            return {
+              //左边菜品类别index
+              activeType:0,
+              categoryList:[],
+              categoryId:undefined,
+              dishList:[],
+              cartData:[],
+              dialogFlavor:{
+                name:'',
+                flavors:[],
+                dishId:undefined,
+                price:undefined,
+                show:false,
+                image:''
+              },
+              cartDialogShow:false,
+              detailsDialog:{
+                show:false,
+                item:{image:''}
+              },
+              setMealDialog:{
+                show:false,
+                item:{}
+              },
+              // 防止重复点击的标志
+              isAddingCart: false,
+              isSubtractingCart: false,
+              // AI 助手相关
+              showChat: false,
+              inputMessage: '',
+              isTyping: false,
+              messages: [
+                {
+                  role: 'assistant',
+                  content: '您好！我是 AI 智能助手，有什么可以帮助您的吗？我可以回答关于菜品推荐、订单查询、配送时间等问题。',
+                  time: this.getCurrentTime()
+                }
+              ]
+            }
+          },
+          computed:{
+            goodsNum(){
+              // 优先从 dishList 计算（乐观更新后的数据）
+              let num = 0
+              this.dishList.forEach(item=>{
+                if(item.number && item.number > 0) {
+                  num += item.number
+                }
+              })
+              if(num <99){
+                return num
+              }else{
+                return '99+'
+              }
+            },
+            goodsPrice(){
+              // 优先从 dishList 计算（乐观更新后的数据）
+              let price = 0
+              this.dishList.forEach(item=>{
+                if(item.number && item.number > 0 && item.price) {
+                  price += (item.number * item.price)
+                }
+              })
+              return price
+            }
+          },
+          created(){
+          },
+          watch:{
+            'dialogFlavor.show'(flag){
+              if(flag){
+                document.querySelector('.divCart').style.zIndex = 1
+              }else{
+                document.querySelector('.divCart').style.zIndex = 3000
+              }
+            },
+          },
+          mounted(){
+            this.initData()
+            // 初始化图片懒加载
+            if (typeof lazyLoadImages === 'function') {
+              this.$nextTick(() => {
+                lazyLoadImages();
+              });
+            }
+          },
+          methods:{
+            //初始化数据
+            initData(){
+              Promise.all([categoryListApi(),cartListApi({})]).then(res=>{
+                //获取分类数据
+                if(res[0].code === 1){
+                  this.categoryList = res[0].data
+                  if(Array.isArray(res[0].data) && res[0].data.length > 0){
+                    this.categoryId = res[0].data[0].id
+                    if(res[0].data[0].type === 1){
+                      this.getDishList()
+                    }else{
+                      this.getSetmealData()
+                    }
+                  }
+                }else{
+                  this.$notify({ type:'warning', message:res[0].msg});
+                }
+                //获取菜品数据
+                if(res[1].code === 1){
+                  // 购物车数据中的amount已经是元单位（后端已转换）
+                  this.cartData = res[1].data || []
+                }else{
+                  this.$notify({ type:'warning', message:res[1].msg});
+                }
+              })
+            },
+            //分类点击
+            categoryClick(index,id,type){
+              this.activeType = index
+              this.categoryId = id
+              if(type === 1){//菜品
+                this.getDishList()
+              }else{
+                this.getSetmealData()
+              }
+            },
+            //获取菜品数据
+            async getDishList(){
+              if(!this.categoryId){
+                return
+              }
+              const res = await dishListApi({categoryId:this.categoryId,status:1})
+              if(res.code === 1){
+                let dishList = res.data
+                // 后端返回的价格已经是元单位，直接使用
+                const cartData  = this.cartData
+                if(dishList.length > 0 && cartData.length > 0){
+                  dishList.forEach(dish=>{
+                    cartData.forEach(cart=>{
+                      if(dish.id === cart.dishId){
+                        this.$set(dish, 'number', cart.number)
+                      }
+                    })
+                  })
+                }
+                this.dishList = dishList
+              }else{
+                this.$notify({ type:'warning', message:res.msg});
+              }
+            },
+            //获取套餐数据setmealId
+            async getSetmealData(){
+              if(!this.categoryId){
+                return
+              }
+              const res = await setmealListApi({categoryId:this.categoryId,status:1})
+              if(res.code === 1){
+                  let dishList = res.data
+                  // 后端返回的价格已经是元单位，直接使用
+                  const cartData  = this.cartData
+                  if(dishList.length > 0 && cartData.length > 0){
+                    dishList.forEach(dish=>{
+                      cartData.forEach(cart=>{
+                        if(dish.id === cart.setmealId){
+                          this.$set(dish, 'number', cart.number)
+                        }
+                      })
+                    })
+                  }
+                  this.dishList = dishList
+              }else{
+                this.$notify({ type:'warning', message:res.msg});
+              }
+            },
+            //获取购物车数据（优化：防抖和错误处理，同时更新dishList）
+            async getCartData(){
+              try {
+                const res = await cartListApi({})
+                if(res.code === 1){
+                  this.cartData = res.data || []
+                  // 同步更新dishList中的数量
+                  if(this.dishList && this.dishList.length > 0 && res.data && res.data.length > 0) {
+                    this.dishList.forEach(dish => {
+                      const cartItem = res.data.find(cart => 
+                        cart.dishId === dish.id || cart.setmealId === dish.id
+                      );
+                      if(cartItem) {
+                        dish.number = cartItem.number;
+                      } else {
+                        dish.number = undefined;
+                      }
+                    });
+                  }
+                } else {
+                  this.$notify({ type:'warning', message:res.msg || '获取购物车数据失败'});
+                }
+              } catch(error) {
+                console.error('获取购物车数据异常:', error);
+                this.$notify({ type:'warning', message:'网络错误，请重试'});
+              }
+            },
+            //菜单中往购物车中添加商品（优化：移除防重复点击限制，允许快速连续添加）
+            async addCart(item){
+              console.log('添加商品:', item.name, '价格:', item.price);
+              
+              // 先乐观更新UI - 同时更新 dishList 和 cartData
+              const targetDish = this.dishList.find(dish => dish.id === item.id);
+              const originalNumber = targetDish ? (targetDish.number || 0) : 0;
+              
+              if(targetDish) {
+                // 使用 Vue.set 确保响应式更新
+                this.$set(targetDish, 'number', originalNumber + 1);
+              }
+              
+              // 同步更新 cartData（用于底部购物车栏显示）
+              let cartItem = this.cartData.find(cart => 
+                cart.dishId === item.id || cart.setmealId === item.id
+              );
+              if(cartItem) {
+                this.$set(cartItem, 'number', (cartItem.number || 0) + 1);
+              } else {
+                // 如果购物车中没有，添加新项
+                const newCartItem = {
+                  id: Date.now(), // 临时ID
+                  dishId: Array.isArray(item.flavors) ? item.id : undefined,
+                  setmealId: Array.isArray(item.flavors) ? undefined : item.id,
+                  name: item.name,
+                  image: item.image,
+                  amount: item.price,
+                  number: 1,
+                  dishFlavor: item.dishFlavor
+                };
+                this.cartData.push(newCartItem);
+                
+                // 如果有 dishList，也更新它
+                if(targetDish) {
+                  this.$set(targetDish, 'number', 1);
+                }
+              }
+              
+              console.log('更新后的 dishList:', this.dishList.find(d => d.id === item.id));
+              console.log('更新后的 cartData:', this.cartData);
+              console.log('goodsNum:', this.goodsNum);
+              console.log('goodsPrice:', this.goodsPrice);
+              
+              let params = {
+                amount:item.price,//金额
+                dishFlavor:item.dishFlavor,//口味  如果没有传undefined
+                dishId:undefined,//菜品id
+                setmealId:undefined,//套餐id
+                name:item.name,
+                image:item.image,
+                number:1  // 默认添加数量为1
+              }
+              if(Array.isArray(item.flavors)){//表示是菜品
+                params.dishId = item.id
+              }else{//表示套餐 套餐没有口味
+                params.setmealId = item.id
+              }
+              
+              // 异步发送到服务器，不阻塞UI
+              addCartApi(params).then(res => {
+                if(res.code === 1){
+                  // 服务器确认，静默更新购物车数据
+                  this.getCartData().catch(err => console.error('获取购物车数据失败:', err));
+                } else {
+                  // 如果失败，回滚UI
+                  if(targetDish) {
+                    this.$set(targetDish, 'number', originalNumber);
+                  }
+                  if(cartItem) {
+                    this.$set(cartItem, 'number', (cartItem.number || 1) - 1);
+                    if(cartItem.number <= 0) {
+                      const idx = this.cartData.indexOf(cartItem);
+                      if(idx >= 0) this.cartData.splice(idx, 1);
+                    }
+                  }
+                  this.$notify({ type:'warning', message:res.msg || '添加失败'});
+                }
+              }).catch(error => {
+                // 请求失败，回滚UI
+                if(targetDish) {
+                  this.$set(targetDish, 'number', originalNumber);
+                }
+                if(cartItem) {
+                  this.$set(cartItem, 'number', (cartItem.number || 1) - 1);
+                  if(cartItem.number <= 0) {
+                    const idx = this.cartData.indexOf(cartItem);
+                    if(idx >= 0) this.cartData.splice(idx, 1);
+                  }
+                }
+                console.error('网络错误:', error);
+              });
+            },
+
+            //菜单中减少选中的商品（优化：移除防重复点击限制，允许快速连续操作）
+            async subtractCart(item){
+              // 先乐观更新UI - 同时更新 dishList 和 cartData
+              const targetDish = this.dishList.find(dish => dish.id === item.id);
+              const originalNumber = targetDish ? (targetDish.number || 0) : 0;
+              
+              if(targetDish && targetDish.number > 0) {
+                this.$set(targetDish, 'number', targetDish.number - 1);
+                if(targetDish.number === 0) {
+                  this.$set(targetDish, 'number', undefined);
+                }
+              }
+              
+              // 同步更新 cartData
+              let cartItem = this.cartData.find(cart => 
+                cart.dishId === item.id || cart.setmealId === item.id
+              );
+              let originalCartNumber = cartItem ? (cartItem.number || 0) : 0;
+              
+              if(cartItem && cartItem.number > 0) {
+                this.$set(cartItem, 'number', cartItem.number - 1);
+                if(cartItem.number <= 0) {
+                  const idx = this.cartData.indexOf(cartItem);
+                  if(idx >= 0) this.cartData.splice(idx, 1);
+                }
+              }
+              
+              let params = {
+                dishId:item.id,
+              }
+              if(!Array.isArray(item.flavors)){
+                params = {
+                  setmealId:item.id,
+                }
+              }
+              
+              // 异步发送到服务器，不阻塞UI
+              updateCartApi(params).then(res => {
+                if(res.code === 1){
+                  // 服务器确认，静默更新购物车数据
+                  this.getCartData().catch(err => console.error('获取购物车数据失败:', err));
+                } else {
+                  // 如果失败，回滚UI
+                  if(targetDish) {
+                    this.$set(targetDish, 'number', originalNumber);
+                  }
+                  if(cartItem) {
+                    this.$set(cartItem, 'number', originalCartNumber);
+                  } else if(originalCartNumber > 0) {
+                    this.cartData.push({
+                      id: Date.now(),
+                      dishId: Array.isArray(item.flavors) ? item.id : undefined,
+                      setmealId: Array.isArray(item.flavors) ? undefined : item.id,
+                      name: item.name,
+                      image: item.image,
+                      amount: item.price,
+                      number: originalCartNumber
+                    });
+                  }
+                  this.$notify({ type:'warning', message:res.msg || '操作失败'});
+                }
+              }).catch(error => {
+                // 请求失败，回滚UI
+                if(targetDish) {
+                  this.$set(targetDish, 'number', originalNumber);
+                }
+                if(cartItem) {
+                  this.$set(cartItem, 'number', originalCartNumber);
+                } else if(originalCartNumber > 0) {
+                  this.cartData.push({
+                    id: Date.now(),
+                    dishId: Array.isArray(item.flavors) ? item.id : undefined,
+                    setmealId: Array.isArray(item.flavors) ? undefined : item.id,
+                    name: item.name,
+                    image: item.image,
+                    amount: item.price,
+                    number: originalCartNumber
+                  });
+                }
+                console.error('网络错误:', error);
+              });
+            },
+            
+            //展开购物车
+            openCart(){
+              if(this.goodsNum > 0){
+                this.cartDialogShow = true
+              }
+            },
+            //购物车中增加商品数量（优化：防重复点击+乐观更新）
+            async cartNumAdd(item){
+              // 防止重复点击
+              if(this.isAddingCart) {
+                return;
+              }
+              this.isAddingCart = true;
+              
+              // 先乐观更新UI - 同时更新 cartData 和 dishList
+              const cartItemIndex = this.cartData.findIndex(cart => 
+                cart.id === item.id || cart.dishId === item.dishId || cart.setmealId === item.setmealId
+              );
+              
+              if(cartItemIndex >= 0) {
+                this.cartData[cartItemIndex].number += 1;
+              }
+              
+              // 同步更新 dishList
+              const dishId = item.dishId || item.setmealId;
+              const targetDish = this.dishList.find(dish => dish.id === dishId);
+              if(targetDish) {
+                targetDish.number = (targetDish.number || 0) + 1;
+              }
+              
+              let params = {
+                amount:item.amount,//金额
+                dishFlavor:item.dishFlavor,//口味  如果没有传undefined
+                dishId:item.dishId,//菜品id
+                setmealId:item.setmealId,//套餐id
+                name:item.name,
+                image:item.image,
+                number:1  // 每次增加1个
+              }
+              
+              try {
+                const res = await addCartApi(params)
+                if(res.code === 1){
+                  // 异步更新整体购物车数据
+                  this.getCartData().catch(err => console.error('获取购物车数据失败:', err));
+                } else {
+                  // 回滚
+                  if(cartItemIndex >= 0) {
+                    this.cartData[cartItemIndex].number -= 1;
+                  }
+                  if(targetDish) {
+                    targetDish.number = (targetDish.number || 1) - 1;
+                  }
+                  this.$notify({ type:'warning', message:res.msg || '添加失败'});
+                }
+              } catch(error) {
+                if(cartItemIndex >= 0) {
+                  this.cartData[cartItemIndex].number -= 1;
+                }
+                if(targetDish) {
+                  targetDish.number = (targetDish.number || 1) - 1;
+                }
+                this.$notify({ type:'warning', message:'网络错误，请重试'});
+              } finally {
+                // 释放锁
+                this.isAddingCart = false;
+              }
+            },
+            //购物车中减少商品数量（优化：防重复点击+乐观更新）
+            async cartNumberSubtract(item){
+              // 防止重复点击
+              if(this.isSubtractingCart) {
+                return;
+              }
+              this.isSubtractingCart = true;
+              
+              // 先乐观更新UI - 同时更新 cartData 和 dishList
+              const cartItemIndex = this.cartData.findIndex(cart => 
+                cart.id === item.id || cart.dishId === item.dishId || cart.setmealId === item.setmealId
+              );
+              
+              let originalNumber = 0;
+              if(cartItemIndex >= 0) {
+                originalNumber = this.cartData[cartItemIndex].number;
+                this.cartData[cartItemIndex].number -= 1;
+              }
+              
+              // 同步更新 dishList
+              const dishId = item.dishId || item.setmealId;
+              const targetDish = this.dishList.find(dish => dish.id === dishId);
+              let originalDishNumber = targetDish ? (targetDish.number || 0) : 0;
+              
+              if(targetDish && targetDish.number > 0) {
+                targetDish.number = targetDish.number - 1;
+                if(targetDish.number === 0) {
+                  targetDish.number = undefined;
+                }
+              }
+              
+              let params = {
+                  dishId:item.dishId,
+                  setmealId:item.setmealId,
+              }
+              
+              try {
+                const res = await updateCartApi(params)
+                if(res.code === 1){
+                  // 异步更新购物车数据
+                  this.getCartData().catch(err => console.error('获取购物车数据失败:', err));
+                } else {
+                  // 回滚
+                  if(cartItemIndex >= 0) {
+                    this.cartData[cartItemIndex].number = originalNumber;
+                  }
+                  if(targetDish) {
+                    targetDish.number = originalDishNumber;
+                  }
+                  this.$notify({ type:'warning', message:res.msg || '操作失败'});
+                }
+              } catch(error) {
+                if(cartItemIndex >= 0) {
+                  this.cartData[cartItemIndex].number = originalNumber;
+                }
+                if(targetDish) {
+                  targetDish.number = originalDishNumber;
+                }
+                this.$notify({ type:'warning', message:'网络错误，请重试'});
+              } finally {
+                // 释放锁
+                this.isSubtractingCart = false;
+              }
+            },
+            
+            //修改商品列表中的数据number
+            changeDishList(item){
+              for(let ele of this.dishList){
+                if(ele.id === (item.setmealId || item.dishId)){
+                  ele.number = item.number
+                }
+              }
+            },
+            
+            //清空购物车（优化：立即清空UI）
+            async clearCart(){
+                // 立即清空UI
+                const originalCartData = [...this.cartData];
+                for(let ele of this.dishList){
+                  ele.number = undefined
+                }
+                this.cartData = []
+                this.cartDialogShow = false
+                
+                try {
+                  const res = await clearCartApi()
+                  if(res.code !== 1){
+                    // 如果失败，恢复数据
+                    this.cartData = originalCartData;
+                    this.$notify({ type:'warning', message:res.msg || '清空失败'});
+                  }
+                } catch(error) {
+                  // 请求失败，恢复数据
+                  this.cartData = originalCartData;
+                  this.$notify({ type:'warning', message:'网络错误，请重试'});
+                }
+            },
+            //点击选择规格
+            chooseFlavorClick(item){
+              this.dialogFlavor = {
+                name:'',
+                flavors:[],
+                dishId:undefined,
+                price:undefined,
+                show:false
+              }
+              this.dialogFlavor={
+                name:item.name,
+                flavors:item.flavors,
+                dishId:item.id,
+                price:item.price,
+                show:true,
+                image:item.image
+              }
+            },
+            flavorClick(flavor,item){
+              flavor.dishFlavor = item
+              // 使用 $nextTick 确保 DOM 更新
+              this.$nextTick(() => {
+                this.dialogFlavor.show = false
+                this.dialogFlavor.show = true
+              })
+            },
+            //选择规格加入购物车（优化：乐观更新）
+            dialogFlavorAddCart(){
+              const dialogFlavor = this.dialogFlavor
+              let flag = true
+              let dishFlavor = []
+              dialogFlavor.flavors.forEach(item=>{
+                if(item.dishFlavor){
+                  dishFlavor.push(item.dishFlavor)
+                }else{
+                  flag = false
+                  Notify({ type: 'warning', message: '请选择'+ item.name });
+                }
+              })
+              if(flag){
+                // 乐观更新：先关闭对话框并更新UI
+                this.dialogFlavor.show = false
+                
+                // 异步添加到购物车
+                this.addCart({
+                  price:dialogFlavor.price,
+                  dishFlavor:dishFlavor.join(","),
+                  id:dialogFlavor.dishId,
+                  flavors:[],
+                  image:dialogFlavor.image,
+                  name:dialogFlavor.name
+                })
+              }
+            },
+            //网络图片路径转换
+            imgPathConvert(path){
+              return imgPath(path)
+            },
+            //跳转到去结算界面
+            toAddOrderPage(){
+              // 使用 goodsNum 计算属性来判断，它已经综合了 dishList 的数据
+              if(this.goodsNum > 0){
+                window.requestAnimationFrame(()=>{
+                  window.location.href ='page/add-order.html'
+                })
+              } else {
+                this.$notify({ type:'warning', message:'购物车为空，请先添加商品'});
+              }
+            },
+            toUserPage(){
+              window.requestAnimationFrame(()=>{
+                window.location.href= 'page/user.html'
+              })
+            },
+            goToHome(){
+              window.requestAnimationFrame(()=>{
+                window.location.href= 'home.html'
+              })
+            },
+            toOrderPage(){
+              window.requestAnimationFrame(()=>{
+                window.location.href= 'page/order.html'
+              })
+            },
+            async dishDetails(item){
+              //先清除对象数据，如果不行的话dialog使用v-if
+              this.detailsDialog.item = {}
+              this.setMealDialog.item = {}
+              if(Array.isArray(item.flavors)){
+                this.detailsDialog.item = item
+                this.detailsDialog.show = true
+              }else{
+                //显示套餐的数据
+                const res = await setMealDishDetailsApi(item.id)
+                if(res.code === 1){
+                  this.setMealDialog.item = {...item,list:res.data}
+                  this.setMealDialog.show = true
+                }else{
+                  this.$notify({ type:'warning', message:res.msg});
+                }
+              }
+
+            },
+            // AI 助手相关方法
+            toggleChat() {
+              this.showChat = !this.showChat;
+              if (this.showChat) {
+                this.$nextTick(() => {
+                  this.scrollToBottom();
+                });
+              }
+            },
+
+            sendMessage() {
+              const message = this.inputMessage.trim();
+              if (!message) return;
+
+              // 添加用户消息
+              this.messages.push({
+                role: 'user',
+                content: message,
+                time: this.getCurrentTime()
+              });
+
+              this.inputMessage = '';
+              this.isTyping = true;
+              this.scrollToBottom();
+
+              // 创建 AI 回复消息占位
+              const aiMessageIndex = this.messages.length;
+              this.messages.push({
+                role: 'assistant',
+                content: '',
+                time: this.getCurrentTime()
+              });
+
+              // 调用后端 AI 接口（流式响应）
+              this.callAIAPI(message, aiMessageIndex);
+            },
+
+            callAIAPI(userMessage, messageIndex) {
+              // 优化: 使用相对路径通过Nginx代理,而不是硬编码公网IP
+              fetch('http://localhost:8067/api/scs/chat', {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                  message: userMessage
+                })
+              })
+              .then(response => {
+                if (!response.ok) {
+                  throw new Error(`HTTP error! status: ${response.status}`);
+                }
+            
+                const reader = response.body.getReader();
+                const decoder = new TextDecoder('utf-8');
+                let accumulatedText = '';
+                let buffer = ''; // 添加缓冲区处理不完整的数据块
+            
+                const readStream = () => {
+                  return reader.read().then(({ done, value }) => {
+                    if (done) {
+                      this.isTyping = false;
+                      this.scrollToBottom();
+                      // 流结束后，尝试解析数据结构
+                      this.parseAndFormatMessage(messageIndex, accumulatedText);
+                      return;
+                    }
+            
+                    // 解码数据块并添加到缓冲区
+                    buffer += decoder.decode(value, { stream: true });
+            
+                    // 按行分割处理
+                    const lines = buffer.split('\n');
+                              
+                    // 保留最后一个可能不完整的行
+                    buffer = lines.pop() || '';
+            
+                    // 处理每一行
+                    lines.forEach(line => {
+                      const trimmedLine = line.trim();
+                                
+                      // 跳过空行
+                      if (!trimmedLine) return;
+            
+                      // 处理 SSE 格式的数据行 (data:xxx)
+                      if (trimmedLine.startsWith('data:')) {
+                        const data = trimmedLine.substring(5);
+                                  
+                        // 只有当 data 不为空时才追加
+                        if (data !== '') {
+                          accumulatedText += data;
+                                    
+                          // 实时更新消息内容
+                          this.$set(this.messages[messageIndex], 'content', accumulatedText);
+                          this.scrollToBottom();
+                        }
+                      }
+                    });
+            
+                    // 继续读取下一块
+                    return readStream();
+                  });
+                };
+            
+                return readStream();
+              })
+              .catch(error => {
+                console.error('AI 接口调用失败:', error);
+                this.isTyping = false;
+            
+                // 如果出错,显示错误信息
+                if (this.messages[messageIndex]) {
+                  this.$set(this.messages[messageIndex], 'content',
+                    '抱歉,服务暂时不可用,请稍后重试。');
+                } else {
+                  this.messages.push({
+                    role: 'assistant',
+                    content: '抱歉,服务暂时不可用,请稍后重试。',
+                    time: this.getCurrentTime()
+                  });
+                }
+            
+                this.scrollToBottom();
+              });
+            },
+
+            // 解析并格式化消息
+            parseAndFormatMessage(messageIndex, text) {
+              try {
+                // 尝试从 markdown 代码块中提取 JSON
+                let jsonData = null;
+                let textPart = text;
+                
+                // 匹配 ```json ... ``` 格式
+                const jsonCodeBlock = text.match(/```json\s*([\s\S]*?)\s*```/);
+                if (jsonCodeBlock) {
+                  jsonData = JSON.parse(jsonCodeBlock[1]);
+                  textPart = text.replace(jsonCodeBlock[0], '').trim();
+                } else {
+                  // 尝试直接匹配 JSON 对象或数组
+                  const jsonMatch = text.match(/\{[\s\S]*\}|\[[\s\S]*\]/);
+                  if (jsonMatch) {
+                    jsonData = JSON.parse(jsonMatch[0]);
+                    textPart = text.replace(jsonMatch[0], '').trim();
+                  }
+                }
+                
+                if (jsonData) {
+                  // 判断数据类型并设置展示方式
+                  if (Array.isArray(jsonData)) {
+                    // 数组数据 - 列表展示
+                    this.$set(this.messages[messageIndex], 'dataType', 'list');
+                    this.$set(this.messages[messageIndex], 'dataList', jsonData);
+                    this.$set(this.messages[messageIndex], 'content', textPart || '查询结果：');
+                  } else if (jsonData.type === 'order') {
+                    // 下单卡片
+                    this.$set(this.messages[messageIndex], 'dataType', 'order');
+                    this.$set(this.messages[messageIndex], 'orderItems', jsonData.items || []);
+                    this.$set(this.messages[messageIndex], 'totalAmount', jsonData.totalAmount || 0);
+                    this.$set(this.messages[messageIndex], 'content', jsonData.title || '确认订单');
+                  } else if (typeof jsonData === 'object') {
+                    // 单个对象 - 详情展示
+                    this.$set(this.messages[messageIndex], 'dataType', 'detail');
+                    this.$set(this.messages[messageIndex], 'data', jsonData);
+                    this.$set(this.messages[messageIndex], 'content', textPart || '详细信息：');
+                  }
+                }
+              } catch (e) {
+                // 如果不是JSON格式，保持原文本显示
+                console.log('非结构化数据，保持文本显示', e);
+              }
+            },
+
+            // 获取列表项标题
+            getItemTitle(item) {
+              return item.name || item.title || item.number || '未知';
+            },
+
+            // 获取列表项信息列表
+            getItemInfoList(item) {
+              const infoList = [];
+              
+              // 菜品/套餐信息
+              if (item.price !== undefined) {
+                infoList.push({
+                  label: '价格',
+                  value: `¥${(item.price / 100).toFixed(2)}`,
+                  class: 'item-price'
+                });
+              }
+              
+              if (item.description) {
+                infoList.push({
+                  label: '描述',
+                  value: item.description
+                });
+              }
+              
+              if (item.status !== undefined) {
+                infoList.push({
+                  label: '状态',
+                  value: item.status === 1 ? '售卖中' : '已停售'
+                });
+              }
+              
+              if (item.phone) {
+                infoList.push({
+                  label: '电话',
+                  value: item.phone
+                });
+              }
+              
+              if (item.address) {
+                infoList.push({
+                  label: '地址',
+                  value: item.address
+                });
+              }
+              
+              if (item.orderTime) {
+                infoList.push({
+                  label: '时间',
+                  value: this.formatTime(item.orderTime)
+                });
+              }
+              
+              if (item.amount !== undefined) {
+                infoList.push({
+                  label: '金额',
+                  value: `¥${item.amount}`,
+                  class: 'item-price'
+                });
+              }
+              
+              // 如果没有特定字段，显示所有键值对
+              if (infoList.length === 0) {
+                Object.keys(item).slice(0, 5).forEach(key => {
+                  if (item[key] && typeof item[key] !== 'object') {
+                    infoList.push({
+                      label: key,
+                      value: String(item[key])
+                    });
+                  }
+                });
+              }
+              
+              return infoList;
+            },
+
+            // 处理列表项点击
+            handleItemClick(item, type) {
+              if (type === 'list') {
+                console.log('点击了列表项:', item);
+              }
+            },
+
+            // 取消订单
+            cancelOrder() {
+              this.$toast('已取消下单');
+            },
+
+            // 确认下单
+            confirmOrder(orderData) {
+              this.$dialog.confirm({
+                title: '提示',
+                message: '确认要提交这个订单吗？'
+              }).then(() => {
+                this.submitOrder(orderData);
+              }).catch(() => {
+                this.$toast('已取消');
+              });
+            },
+
+            // 提交订单
+            submitOrder(orderData) {
+              console.log('提交订单:', orderData);
+              this.$toast.success('订单提交成功！');
+            },
+
+            // 格式化时间
+            formatTime(timeStr) {
+              if (!timeStr) return '';
+              const date = new Date(timeStr);
+              const year = date.getFullYear();
+              const month = String(date.getMonth() + 1).padStart(2, '0');
+              const day = String(date.getDate()).padStart(2, '0');
+              const hours = String(date.getHours()).padStart(2, '0');
+              const minutes = String(date.getMinutes()).padStart(2, '0');
+              return `${year}-${month}-${day} ${hours}:${minutes}`;
+            },
+
+            getCurrentTime() {
+              const now = new Date();
+              const hours = String(now.getHours()).padStart(2, '0');
+              const minutes = String(now.getMinutes()).padStart(2, '0');
+              return `${hours}:${minutes}`;
+            },
+
+            scrollToBottom() {
+              this.$nextTick(() => {
+                const container = this.$refs.messagesContainer;
+                if (container) {
+                  container.scrollTop = container.scrollHeight;
+                }
+              });
+            }
+
+          }
+      })
+  </script>
+  </html>
