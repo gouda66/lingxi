@@ -3,8 +3,11 @@ package com.lingxi.scs.interfaces.mcp;
 import com.lingxi.scs.application.service.DishApplicationService;
 import com.lingxi.scs.application.service.OrderApplicationService;
 import com.lingxi.scs.application.service.SetmealApplicationService;
+import com.lingxi.scs.application.service.DishRecommendationService;
+import com.lingxi.scs.application.service.PersonalizedRecommendationService;
 import com.lingxi.scs.application.dto.DishDTO;
 import com.lingxi.scs.application.dto.McpDishDTO;
+import com.lingxi.scs.application.dto.RecommendDishDTO;
 import com.lingxi.scs.domain.model.entity.Dish;
 import com.lingxi.scs.domain.model.entity.Setmeal;
 import com.lingxi.scs.domain.model.entity.Orders;
@@ -25,11 +28,19 @@ public class ScsMcpToolService {
     private final DishApplicationService dishService;
     private final SetmealApplicationService setmealService;
     private final OrderApplicationService orderService;
+    private final DishRecommendationService recommendationService;
+    private final PersonalizedRecommendationService personalizedRecommendationService;
 
-    public ScsMcpToolService(DishApplicationService dishService, SetmealApplicationService setmealService, OrderApplicationService orderService) {
+    public ScsMcpToolService(DishApplicationService dishService, 
+                             SetmealApplicationService setmealService, 
+                             OrderApplicationService orderService,
+                             DishRecommendationService recommendationService,
+                             PersonalizedRecommendationService personalizedRecommendationService) {
         this.dishService = dishService;
         this.setmealService = setmealService;
         this.orderService = orderService;
+        this.recommendationService = recommendationService;
+        this.personalizedRecommendationService = personalizedRecommendationService;
     }
 
     @Tool(description = "查询所有菜品列表，支持按名称搜索")
@@ -100,5 +111,20 @@ public class ScsMcpToolService {
             @ToolParam(description = "数量，默认10") Integer limit) {
         log.info("AI 查询最近订单: {}", limit);
         return orderService.getRecentOrders(limit != null ? limit : 10);
+    }
+
+    @Tool(description = "获取智能推荐菜品列表，基于销量、评分、新品、性价比等多维度算法")
+    public List<RecommendDishDTO> getRecommendedDishes(
+            @ToolParam(description = "返回数量，默认10") Integer limit) {
+        log.info("AI 获取推荐菜品: {}", limit);
+        return recommendationService.getRecommendedDishes(limit != null ? limit : 10);
+    }
+
+    @Tool(description = "获取个性化推荐菜品列表，基于用户历史订单、口味偏好、消费习惯等")
+    public List<RecommendDishDTO> getPersonalizedRecommendations(
+            @ToolParam(description = "用户ID") Long userId,
+            @ToolParam(description = "返回数量，默认10") Integer limit) {
+        log.info("AI 获取个性化推荐，用户ID: {}, 数量: {}", userId, limit);
+        return personalizedRecommendationService.getPersonalizedRecommendations(userId, limit != null ? limit : 10);
     }
 }

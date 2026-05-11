@@ -1,5 +1,6 @@
 package com.lingxi.scs.interfaces.rest;
 
+import com.lingxi.scs.application.dto.OrderStatusDTO;
 import com.lingxi.scs.application.service.OrderApplicationService;
 import com.lingxi.scs.common.context.BaseContext;
 import com.lingxi.scs.common.result.R;
@@ -99,13 +100,17 @@ public class OrderController {
         return R.success(orders);
     }
 
-    /**
-     * 更新订单状态
-     */
+    @PutMapping
+    public R<String> send(@RequestBody Orders orders) {
+        log.info("更新订单: {}", orders);
+        orderService.updateOrder(orders);
+        return R.success("订单更新成功");
+    }
+
     @PutMapping("/status")
-    public R<String> updateStatus(@RequestParam String orderId, @RequestParam Integer status) {
-        log.info("更新订单状态: orderId={}, status={}", orderId, status);
-        orderService.updateOrderStatus(Long.parseLong(orderId), status);
+    public R<String> updateStatus(@RequestBody OrderStatusDTO dto) {
+        log.info("更新订单状态: orderId={}, status={}", dto.getId(), dto.getStatus());
+        orderService.updateOrderStatus(dto.getId(), dto.getStatus());
         return R.success("订单状态更新成功");
     }
 

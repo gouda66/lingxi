@@ -617,6 +617,22 @@
         color: #999;
         margin-top: 4px;
       }
+
+      /* 订单通知样式 */
+      .order-notification {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+        border: none !important;
+        box-shadow: 0 8px 24px rgba(102, 126, 234, 0.4) !important;
+      }
+
+      .order-notification .el-notification__title {
+        color: #fff !important;
+        font-weight: 600 !important;
+      }
+
+      .order-notification .el-notification__content {
+        color: #fff !important;
+      }
     </style>
   </head>
 
@@ -932,7 +948,12 @@
             addressList: [],
             loadingAddresses: false,
             selectedAddressId: null,
-            pendingOrderData: null
+            pendingOrderData: null,
+            
+            // 订单提醒相关
+            orderCheckTimer: null,
+            lastOrderNumber: null,  // 记录最后检查的订单号（使用订单号而不是ID，避免精度问题）
+            currentOrderId: null,   // 当前通知的订单ID，用于快速接单
           }
         },
         computed: {},
@@ -943,9 +964,15 @@
         beforeDestroy() {
           this.timer = null
           clearTimeout(this.timer)
+          // 清除订单检查定时器
+          if (this.orderCheckTimer) {
+            clearInterval(this.orderCheckTimer)
+          }
         },
         mounted() {
           window.menuHandle = this.menuHandle
+          // 启动订单检查
+          this.startOrderCheck()
         },
         methods: {
           toggleChat() {
@@ -1468,10 +1495,20 @@
             }
           },
 
-          // 格式化时间
+          // 格式化时间（支持数组格式和字符串格式）
           formatTime(timeStr) {
             if (!timeStr) return '';
+            
+            // 如果是数组格式 [年, 月, 日, 时, 分, 秒]
+            if (Array.isArray(timeStr)) {
+              if (timeStr.length < 6) return '';
+              const [year, month, day, hours, minutes, seconds] = timeStr;
+              return `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')} ${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}`;
+            }
+            
+            // 如果是字符串格式
             const date = new Date(timeStr);
+            if (isNaN(date.getTime())) return '';
             const year = date.getFullYear();
             const month = String(date.getMonth() + 1).padStart(2, '0');
             const day = String(date.getDate()).padStart(2, '0');
@@ -1536,7 +1573,7 @@
             logoutApi().then((res)=>{
               if(res.code === 1){
                 localStorage.removeItem('userInfo')
-                window.location.href = '/page/login/login.html'
+                window.location.href = '/backend/page/login/login.html'
               }
             })
           },
@@ -1554,13 +1591,13 @@
                 this.closeLoading()
               } else {
                 // 未登录，跳转到登录页
-                window.location.href = '/page/login/login.html'
+                window.location.href = '/backend/page/login/login.html'
               }
             })
             .catch(error => {
               console.error('检查登录状态失败:', error)
               // 出错也跳转到登录页
-              window.location.href = '/page/login/login.html'
+              window.location.href = '/backend/page/login/login.html'
             })
           },
           goBack() {
@@ -1589,6 +1626,174 @@
             this.timer = setTimeout(()=>{
               this.loading = false
             },1000)
+          },
+          
+          // 启动订单检查（每5秒检查一次）
+          startOrderCheck() {
+            console.log('🔔 启动订单检查机制...')
+            // 先获取最新的订单
+            this.checkNewOrders()
+            
+            // 设置定时器，每5秒检查一次
+            this.orderCheckTimer = setInterval(() => {
+              this.checkNewOrders()
+            }, 5000)
+            console.log('✅ 订单检查定时器已启动，每5秒检查一次')
+          },
+          
+          // 检查新订单
+          async checkNewOrders() {
+            try {
+              const response = await fetch('/order/page?page=1&pageSize=1', {
+                method: 'GET',
+                credentials: 'include'
+              })
+              
+              const res = await response.json()
+              
+              console.log(' 检查订单响应:', res)
+              
+              if (res.code === 1 && res.data && res.data.content && res.data.content.length > 0) {
+                const latestOrder = res.data.content[0]
+                const orderNumber = latestOrder.number
+                
+                console.log(' 最新订单号:', orderNumber, '上次订单号:', this.lastOrderNumber)
+                
+                // 如果是第一次加载，记录当前最新订单号，不提示
+                if (!this.lastOrderNumber) {
+                  this.lastOrderNumber = orderNumber
+                  console.log('✅ 初始化订单号:', orderNumber)
+                  return
+                }
+                
+                // 如果发现了新的订单号，弹出提示
+                if (orderNumber !== this.lastOrderNumber) {
+                  console.log(' 发现新订单！订单号:', orderNumber)
+                  this.lastOrderNumber = orderNumber
+                  this.showOrderNotification(latestOrder)
+                }
+              } else {
+                console.log('️ 没有获取到订单数据')
+              }
+            } catch (error) {
+              console.error('❌ 检查订单失败:', error)
+            }
+          },
+
+          showOrderNotification(order) {
+            this.currentOrderId = order.id
+
+            // 生成唯一ID
+            const btnId = 'accept-btn-' + Date.now()
+
+            this.$notify({
+              title: '🔔 新订单提醒',
+              message: `
+      <div style="padding: 10px;">
+        <div style="font-size: 14px; margin-bottom: 8px;">
+          <strong>订单号：</strong>${order.number || '未知'}
+        </div>
+        <div style="font-size: 14px; margin-bottom: 8px;">
+          <strong>金额：</strong><span style="color: #ff6b6b; font-weight: 600;">¥${parseFloat(order.amount || 0).toFixed(2)}</span>
+        </div>
+        <div style="font-size: 13px; color: #666;">
+          <strong>下单时间：</strong>${this.formatTime(order.orderTime)}
+        </div>
+        <div style="margin-top: 12px; text-align: center; display: flex; gap: 10px; justify-content: center;">
+          <button id="${btnId}"
+                  style="padding: 8px 20px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: #fff; border: none; border-radius: 6px; cursor: pointer; font-size: 13px;">
+            立即接单
+          </button>
+          <button onclick="window.location.href='backend/page/order/list.html'"
+                  style="padding: 8px 20px; background: #fff; color: #667eea; border: 1px solid #667eea; border-radius: 6px; cursor: pointer; font-size: 13px;">
+            查看详情
+          </button>
+        </div>
+      </div>
+    `,
+              type: 'success',
+              duration: 0,
+              dangerouslyUseHTMLString: true,
+              position: 'top-right',
+              customClass: 'order-notification',
+              onClose: () => {
+                // 清理事件监听，避免内存泄漏
+                const btn = document.getElementById(btnId)
+                if (btn) btn.removeEventListener('click', this._handleAccept)
+              }
+            })
+
+            // 使用 $nextTick 确保 DOM 已渲染
+            this.$nextTick(() => {
+              const btn = document.getElementById(btnId)
+              if (btn) {
+                // 绑定点击事件，this 指向 Vue 实例
+                this._handleAccept = () => this.quickAcceptOrder()
+                btn.addEventListener('click', this._handleAccept)
+              }
+            })
+          },
+          
+          // 快速接单
+          async quickAcceptOrder() {
+            if (!this.currentOrderId) {
+              this.$message.warning('订单信息不存在')
+              return
+            }
+            
+            try {
+              const response = await fetch('/order/status', {
+                method: 'PUT',
+                headers: {
+                  'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                  id: this.currentOrderId,
+                  status: 3
+                })
+              })
+              
+              const result = await response.json()
+              console.log('当前订单',result)
+              
+              if (result.code === 1) {
+                this.$message.success('订单已确认，开始派送')
+                // 关闭通知
+                this.$notify.closeAll()
+                // 刷新订单列表
+                this.checkNewOrders()
+              } else {
+                this.$message.error(result.msg || '操作失败')
+              }
+            } catch (error) {
+              console.error('接单失败:', error)
+              this.$message.error('接单失败，请重试')
+            }
+          },
+          
+          // 播放提示音（可选）
+          playNotificationSound() {
+            try {
+              // 创建一个简单的提示音
+              const audioContext = new (window.AudioContext || window.webkitAudioContext)()
+              const oscillator = audioContext.createOscillator()
+              const gainNode = audioContext.createGain()
+              
+              oscillator.connect(gainNode)
+              gainNode.connect(audioContext.destination)
+              
+              oscillator.frequency.value = 800
+              oscillator.type = 'sine'
+              
+              gainNode.gain.setValueAtTime(0.3, audioContext.currentTime)
+              gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5)
+              
+              oscillator.start(audioContext.currentTime)
+              oscillator.stop(audioContext.currentTime + 0.5)
+            } catch (e) {
+              // 如果浏览器不支持或用户禁止音频，忽略错误
+              console.log('提示音播放失败', e)
+            }
           }
         }
       })

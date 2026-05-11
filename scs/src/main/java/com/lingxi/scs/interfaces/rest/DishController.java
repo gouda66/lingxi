@@ -1,6 +1,8 @@
 package com.lingxi.scs.interfaces.rest;
 
 import com.lingxi.scs.application.dto.DishDTO;
+import com.lingxi.scs.application.dto.RecommendDishDTO;
+import com.lingxi.scs.application.service.PersonalizedRecommendationService;
 import com.lingxi.scs.common.context.BaseContext;
 import com.lingxi.scs.common.result.R;
 import com.lingxi.scs.interfaces.facade.DishFacade;
@@ -18,6 +20,7 @@ import java.util.List;
 public class DishController {
 
     private final DishFacade dishFacade;
+    private final PersonalizedRecommendationService recommendationService;
 
     @PostMapping
     public R<String> save(@RequestBody DishDTO dishDTO) {
@@ -73,5 +76,20 @@ public class DishController {
         List<Long> longIds = ids.stream().map(Long::parseLong).collect(java.util.stream.Collectors.toList());
         dishFacade.batchDelete(longIds);
         return R.success("批量删除成功");
+    }
+
+    /**
+     * 获取个性化推荐菜品
+     *
+     * @param limit 返回数量，默认10
+     * @return 推荐菜品列表
+     */
+    @GetMapping("/personalized-recommend")
+    public R<List<RecommendDishDTO>> getPersonalizedRecommendations(
+            @RequestParam(defaultValue = "10") int limit) {
+        Long userId = BaseContext.getCurrentId();
+        log.info("获取个性化推荐菜品，用户ID: {}, 数量: {}", userId, limit);
+        List<RecommendDishDTO> recommendations = recommendationService.getPersonalizedRecommendations(userId, limit);
+        return R.success(recommendations);
     }
 }

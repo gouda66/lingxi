@@ -989,7 +989,7 @@
             logoutApi().then((res)=>{
               if(res.code === 1){
                 localStorage.removeItem('userInfo')
-                window.location.href = '/page/login/login.html'
+                window.location.href = '/backend/page/login/login.html'
               }
             })
           },
@@ -1007,13 +1007,13 @@
                 this.closeLoading()
               } else {
                 // 未登录，跳转到登录页
-                window.location.href = '/page/login/login.html'
+                window.location.href = '/backend/page/login/login.html'
               }
             })
             .catch(error => {
               console.error('检查登录状态失败:', error)
               // 出错也跳转到登录页
-              window.location.href = '/page/login/login.html'
+              window.location.href = '/backend/page/login/login.html'
             })
           },
           goBack() {

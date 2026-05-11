@@ -44,6 +44,11 @@ public class OrderRepositoryImpl implements OrderRepository {
     }
 
     @Override
+    public List<Orders> findByUserIdAndStatus(Long userId, Integer status) {
+        return jpaRepository.findByUserIdAndStatus(userId, status);
+    }
+
+    @Override
     public Page<Orders> findByUserId(Long userId, Pageable pageable) {
         return jpaRepository.findByUserId(userId, pageable);
     }

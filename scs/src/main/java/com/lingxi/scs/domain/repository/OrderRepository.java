@@ -36,6 +36,11 @@ public interface OrderRepository {
     List<Orders> findByUserId(Long userId);
 
     /**
+     * 根据用户ID和状态查询订单列表
+     */
+    List<Orders> findByUserIdAndStatus(Long userId, Integer status);
+
+    /**
      * 根据用户ID分页查询订单
      */
     Page<Orders> findByUserId(Long userId, Pageable pageable);

@@ -21,6 +21,7 @@ public interface OrderJpaRepository extends JpaRepository<Orders, Long>, JpaSpec
     Optional<Orders> findByNumber(String number);
     List<Orders> findByUserId(Long userId);
     List<Orders> findByStatus(Integer status);
+    List<Orders> findByUserIdAndStatus(Long userId, Integer status);
     
     Page<Orders> findAll(Pageable pageable);
     

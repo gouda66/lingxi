@@ -2,6 +2,7 @@ package com.lingxi.scs.domain.repository;
 
 import com.lingxi.scs.domain.model.entity.OrderDetail;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -41,4 +42,31 @@ public interface OrderDetailRepository {
      * 删除订单明细
      */
     void deleteById(Long id);
+
+    /**
+     * 统计菜品在指定时间后的销量（已完成订单）
+     *
+     * @param dishId 菜品ID
+     * @param startTime 开始时间
+     * @return 销量数量
+     */
+    Long countSalesByDishId(Long dishId, LocalDateTime startTime);
+
+    /**
+     * 统计菜品在指定时间后的总订单数
+     *
+     * @param dishId 菜品ID
+     * @param startTime 开始时间
+     * @return 订单数量
+     */
+    Long countTotalOrdersByDishId(Long dishId, LocalDateTime startTime);
+
+    /**
+     * 统计菜品在指定时间后的已完成订单数
+     *
+     * @param dishId 菜品ID
+     * @param startTime 开始时间
+     * @return 完成订单数量
+     */
+    Long countCompletedOrdersByDishId(Long dishId, LocalDateTime startTime);
 }

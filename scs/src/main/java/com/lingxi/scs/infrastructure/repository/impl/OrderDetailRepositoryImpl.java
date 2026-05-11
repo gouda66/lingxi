@@ -6,6 +6,7 @@ import com.lingxi.scs.infrastructure.repository.jpa.OrderDetailJpaRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -48,5 +49,20 @@ public class OrderDetailRepositoryImpl implements OrderDetailRepository {
     @Override
     public void deleteById(Long id) {
         jpaRepository.deleteById(id);
+    }
+
+    @Override
+    public Long countSalesByDishId(Long dishId, LocalDateTime startTime) {
+        return jpaRepository.countSalesByDishId(dishId, startTime);
+    }
+
+    @Override
+    public Long countTotalOrdersByDishId(Long dishId, LocalDateTime startTime) {
+        return jpaRepository.countTotalOrdersByDishId(dishId, startTime);
+    }
+
+    @Override
+    public Long countCompletedOrdersByDishId(Long dishId, LocalDateTime startTime) {
+        return jpaRepository.countCompletedOrdersByDishId(dishId, startTime);
     }
 }

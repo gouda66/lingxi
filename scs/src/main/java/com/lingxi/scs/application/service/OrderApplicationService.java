@@ -181,6 +181,34 @@ public class OrderApplicationService {
         orderRepository.save(order);
     }
 
+    /**
+     * 更新订单信息
+     *
+     * @param orders 订单信息
+     */
+    @Transactional
+    public void updateOrder(Orders orders) {
+        if (orders.getId() == null) {
+            throw new CustomException("订单ID不能为空");
+        }
+        
+        Orders existingOrder = orderRepository.findById(orders.getId())
+                .orElseThrow(() -> new CustomException("订单不存在"));
+        
+        // 更新允许修改的字段
+        if (orders.getStatus() != null) {
+            existingOrder.setStatus(orders.getStatus());
+        }
+        if (orders.getRemark() != null) {
+            existingOrder.setRemark(orders.getRemark());
+        }
+        if (orders.getPayMethod() != null) {
+            existingOrder.setPayMethod(orders.getPayMethod());
+        }
+        
+        orderRepository.save(existingOrder);
+    }
+
 
     /**
      * 分页查询订单

@@ -81,8 +81,8 @@ public class OrderMapper {
     private String getStatusText(Integer status) {
         return switch (status) {
             case 1 -> "待付款";
-            case 2 -> "待派送";
-            case 3 -> "已派送";
+            case 2 -> "待接单";
+            case 3 -> "派送中";
             case 4 -> "已完成";
             case 5 -> "已取消";
             default -> "未知状态";
